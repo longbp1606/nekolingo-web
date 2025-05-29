@@ -1,12 +1,20 @@
-const PRIMARY_COLOR: string = '#151542';
-const SECONDARY_COLOR: string = '#FFFFFF';
+const PRIMARY_COLOR: string = '#00C2D1';
+const SECONDARY_COLOR: string = '#F9E900';
+const TERTIARY_COLOR: string = '#ED33B9';
+const QUATERNARY_COLOR: string = '#F6AF65';
+const QUINARY_COLOR: string = '#0A1045';
 
 export const theme = {
     light: '',
     dark: '',
     color: {
         primary: PRIMARY_COLOR,
+        lightPrimary: '#CCF3F6',
         secondary: SECONDARY_COLOR,
+        tertiary: TERTIARY_COLOR,
+        quaternary: QUATERNARY_COLOR,
+        quinary: QUINARY_COLOR,
+        google: '#DB4437',
         facebook: '#1877F2',
         info: '#1677FF',
         warning: '#FAAD14',
@@ -62,7 +70,7 @@ export const AntdThemeConfig = {
         colorPrimary: PRIMARY_COLOR,
         colorSecondary: SECONDARY_COLOR,
         colorLink: PRIMARY_COLOR,
-        fontFamily: 'Inter',
+        fontFamily: 'Quicksand',
         colorLinkHover: PRIMARY_COLOR,
     },
 };
