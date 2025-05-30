@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Module background -->
+  <circle cx="50" cy="50" r="40" fill="#58CC02" />
+  
+  <!-- Book icon -->
+  <rect x="30" y="35" width="40" height="30" rx="2" ry="2" fill="white" />
+  <path d="M30,40 L70,40" stroke="#DDD" stroke-width="1" />
+  <path d="M30,45 L70,45" stroke="#DDD" stroke-width="1" />
+  <path d="M30,50 L70,50" stroke="#DDD" stroke-width="1" />
+  <path d="M30,55 L70,55" stroke="#DDD" stroke-width="1" />
+  <path d="M30,60 L70,60" stroke="#DDD" stroke-width="1" />
+  
+  <!-- Language symbol -->
+  <text x="50" y="53" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle" fill="#58CC02">あ</text>
+</svg>
