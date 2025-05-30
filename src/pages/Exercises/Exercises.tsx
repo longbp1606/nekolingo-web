@@ -9,7 +9,6 @@ import Listening from './Type/Listening/Listening';
 import CompleteSentences from './Type/CompleteSentences/CompleteSentences';
 
 const options = [
-    { value: 'question_sample', label: 'Question Sample' },
     { value: 'select_image', label: 'Select image exercise' },
     { value: 'sort_sentence', label: 'Sort complete sentences' },
     { value: 'match_pairs', label: 'Match' },
