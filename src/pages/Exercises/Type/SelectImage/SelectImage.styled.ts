@@ -1,21 +1,33 @@
 import styled from "styled-components";
+import { theme } from "@/themes";
+import { transparentize } from "polished"; // Thêm hàm từ polished
 
 export const SelectWrapper = styled.div`
-  font-family: "Segoe UI", sans-serif;
-  max-width: 640px;
-  margin: auto;
+  padding: 24px;
+  text-align: center;
+  height: 80%;
+`;
+
+export const Content = styled.div`
+  width: 50%;
+  margin: 0 auto 12px;
+  height: 100%;
+  align-content: center;
 `;
 
 export const SubTitle = styled.h4`
-  font-family: "Segoe UI", sans-serif;
   max-width: 640px;
-  margin: auto;
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: ${theme.color.tertiary};
 `;
 
 export const Question = styled.h2`
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+  color: #3c3c3c;
+  margin-bottom: 25px;
 `;
 
 export const OptionsContainer = styled.div`
@@ -50,12 +62,12 @@ export const OptionsContainer = styled.div`
 
   .option-card:hover {
     background-color: #f1f2f6;
-    border-color: #74b9ff;
+    border-color:  ${theme.color.primary};
   }
 
   .option-card.selected {
-    background-color: #d6f0ff;
-    border-color: #0984e3;
+    background-color: ${transparentize(0.3, theme.color.lightPrimary)}; 
+ border-color: ${theme.color.primary};
   }
 
   .option-number {
