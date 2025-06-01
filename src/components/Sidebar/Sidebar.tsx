@@ -1,10 +1,6 @@
 import { Image, Typography } from 'antd';
 import * as Styled from './Sidebar.styled';
-import { FiHome, FiUser } from 'react-icons/fi';
-import { GiWeightLiftingUp } from "react-icons/gi";
-import { FaCircleQuestion, FaShop, FaTrophy } from "react-icons/fa6";
 import { Link, useLocation, useRoutes } from 'react-router-dom';
-import { useState } from 'react';
 import { theme } from '@/themes';
 import { symbols } from '@/utils/assets';
 
