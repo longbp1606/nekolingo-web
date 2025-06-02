@@ -2,10 +2,10 @@ import styled from "styled-components";
 
 export const ProgressBarContainer = styled.div`
   background: #e0e0e0;
-  height: 10px;
-  width: 50%;
+  height: 16px;
+  width: 70%;
   margin: 0 auto 12px;
-  border-radius: 5px;
+  border-radius: 30px;
   overflow: hidden;
 `;
 

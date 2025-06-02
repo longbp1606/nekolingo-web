@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StarTwoTone } from '@ant-design/icons';
+// import { StarTwoTone } from '@ant-design/icons';
 import { Content, LeftOption, MatchArea, RightOption, Title, Wrapper } from './MatchPairs.styled';
 import ProgressBar from '@/components/ProgressBar';
 import BottomBar from '@/components/BottomBar/BottomBar';
@@ -160,7 +160,7 @@ const MatchPairs: React.FC = () => {
         text: string,
         id: number,
         isViColumn: boolean,
-        idx: number,
+        // idx: number,
     ) => {
         // 1) isMatched: cặp đã “kết thúc” (đã ghi vào matchedIds)
         const isMatched = isViColumn
@@ -230,12 +230,12 @@ const MatchPairs: React.FC = () => {
                         color: '#4b4b4b',
                     }}
                 >
-                    <span className="option-number">{idx + 1}</span>
+                    {/* <span className="option-number">{idx + 1}</span> */}
                     {text}
                 </button>
 
                 {/* Nếu là recentMatchedMatch → show Star */}
-                {isRecentMatch && (
+                {/* {isRecentMatch && (
                     <StarTwoTone
                         twoToneColor="#faad14"
                         style={{
@@ -245,7 +245,7 @@ const MatchPairs: React.FC = () => {
                             fontSize: 20,
                         }}
                     />
-                )}
+                )} */}
             </div>
         );
     };
@@ -262,15 +262,17 @@ const MatchPairs: React.FC = () => {
                 >
                     {/* Cột tiếng Việt */}
                     <LeftOption>
-                        {wordPairs.map((pair, idx) =>
-                            renderButton(pair.vi, pair.id, true, idx)
+                        {wordPairs.map((pair) =>
+                            // renderButton(pair.vi, pair.id, true, idx)
+                            renderButton(pair.vi, pair.id, true)
                         )}
                     </LeftOption>
 
                     {/* Cột tiếng Anh */}
                     <RightOption>
-                        {shuffledEnPairs.map((pair, idx) =>
-                            renderButton(pair.en, pair.id, false, idx)
+                        {shuffledEnPairs.map((pair) =>
+                            // renderButton(pair.en, pair.id, false, idx)
+                            renderButton(pair.en, pair.id, false)
                         )}
                     </RightOption>
                 </MatchArea>
