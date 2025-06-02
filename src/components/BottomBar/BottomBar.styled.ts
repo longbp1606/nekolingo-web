@@ -36,6 +36,25 @@ export const SkipButton = styled.button`
   border-bottom: 5px solid #eee;
   background-color: white;
   padding: 10px 36px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+  background-color: #ccf2f5;
+    color: #333;
+    border-color: #00c2d1;
+  }
+
+  &:active {
+    background-color: #ffffff;
+    border-bottom: 2px solid #ccc;
+    transform: translateY(2px);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
 `;
 
 export const CheckButton = styled.button`
@@ -47,7 +66,27 @@ export const CheckButton = styled.button`
   border-bottom: 5px solid #eee;
   color: #555;
   padding: 10px 36px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #ccf2f5;
+    color: #333;
+    border-color: #00c2d1;
+  }
+
+  &:active {
+    background-color: #d0d0d0;
+    border-bottom: 2px solid #bbb;
+    transform: translateY(2px);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
 `;
+
 
 export const NextButtonSuccess = styled.button`
   border-radius: 10px;
