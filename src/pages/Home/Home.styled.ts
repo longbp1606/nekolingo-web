@@ -44,6 +44,10 @@ export const GuideButton = styled.button`
     font-size: 14px;
 `;
 
+export const BodyContent = styled.div`
+    padding-left: 256px;
+`;
+
 export const HomeWrapper = styled.div`
     max-width: 1200px;
     margin: 0 auto;
@@ -57,6 +61,7 @@ export const HomeWrapper = styled.div`
 export const HomeContent = styled.div`
     display: flex;
     flex-direction: row;
+    justify-content: center;
     gap: 40px;
     width: 100%;
     margin-top: 20px;
@@ -81,6 +86,13 @@ export const RightSection = styled.div`
         width: 100%;
         max-width: 600px;
     }
+`;
+
+export const StatHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
 `;
 
 export const Card = styled.div`
