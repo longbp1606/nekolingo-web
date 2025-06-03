@@ -33,7 +33,7 @@ const LessionComplete: React.FC<Props> = ({ onContinue }) => {
                     border: '2px solid #eee',
                     borderBottom: '5px solid #eee',
                     hoverBackground: `${theme.color.bgBlue}`,
-                    hoverColor: '#fff',
+                    hoverColor: `${theme.color.primary}`,
                     hoverBorder: `${theme.color.primary}`,
                     onClick: () => console.log('Xem lại bài học'),
                 }}

@@ -10,6 +10,10 @@ const RED: string = '#FF4B4B';
 const DARK_RED: string = '#E04343';
 const BG_RED: string = '#FFDFE0';
 const BG_BLUE: string = '#CCF2F5';
+const LIGHT_ORANGE: string = '#FFD700';
+const ORANGE: string = '#FFA500';
+const LIGHT_PURPLE: string = '#AB47BC';
+const DARK_PURPLE: string = '#9C27B0';
 
 export const theme = {
     light: '',
@@ -28,6 +32,10 @@ export const theme = {
         darkRed: DARK_RED,
         bgRed: BG_RED,
         bgBlue: BG_BLUE,
+        orange: ORANGE,
+        lightOrange: LIGHT_ORANGE,
+        lightPurple: LIGHT_PURPLE,
+        darkPurple: DARK_PURPLE,
         google: '#DB4437',
         facebook: '#1877F2',
         info: '#1677FF',
