@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Space, Typography } from "antd";
 import { SoundOutlined, MutedOutlined } from '@ant-design/icons';
 import {
@@ -11,6 +11,7 @@ import {
 
 import BottomBar from "@/components/BottomBar/BottomBar";
 import ProgressBar from '@/components/ProgressBar';
+import GameOver from "@/components/ProgressBar/GameOver/GameOver";
 const { Title } = Typography;
 
 const choices = ["I", "study", "three"];
@@ -26,6 +27,14 @@ const Listening: React.FC = () => {
     const [answeredQuestions, setAnsweredQuestions] = useState(0);
     const [lives, setLives] = useState(3); // Initial lives
     const correctAnswerIndex = 0; // Assuming the first choice is the correct answer
+
+    const [showGameOver, setShowGameOver] = useState(false);
+
+    useEffect(() => {
+        if (lives === 0) {
+            setShowGameOver(true);
+        }
+    }, [lives]);
 
     // Handle selection and checking
     const handleCheck = () => {
@@ -74,6 +83,16 @@ const Listening: React.FC = () => {
 
     return (
         <ListeningWrapper>
+
+            {showGameOver && (
+                <GameOver
+                    onCancel={() => setShowGameOver(false)}
+                    onRecover={() => {
+                        setLives(1);
+                        setShowGameOver(false);
+                    }}
+                />
+            )}
             <ProgressBar
                 totalQuestions={totalQuestions}
                 answeredQuestions={answeredQuestions}

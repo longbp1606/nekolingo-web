@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Space, Typography } from "antd";
 import {
     Wrapper,
@@ -8,6 +8,7 @@ import {
 } from "./MultipleChoice.styled";
 import BottomBar from "@/components/BottomBar/BottomBar";
 import ProgressBar from "@/components/ProgressBar";
+import GameOver from "@/components/ProgressBar/GameOver/GameOver";
 
 const choices = ["I", "study", "three"];
 
@@ -23,6 +24,14 @@ const MultipleChoice: React.FC = () => {
     const [answeredQuestions, setAnsweredQuestions] = useState(0);
     const [lives, setLives] = useState(3); // Initial lives
     const correctAnswerIndex = 0; // Assuming the first choice is the correct answer
+
+    const [showGameOver, setShowGameOver] = useState(false);
+
+    useEffect(() => {
+        if (lives === 0) {
+            setShowGameOver(true);
+        }
+    }, [lives]);
 
     // Handle selection and checking
     const handleCheck = () => {
@@ -51,6 +60,16 @@ const MultipleChoice: React.FC = () => {
 
     return (
         <Wrapper>
+            {showGameOver && (
+                <GameOver
+                    onCancel={() => setShowGameOver(false)}
+                    onRecover={() => {
+                        setLives(1);
+                        setShowGameOver(false);
+                    }}
+                />
+            )}
+
             <ProgressBar
                 totalQuestions={totalQuestions}
                 answeredQuestions={answeredQuestions}

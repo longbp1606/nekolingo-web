@@ -14,12 +14,14 @@ const LIGHT_ORANGE: string = '#FFD700';
 const ORANGE: string = '#FFA500';
 const LIGHT_PURPLE: string = '#AB47BC';
 const DARK_PURPLE: string = '#9C27B0';
+const DARK_PRIMARY: string = '#009EB2';
 
 export const theme = {
     light: '',
     dark: '',
     color: {
         primary: PRIMARY_COLOR,
+        darkPrimary: DARK_PRIMARY,
         lightPrimary: '#CCF3F6',
         secondary: SECONDARY_COLOR,
         tertiary: TERTIARY_COLOR,
