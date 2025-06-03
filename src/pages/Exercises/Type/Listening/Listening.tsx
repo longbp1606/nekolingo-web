@@ -91,7 +91,7 @@ const Listening: React.FC = () => {
                                 ? "#f8d7da"
                                 : "#fff"
                         : isSelected
-                            ? "#e6f7ff"
+                            ? "#ccf2f5"
                             : "#fff";
 
                     const borderColor =
@@ -100,7 +100,7 @@ const Listening: React.FC = () => {
                             : isChecked && isSelected && !isCorrectChoice
                                 ? "#ff4d4f"
                                 : isSelected
-                                    ? "#1890ff"
+                                    ? "#00c2d1"
                                     : "#d9d9d9";
 
                     return (

@@ -3,6 +3,7 @@ import config from '@/config';
 import MainLayout from '@/layouts/MainLayout';
 import Exercises from '@/pages/Exercises';
 import Home from '@/pages/Home';
+import ResultProcess from '@/pages/Result';
 
 const MainRouter = () => {
     return <MainLayout />;
@@ -13,6 +14,7 @@ const publicRoutes = {
         { path: config.routes.public.welcome, element: <Onboarding />},
         { path: config.routes.public.home, element: <Home />},
         { path: config.routes.user.exercise, element: <Exercises />},
+        { path: config.routes.user.result, element: <ResultProcess /> },
     ]
 };
 

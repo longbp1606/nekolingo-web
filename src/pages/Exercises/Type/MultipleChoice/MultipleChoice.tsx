@@ -4,7 +4,7 @@ import {
     Wrapper,
     ProgressBarContainer,
     ProgressBar,
-    // CharacterImage,
+    PersonSay,
     WordBox,
     OptionCard,
 } from "./MultipleChoice.styled";
@@ -39,13 +39,16 @@ const MultipleChoice: React.FC = () => {
 
             <Typography.Title level={4}>Chọn đáp án đúng</Typography.Title>
 
-            <div style={{ margin: "20px 0" }}>
-                {/* <CharacterImage
-                    src="https://d35aaqx5ub95lt.cloudfront.net/images/8dc49e6b40fba124a92a44c3cdba6416.svg"
-                    alt="character"
-                /> */}
+            <PersonSay>
+                <img
+                    src="https://firebasestorage.googleapis.com/v0/b/orchid-92a2a.appspot.com/o/Nh%C3%A1p%2Fgirl-say.png?alt=media&token=9db5fc7a-0d65-4808-b114-81430b710929"
+                    alt="girl"
+                    width={70}
+                    height={50}
+                />
                 <WordBox>ba</WordBox>
-            </div>
+            </PersonSay>
+
 
             <Space direction="vertical" style={{ width: "100%" }} size="middle">
                 {choices.map((choice, index) => {
@@ -59,7 +62,7 @@ const MultipleChoice: React.FC = () => {
                                 ? "#f8d7da"
                                 : "#fff"
                         : isSelected
-                            ? "#e6f7ff"
+                            ? "#ccf2f5"
                             : "#fff";
 
                     const borderColor =
@@ -68,7 +71,7 @@ const MultipleChoice: React.FC = () => {
                             : isChecked && isSelected && !isCorrectChoice
                                 ? "#ff4d4f"
                                 : isSelected
-                                    ? "#1890ff"
+                                    ? "#00c2d1"
                                     : "#d9d9d9";
 
                     return (

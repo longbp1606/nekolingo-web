@@ -8,6 +8,13 @@ export const Wrapper = styled.div`
   text-align: center;
 `;
 
+export const Image = styled.img`
+  width: 100px;
+  height: 120px;
+  background-size: cover;
+  margin: 0 auto;
+`;
+
 export const ProgressBarContainer = styled.div`
   background: #e0e0e0;
   height: 10px;
@@ -50,8 +57,8 @@ export const SentenceContainer = styled.div`
 `;
 
 interface WordSlotProps {
-    hasWord: boolean;
-    isChecked: boolean;
+  hasWord: boolean;
+  isChecked: boolean;
 }
 
 export const WordSlot = styled.div<WordSlotProps>`
@@ -62,7 +69,7 @@ export const WordSlot = styled.div<WordSlotProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${props => props.hasWord ? '#1890ff' : '#ffffff'};
+  background-color: ${props => props.hasWord ? '#00c2d1' : '#ffffff'};
   color: ${props => props.hasWord ? '#ffffff' : '#999999'};
   cursor: ${props => props.hasWord && !props.isChecked ? 'pointer' : 'default'};
   font-size: 14px;
@@ -71,7 +78,7 @@ export const WordSlot = styled.div<WordSlotProps>`
 
   &:hover {
     ${props => props.hasWord && !props.isChecked && `
-      background-color: #40a9ff;
+      background-color: #52d8e0;
       transform: translateY(-1px);
     `}
   }
@@ -91,13 +98,16 @@ export const WordsContainer = styled.div`
   justify-content: center;
 `;
 
+
+
 interface WordBoxProps {
-    isChecked: boolean;
+  isChecked: boolean;
 }
 
 export const WordBox = styled.div<WordBoxProps>`
   padding: 8px 16px;
   border: 2px solid #d9d9d9;
+  border-bottom: 3px solid #d9d9d9;
   border-radius: 6px;
   background-color: #ffffff;
   cursor: ${props => !props.isChecked ? 'pointer' : 'default'};
@@ -109,7 +119,8 @@ export const WordBox = styled.div<WordBoxProps>`
   &:hover {
     ${props => !props.isChecked && `
       background-color: #e6f7ff;
-      border-color: #1890ff;
+      border-color: #00c2d1;
+      border-bottom: 4px solid #00c2d1; 
       transform: translateY(-1px);
       box-shadow: 0 2px 4px rgba(24, 144, 255, 0.1);
     `}

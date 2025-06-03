@@ -5,6 +5,7 @@ const routes = {
   },
   user: {
     exercise: "/exercise",
+    result: "/exercise/result",
   },
   api: {
     loginGoogle: "/auth/signin",

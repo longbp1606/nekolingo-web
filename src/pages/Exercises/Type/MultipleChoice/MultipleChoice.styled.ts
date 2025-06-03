@@ -23,9 +23,19 @@ export const ProgressBar = styled.div`
   background: #4cd137;
 `;
 
-export const CharacterImage = styled.img`
-  width: 60px;
+export const PersonSay = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  gap: 10px;
+  margin: 20px auto;      
+
+  img {
+    border-radius: 50%;
+    background-color: #d6f0ff;
+  }
 `;
+
 
 export const WordBox = styled(Text)`
   font-size: 16px !important;
@@ -37,14 +47,15 @@ export const WordBox = styled(Text)`
 `;
 
 export const OptionCard = styled(Card) <{
-    bgColor: string;
-    borderColor: string;
-    isClickable: boolean;
+  bgColor: string;
+  borderColor: string;
+  isClickable: boolean;
 }>`
   width: 60% !important;
   margin: 0 auto;
   background-color: ${({ bgColor }) => bgColor};
   border: 2px solid ${({ borderColor }) => borderColor};
+  border-bottom: 4px solid ${({ borderColor }) => borderColor}; 
   cursor: ${({ isClickable }) => (isClickable ? "pointer" : "default")};
   transition: all 0.2s ease;
 `;
