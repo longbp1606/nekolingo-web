@@ -6,6 +6,7 @@ import SortSentence from './Type/SortSentence/SortSentence';
 import MatchPairs from './Type/MatchPairs/MatchPairs';
 import MultipleChoice from './Type/MultipleChoice/MultipleChoice';
 import Listening from './Type/Listening/Listening';
+import CompleteSentences from './Type/CompleteSentences/CompleteSentences';
 
 const options = [
     { value: 'question_sample', label: 'Question Sample' },
@@ -14,7 +15,7 @@ const options = [
     { value: 'match_pairs', label: 'Match' },
     { value: 'multiple_choice', label: 'Multiple Choice' },
     { value: 'listening', label: 'Listening' },
-    // { value: 'complete_sentences', label: 'Complete Sentences' },
+    { value: 'complete_sentences', label: 'Complete Sentences' },
 ];
 
 
@@ -33,7 +34,7 @@ const Exercises = () => {
             {questionType === 'select_image' && <SelectImage />}
             {questionType === 'sort_sentence' &&
                 <SortSentence
-                numberOfSlots={5}
+                    numberOfSlots={5}
                     question="Đây là một cửa hàng mới."
                     correctAnswer="This is a new store"
                     options={["store", "is", "laptops", "This", "taller", "coworkers", "new", "whiter", "a", "fast", "window", "friendly", "blue", "smart", "strong"]}
@@ -42,7 +43,7 @@ const Exercises = () => {
             {questionType === 'match_pairs' && <MatchPairs />}
             {questionType === 'multiple_choice' && <MultipleChoice />}
             {questionType === 'listening' && <Listening />}
-            {/* {questionType === 'complete_sentences' && <CompleteSentences />} */}
+            {questionType === 'complete_sentences' && <CompleteSentences />}
         </div>
     )
 }

@@ -34,7 +34,7 @@ export const ControlButtons = styled.div`
 export const PlayButton = styled.button`
   width: 80px;
   height: 80px;
-  background-color: #1cb0f6;
+  background-color: #00c2d1;
   border: none;
   border-radius: 20px;
   display: flex;
@@ -51,7 +51,7 @@ export const PlayButton = styled.button`
 export const SlowButton = styled.button`
   width: 60px;
   height: 60px;
-  background-color: #1cb0f6;
+  background-color: #00c2d1;
   border: none;
   border-radius: 15px;
   display: flex;
@@ -71,14 +71,15 @@ export const QuestionTitle = styled(Title).attrs({ level: 5 })`
 `;
 
 export const OptionCard = styled(Card) <{
-    bgColor: string;
-    borderColor: string;
-    isClickable: boolean;
+  bgColor: string;
+  borderColor: string;
+  isClickable: boolean;
 }>`
   width: 60% !important;
   margin: 0 auto;
   background-color: ${({ bgColor }) => bgColor};
   border: 2px solid ${({ borderColor }) => borderColor};
+  border-bottom: 4px solid ${({ borderColor }) => borderColor}; 
   cursor: ${({ isClickable }) => (isClickable ? "pointer" : "default")};
   transition: all 0.2s ease;
 `;
