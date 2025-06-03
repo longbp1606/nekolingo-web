@@ -44,6 +44,7 @@ export const theme = {
         overlayImage: 'rgba(106, 111, 119, 0.1)',
         borderDefault: '#E5E5E5',
         borderInput: '#D9D9D9',
+        borderNextButton: '#349fa7',
         starIcon: '#FADB14',
         descTabBorder: '#F0F0F0',
         done: '#1BC47D',

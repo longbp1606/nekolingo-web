@@ -9,8 +9,9 @@ import {
     WordSlot,
     WordsContainer,
     WordBox,
+    Image,
 } from "./CompleteSentences.styled";
-
+import storeImg from "@/assets/store.png";
 import BottomBar from "@/components/BottomBar/BottomBar";
 
 interface CompleteSentencesProps { }
@@ -23,7 +24,7 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = () => {
     const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isCorrect, setIsCorrect] = useState<boolean>(false);
 
-    const numberOfSlots: number = 5;
+    const numberOfSlots: number = 1;
 
     const handleWordClick = (word: string, index: number): void => {
         if (isChecked) return;
@@ -59,19 +60,14 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = () => {
     };
 
     const handleCheck = (): void => {
-        // Check if the sentence is complete
-        if (selectedWords.some(word => word === "")) return;
+        if (selectedWords[0] === "") return;
 
-        // 	Compare with the correct sentence
-        const userSentence = selectedWords.filter(word => word !== "");
-        const correctWithoutA = ["This", "is", "a", "new", "store"];
-
-        const correct = userSentence.length === correctWithoutA.length &&
-            userSentence.every((word, index) => word === correctWithoutA[index]);
+        const correct = selectedWords[0] === "new";
 
         setIsCorrect(correct);
         setIsChecked(true);
     };
+
 
     const handleReset = (): void => {
         setSelectedWords(Array(numberOfSlots).fill(""));
@@ -93,22 +89,24 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = () => {
                 <ProgressBar />
             </ProgressBarContainer>
 
-            <Typography.Title level={4}>Viết lại bằng Tiếng Anh</Typography.Title>
+            <Typography.Title level={4}>Điền vào chỗ trống</Typography.Title>
             <Vietnamese>Đây là một cửa hàng mới.</Vietnamese>
-
-            {/* Spaces to display the selected sentence */}
+            <Image
+                src={storeImg}
+                alt="example"
+            />
             <SentenceContainer>
-                {selectedWords.map((word, index) => (
-                    <WordSlot
-                        key={index}
-                        hasWord={!!word}
-                        isChecked={isChecked}
-                        onClick={() => handleSlotClick(index)}
-                    >
-                        {word || "___"}
-                    </WordSlot>
-                ))}
+                <Typography.Title level={5}>This is a</Typography.Title>
+                <WordSlot
+                    hasWord={!!selectedWords[0]}
+                    isChecked={isChecked}
+                    onClick={() => handleSlotClick(0)}
+                >
+                    {selectedWords[0] || "_____"}
+                </WordSlot>
+                <Typography.Title level={5}>store</Typography.Title>
             </SentenceContainer>
+
 
             {/* The choice words */}
             <WordsContainer>

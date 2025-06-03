@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import {
@@ -15,9 +16,10 @@ import {
 type BottomBarProps = {
     isChecked: boolean;
     isCorrect: boolean;
-    selectedIndex: number | null;
+    selectedIndex: any | null;
     handleCheck: () => void;
     handleReset: () => void;
+    handleNext?: () => void;
 };
 
 const BottomBar: React.FC<BottomBarProps> = ({
@@ -26,6 +28,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
     selectedIndex,
     handleCheck,
     handleReset,
+    handleNext,
 }) => {
     return (
         <BottomBarWrapper className={isChecked ? (isCorrect ? 'correct' : 'wrong') : ''}>
@@ -47,7 +50,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
                         </FeedbackBox>
                         <NextButtonSuccess
                             className={isCorrect ? 'success' : 'fail'}
-                            onClick={handleReset}
+                            onClick={handleNext || handleReset}
                         >
                             TIẾP TỤC
                         </NextButtonSuccess>
