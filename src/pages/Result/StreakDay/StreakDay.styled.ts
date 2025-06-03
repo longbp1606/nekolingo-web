@@ -62,7 +62,7 @@ export const StreakBox = styled.div`
 `;
 
 export const StreakText = styled.div`
-  color: #ff9500;
+  color: orange;
   font-size: 18px;
   font-weight: 600;
   margin: -10px 0 0 0;
@@ -100,7 +100,7 @@ export const DayItem = styled.div<{ active?: boolean }>`
   position: relative;
   
   ${props => props.active ? `
-    background: #ff9500;
+    background: orange;
     color: white;
     box-shadow: 0 2px 8px rgba(255, 149, 0, 0.4);
     animation: fadeInActive 1.2s ease-in-out;

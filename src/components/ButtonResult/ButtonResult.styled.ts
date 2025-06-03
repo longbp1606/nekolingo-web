@@ -1,3 +1,4 @@
+import { theme } from "@/themes";
 import styled from "styled-components";
 
 export const BottomBarWrapper = styled.div`
@@ -13,11 +14,11 @@ export const BottomBarWrapper = styled.div`
   z-index: 1000;
 
   &.correct {
-    background-color: #d6ffbe;
+    background-color: ${theme.color.bgGreen};
   }
 
   &.wrong {
-    background-color: #ffe1e1;
+    background-color: ${theme.color.bgRed};
   }
 `;
 
@@ -29,13 +30,13 @@ export const ButtonGroup = styled.div`
 `;
 
 export const ResultButton = styled.button<{
-    $color?: string;
-    $background?: string;
-    $border?: string;
-    $borderBottom?: string;
-    $hoverColor?: string;
-    $hoverBackground?: string;
-    $hoverBorder?: string;
+  $color?: string;
+  $background?: string;
+  $border?: string;
+  $borderBottom?: string;
+  $hoverColor?: string;
+  $hoverBackground?: string;
+  $hoverBorder?: string;
 }>`
   border-radius: 10px;
   font-weight: bold;

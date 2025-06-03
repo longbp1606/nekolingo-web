@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { GoalWrapper, GoalOption, OptionList, Image, ImageWrapper, SpeechBubble } from './StreakGoal.styled';
 import goal from "@/assets/goal.jpg";
 import ButtonResult from '@/components/ButtonResult/ButtonResult';
+import { theme } from '@/themes';
 
 const options = [
     { days: 7, label: 'Tốt', note: 'Tăng 2 lần khả năng hoàn thành khoá học' },
@@ -36,25 +37,18 @@ const StreakGoal = () => {
                 leftButton={{
                     show: false,
                     title: 'Xem lại bài học',
-                    color: '#888',
-                    background: 'white',
-                    border: '2px solid #eee',
-                    borderBottom: '5px solid #eee',
-                    hoverBackground: '#1890ff',
-                    hoverColor: '#fff',
-                    hoverBorder: '#1890ff',
                     onClick: () => console.log('Xem lại bài học'),
                 }}
                 rightButton={{
                     show: true,
                     title: 'Tôi có thể!',
-                    color: '#fff',
-                    background: '#84d8ff',
-                    border: '2px solid #eee',
-                    borderBottom: '5px solid #33bbff',
-                    hoverBackground: '#1890ff',
+                    color: `${theme.color.primary}`,
+                    background: `${theme.color.bgBlue}`,
+                    border: `2px solid ${theme.color.primary}`,
+                    borderBottom: `5px solid ${theme.color.primary}`,
+                    hoverBackground: `${theme.color.primary}`,
                     hoverColor: '#fff',
-                    hoverBorder: '#1890ff',
+                    hoverBorder: `${theme.color.primary}`,
                     onClick: () => console.log('Tôi có thể!'),
                 }}
             />
