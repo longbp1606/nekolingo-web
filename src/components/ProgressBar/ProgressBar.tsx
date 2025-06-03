@@ -1,26 +1,38 @@
 import React from 'react';
-import { ProgressBarContainer, ProgressBarFill } from './ProgressBar.styled';
+import { CloseOutlined, HeartFilled } from '@ant-design/icons';
+import { ProgressBarContainer, ProgressBarFill, ProgressBarWrapper, CloseButton, LivesContainer } from './ProgressBar.styled';
+import { theme } from '@/themes';
 
 interface ProgressBarProps {
   totalQuestions: number;
   answeredQuestions: number;
+  lives: number;
+  onClose?: () => void;
 }
 
 const ProgressBar: React.FC<ProgressBarProps> = ({
   totalQuestions,
   answeredQuestions,
+  lives,
+  onClose,
 }) => {
   const percent = totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
 
   return (
-    <>
-      {/* <ProgressText>
-        {answeredQuestions} / {totalQuestions} câu đã hoàn thành
-      </ProgressText> */}
+    <ProgressBarWrapper>
+      <CloseButton onClick={onClose}>
+        <CloseOutlined style={{ fontSize: '18px', color: '#666' }} />
+      </CloseButton>
+
       <ProgressBarContainer>
         <ProgressBarFill percent={percent} />
       </ProgressBarContainer>
-    </>
+
+      <LivesContainer>
+        <HeartFilled style={{ fontSize: '20px', color: `${theme.color.red}` }} />
+        <span style={{ color: `${theme.color.red}` }}>{lives}</span>
+      </LivesContainer>
+    </ProgressBarWrapper>
   );
 };
 

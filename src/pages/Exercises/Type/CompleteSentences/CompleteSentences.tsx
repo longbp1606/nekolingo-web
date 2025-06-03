@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Typography } from "antd";
 import {
     Wrapper,
-    ProgressBarContainer,
-    ProgressBar,
     Vietnamese,
     SentenceContainer,
     WordSlot,
@@ -13,6 +11,7 @@ import {
 } from "./CompleteSentences.styled";
 import storeImg from "@/assets/store.png";
 import BottomBar from "@/components/BottomBar/BottomBar";
+import ProgressBar from "@/components/ProgressBar";
 
 interface CompleteSentencesProps { }
 
@@ -59,6 +58,17 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = () => {
         }
     };
 
+    // Progress bar and lives
+    const [totalQuestions] = useState(10); // Total number of questions in the game
+    // This should be managed by the game logic, here it's just a placeholder
+    const [answeredQuestions, setAnsweredQuestions] = useState(0);
+    const [lives, setLives] = useState(3); // Initial lives
+
+    const handleClose = () => {
+        console.log('Close button clicked');
+    };
+
+
     const handleCheck = (): void => {
         if (selectedWords[0] === "") return;
 
@@ -66,6 +76,14 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = () => {
 
         setIsCorrect(correct);
         setIsChecked(true);
+
+        if (correct) {
+            // Correct: increase progress
+            setAnsweredQuestions(prev => prev + 1);
+        } else {
+            // Incorrect: decrease lives
+            setLives(prev => Math.max(0, prev - 1));
+        }
     };
 
 
@@ -85,9 +103,12 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = () => {
 
     return (
         <Wrapper>
-            <ProgressBarContainer>
-                <ProgressBar />
-            </ProgressBarContainer>
+            <ProgressBar
+                totalQuestions={totalQuestions}
+                answeredQuestions={answeredQuestions}
+                lives={lives}
+                onClose={handleClose}
+            />
 
             <Typography.Title level={4}>Điền vào chỗ trống</Typography.Title>
             <Vietnamese>Đây là một cửa hàng mới.</Vietnamese>
@@ -108,7 +129,6 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = () => {
             </SentenceContainer>
 
 
-            {/* The choice words */}
             <WordsContainer>
                 {availableWords.map((word, index) => (
                     <WordBox
