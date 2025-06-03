@@ -9,10 +9,6 @@ import Listening from './Type/Listening/Listening';
 import CompleteSentences from './Type/CompleteSentences/CompleteSentences';
 
 const options = [
-<<<<<<< HEAD
-=======
-    { value: 'question_sample', label: 'Question Sample' },
->>>>>>> f9346e0b89a088391d27306799922a485d600016
     { value: 'select_image', label: 'Select image exercise' },
     { value: 'sort_sentence', label: 'Sort complete sentences' },
     { value: 'match_pairs', label: 'Match' },
@@ -20,10 +16,6 @@ const options = [
     { value: 'listening', label: 'Listening' },
     { value: 'complete_sentences', label: 'Complete Sentences' },
 ];
-<<<<<<< HEAD
-=======
-
->>>>>>> f9346e0b89a088391d27306799922a485d600016
 
 const Exercises = () => {
     const [questionType, setQuestionType] = useState(options[0].value);
@@ -36,7 +28,6 @@ const Exercises = () => {
                 onChange={(value) => setQuestionType(value)}
             />
 
-            {questionType === 'question_sample' && <QuestionSample />}
             {questionType === 'select_image' && <SelectImage />}
             {questionType === 'sort_sentence' &&
                 <SortSentence
@@ -50,11 +41,7 @@ const Exercises = () => {
             {questionType === 'multiple_choice' && <MultipleChoice />}
             {questionType === 'listening' && <Listening />}
             {questionType === 'complete_sentences' && <CompleteSentences />}
-<<<<<<< HEAD
-        </>
-=======
         </div>
->>>>>>> f9346e0b89a088391d27306799922a485d600016
     )
 }
 
