@@ -1,6 +1,7 @@
 const routes = {
   public: {
     home: "/",
+    welcome: "/welcome",
   },
   user: {
     exercise: "/exercise",
