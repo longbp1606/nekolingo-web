@@ -3,6 +3,7 @@ import { Tag } from 'antd';
 import { LessionWrapper, XPBox, Image, Title } from './LessionComplete.styled';
 import complete from "@/assets/complete.gif";
 import ButtonResult from '@/components/ButtonResult/ButtonResult';
+import { theme } from '@/themes';
 
 interface Props {
     onContinue: () => void;
@@ -31,21 +32,21 @@ const LessionComplete: React.FC<Props> = ({ onContinue }) => {
                     background: 'white',
                     border: '2px solid #eee',
                     borderBottom: '5px solid #eee',
-                    hoverBackground: '#1890ff',
-                    hoverColor: '#fff',
-                    hoverBorder: '#1890ff',
+                    hoverBackground: `${theme.color.bgBlue}`,
+                    hoverColor: `${theme.color.primary}`,
+                    hoverBorder: `${theme.color.primary}`,
                     onClick: () => console.log('Xem lại bài học'),
                 }}
                 rightButton={{
                     show: true,
                     title: 'Tiếp tục',
                     color: 'white',
-                    background: '#52c41a',
+                    background: `${theme.color.green}`,
                     border: '2px solid #eee',
-                    borderBottom: '5px solid #389e0d',
-                    hoverBackground: '#1890ff',
-                    hoverColor: '#fff',
-                    hoverBorder: '#1890ff',
+                    borderBottom: `5px solid ${theme.color.darkGreen}`,
+                    hoverBackground: `${theme.color.bgBlue}`,
+                    hoverColor: `${theme.color.primary}`,
+                    hoverBorder: `${theme.color.primary}`,
                     onClick: onContinue
                 }}
             />

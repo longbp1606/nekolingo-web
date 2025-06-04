@@ -3,6 +3,17 @@ const SECONDARY_COLOR: string = '#F9E900';
 const TERTIARY_COLOR: string = '#ED33B9';
 const QUATERNARY_COLOR: string = '#F6AF65';
 const QUINARY_COLOR: string = '#0A1045';
+const GREEN: string = '#58CC02';
+const DARK_GREEN: string = '#4DAA02';
+const BG_GREEN: string = '#D7FFB8';
+const RED: string = '#FF4B4B';
+const DARK_RED: string = '#E04343';
+const BG_RED: string = '#FFDFE0';
+const BG_BLUE: string = '#CCF2F5';
+const LIGHT_ORANGE: string = '#FFD700';
+const ORANGE: string = '#FFA500';
+const LIGHT_PURPLE: string = '#AB47BC';
+const DARK_PURPLE: string = '#9C27B0';
 
 export const theme = {
     light: '',
@@ -14,6 +25,17 @@ export const theme = {
         tertiary: TERTIARY_COLOR,
         quaternary: QUATERNARY_COLOR,
         quinary: QUINARY_COLOR,
+        green: GREEN,
+        darkGreen: DARK_GREEN,
+        bgGreen: BG_GREEN,
+        red: RED,
+        darkRed: DARK_RED,
+        bgRed: BG_RED,
+        bgBlue: BG_BLUE,
+        orange: ORANGE,
+        lightOrange: LIGHT_ORANGE,
+        lightPurple: LIGHT_PURPLE,
+        darkPurple: DARK_PURPLE,
         google: '#DB4437',
         facebook: '#1877F2',
         info: '#1677FF',

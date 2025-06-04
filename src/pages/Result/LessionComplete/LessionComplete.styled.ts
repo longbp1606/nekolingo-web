@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Typography } from 'antd';
+import { theme } from '@/themes';
 
 export const Title = styled(Typography.Title)`
   color: #ffd333 !important;
@@ -22,28 +23,28 @@ interface XPBoxProps {
 
 const colorMap = {
   yellow: {
-    background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-    border: '#FFD700',
+    background: `linear-gradient(135deg, ${theme.color.lightOrange} 0%, ${theme.color.orange} 100%)`,
+    border: `${theme.color.orange}`,
     headerBg: 'rgba(255, 255, 255, 0.25)'
   },
   green: {
-    background: 'linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%)',
-    border: '#66BB6A',
+    background: `linear-gradient(135deg, ${theme.color.green} 0%, ${theme.color.darkGreen} 100%)`,
+    border: `${theme.color.green}`,
     headerBg: 'rgba(255, 255, 255, 0.25)'
   },
   blue: {
-    background: 'linear-gradient(135deg, #4FC3F7 0%, #29B6F6 100%)',
-    border: '#4FC3F7',
+    background: `linear-gradient(135deg, ${theme.color.bgBlue} 0%, ${theme.color.primary} 100%)`,
+    border: `${theme.color.bgBlue}`,
     headerBg: 'rgba(255, 255, 255, 0.25)'
   },
   red: {
-    background: 'linear-gradient(135deg, #EF5350 0%, #F44336 100%)',
-    border: '#EF5350',
+    background: `linear-gradient(135deg, ${theme.color.red} 0%, ${theme.color.darkRed} 100%)`,
+    border: `${theme.color.red}`,
     headerBg: 'rgba(255, 255, 255, 0.25)'
   },
   purple: {
-    background: 'linear-gradient(135deg, #AB47BC 0%, #9C27B0 100%)',
-    border: '#AB47BC',
+    background: `linear-gradient(135deg, ${theme.color.lightPurple} 0%, ${theme.color.darkPurple} 100%)`,
+    border: `${theme.color.lightPurple}`,
     headerBg: 'rgba(255, 255, 255, 0.25)'
   }
 };
@@ -96,7 +97,7 @@ export const XPBox = styled.div<XPBoxProps>`
     
     &.ant-tag-green {
       background: rgba(255, 255, 255, 0.95);
-      color: #52c41a;
+      color: ${theme.color.green};
     }
   }
 

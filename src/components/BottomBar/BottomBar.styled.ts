@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { theme } from "@/themes";
 
 export const BottomBarWrapper = styled.div`
   position: fixed;
@@ -13,11 +14,11 @@ export const BottomBarWrapper = styled.div`
   z-index: 1000;
 
   &.correct {
-    background-color: #d6ffbe;
+    background-color: ${theme.color.bgGreen};
   }
 
   &.wrong {
-    background-color: #ffe1e1;
+    background-color: ${theme.color.bgRed};
   }
 `;
 
@@ -40,9 +41,9 @@ export const SkipButton = styled.button`
   transition: all 0.2s ease;
 
   &:hover {
-  background-color: #ccf2f5;
+    background-color: ${theme.color.bgBlue};
     color: #333;
-    border-color: #00c2d1;
+    border-color: ${theme.color.primary};
   }
 
   &:active {
@@ -69,10 +70,10 @@ export const CheckButton = styled.button`
   cursor: pointer;
   transition: all 0.2s ease;
 
-  &:hover {
-    background-color: #ccf2f5;
+ &:hover {
+    background-color: ${theme.color.bgBlue};
     color: #333;
-    border-color: #00c2d1;
+    border-color: ${theme.color.primary};
   }
 
   &:active {
@@ -92,15 +93,21 @@ export const NextButtonSuccess = styled.button`
   border-radius: 10px;
   font-weight: bold;
   text-transform: uppercase;
-  background-color: #52c41a;
+  background-color: ${theme.color.green};
   color: white;
   border: 2px solid #eee;
-  border-bottom: 5px solid #389e0d;
+  border-bottom: 5px solid ${theme.color.darkGreen};
   padding: 10px 36px;
 
   &.fail {
-    background-color: #ff4d4f;
-    border-bottom: 5px solid #cf1322;
+    background-color: ${theme.color.red};
+    border-bottom: 5px solid ${theme.color.darkRed};
+  }
+    
+  &:hover {
+    background-color: ${theme.color.bgBlue};
+    color: #333;
+    border-color: ${theme.color.primary};
   }
 `;
 
@@ -113,11 +120,11 @@ export const FeedbackBox = styled.div`
   border-radius: 12px;
 
   &.success {
-    background-color: #d6ffbe;
+    background-color: ${theme.color.bgGreen};
   }
 
   &.danger {
-    background-color: #ffe2e2;
+    background-color: ${theme.color.bgRed};
   }
 `;
 
@@ -129,11 +136,11 @@ export const FeedbackText = styled.div`
   font-weight: bold;
 
   &.success {
-    color: #2f8c00;
+    color: ${theme.color.green};
   }
 
   &.danger {
-    color: #cc0000;
+    color: ${theme.color.red};
   }
 `;
 

@@ -1,3 +1,4 @@
+import { theme } from '@/themes';
 import styled from 'styled-components';
 
 export const StreakWrapper = styled.div`
@@ -18,7 +19,7 @@ export const StreakWrapper = styled.div`
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #ff9500;
+    background: ${theme.color.orange};
     box-shadow: 
       -50px 30px 0 #e0e0e0,
       -100px 60px 0 #e0e0e0,
@@ -28,7 +29,7 @@ export const StreakWrapper = styled.div`
   }
 
   h1 {
-    color: #ff9500 !important;
+    color: ${theme.color.orange} !important;
     font-size: 72px !important;
     font-weight: 800;
     margin: 0;
@@ -62,7 +63,7 @@ export const StreakBox = styled.div`
 `;
 
 export const StreakText = styled.div`
-  color: #ff9500;
+  color: ${theme.color.orange};
   font-size: 18px;
   font-weight: 600;
   margin: -10px 0 0 0;
@@ -100,7 +101,7 @@ export const DayItem = styled.div<{ active?: boolean }>`
   position: relative;
   
   ${props => props.active ? `
-    background: #ff9500;
+    background:  ${theme.color.orange};
     color: white;
     box-shadow: 0 2px 8px rgba(255, 149, 0, 0.4);
     animation: fadeInActive 1.2s ease-in-out;
@@ -132,12 +133,12 @@ export const DayItem = styled.div<{ active?: boolean }>`
       transform: scale(1.05);
     }
     60% {
-      background: #ff9500;
+      background:${theme.color.orange};
       color: white;
       box-shadow: 0 1px 4px rgba(255, 149, 0, 0.2);
     }
     100% {
-      background: #ff9500;
+      background: ${theme.color.orange};
       color: white;
       box-shadow: 0 2px 8px rgba(255, 149, 0, 0.4);
       transform: scale(1);

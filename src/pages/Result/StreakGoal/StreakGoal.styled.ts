@@ -1,3 +1,4 @@
+import { theme } from '@/themes';
 import styled from 'styled-components';
 
 export const GoalWrapper = styled.div`
@@ -90,8 +91,8 @@ export const GoalOption = styled.div<{ selected?: boolean }>`
   border-bottom: 3px solid #f0f0f0; 
 
   ${props => props.selected ? `
-    background: #ddf4ff;
-    border-color: #84d8ff;
+    background: ${theme.color.bgBlue};
+    border-color: ${theme.color.primary};
     box-shadow: 0 2px 8px rgba(24, 144, 255, 0.15);
   ` : `
     background: white;
@@ -107,12 +108,12 @@ export const GoalOption = styled.div<{ selected?: boolean }>`
   div:first-child {
     font-weight: 600;
     font-size: 16px;
-    color: ${props => props.selected ? '#33bbff' : '#333'};
+    color: ${props => props.selected ? `${theme.color.primary}` : '#333'};
   }
 
   div:last-child {
     font-size: 14px;
-    color: ${props => props.selected ? '#33bbff' : '#8c8c8c'};
+    color: ${props => props.selected ? `${theme.color.primary}` : '#8c8c8c'};
     font-weight: ${props => props.selected ? '400' : '300'};
   }
 `;
