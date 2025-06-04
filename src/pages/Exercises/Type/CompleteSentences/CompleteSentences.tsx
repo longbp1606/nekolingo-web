@@ -12,6 +12,7 @@ import {
 import storeImg from "@/assets/store.png";
 import BottomBar from "@/components/BottomBar/BottomBar";
 import ProgressBar from "@/components/ProgressBar";
+import GameOver from "@/components/ProgressBar/GameOver/GameOver";
 
 interface CompleteSentencesProps { }
 
@@ -64,6 +65,14 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = () => {
     const [answeredQuestions, setAnsweredQuestions] = useState(0);
     const [lives, setLives] = useState(3); // Initial lives
 
+    const [showGameOver, setShowGameOver] = useState(false);
+
+    useEffect(() => {
+        if (lives === 0) {
+            setShowGameOver(true);
+        }
+    }, [lives]);
+
     const handleClose = () => {
         console.log('Close button clicked');
     };
@@ -103,6 +112,16 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = () => {
 
     return (
         <Wrapper>
+            {showGameOver && (
+                <GameOver
+                    onCancel={() => setShowGameOver(false)}
+                    onRecover={() => {
+                        setLives(1);
+                        setShowGameOver(false);
+                    }}
+                />
+            )}
+
             <ProgressBar
                 totalQuestions={totalQuestions}
                 answeredQuestions={answeredQuestions}
