@@ -15,21 +15,6 @@ export const Image = styled.img`
   margin: 0 auto;
 `;
 
-export const ProgressBarContainer = styled.div`
-  background: #e0e0e0;
-  height: 10px;
-  width: 50%;
-  margin: 0 auto 24px;
-  border-radius: 5px;
-  overflow: hidden;
-`;
-
-export const ProgressBar = styled.div`
-  width: 80%;
-  height: 100%;
-  background: #4cd137;
-`;
-
 export const Vietnamese = styled(Text)`
   font-size: 16px !important;
   border: 1px solid #ccc;

@@ -78,7 +78,7 @@ const SelectImage: React.FC = () => {
 
   return (
     <SelectWrapper>
-      <ProgressBar totalQuestions={2} answeredQuestions={answered} />
+      {/* <ProgressBar totalQuestions={2} answeredQuestions={answered} /> */}
 
       <Content>
         <SubTitle>TỪ VỰNG MỚI</SubTitle>

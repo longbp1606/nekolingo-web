@@ -102,7 +102,7 @@ const SortSentence: React.FC<SortSentenceProps> = ({ numberOfSlots, question, op
 
     return (
         <Wrapper>
-            <ProgressBar totalQuestions={2} answeredQuestions={answered} />
+            {/* <ProgressBar totalQuestions={2} answeredQuestions={answered} /> */}
 
             <Content>
                 <Title>Viết lại bằng Tiếng Anh</Title>

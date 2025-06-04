@@ -253,7 +253,7 @@ const MatchPairs: React.FC = () => {
     return (
         <Wrapper>
             {/* Progress Bar */}
-            <ProgressBar totalQuestions={totalPairs} answeredQuestions={answered} />
+            {/* <ProgressBar totalQuestions={totalPairs} answeredQuestions={answered} /> */}
 
             <Content>
                 <Title style={{ margin: '16px 0' }}>Chọn cặp từ</Title>
