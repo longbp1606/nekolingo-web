@@ -4,7 +4,7 @@ const routes = {
     welcome: "/welcome",
   },
   user: {
-    exercise: "/exercise",
+    exercise: "/exercise/:lessonId",
     result: "/exercise/result",
   },
   api: {

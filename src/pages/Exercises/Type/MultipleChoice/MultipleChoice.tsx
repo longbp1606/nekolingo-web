@@ -10,22 +10,31 @@ import BottomBar from "@/components/BottomBar/BottomBar";
 import ProgressBar from "@/components/ProgressBar";
 import GameOver from "@/components/ProgressBar/GameOver/GameOver";
 
-const choices = ["I", "study", "three"];
+interface MultipleChoiceProps {
+    data: {
+        prompt: string;
+        options: string[];
+        answer: string;
+    };
+    totalQuestions: number;
+    answeredQuestions: number;
+    onAnswered: (correct: boolean) => void;
+}
 
-const MultipleChoice: React.FC = () => {
+const MultipleChoice: React.FC<MultipleChoiceProps> = ({
+    data,
+    totalQuestions,
+    answeredQuestions,
+    onAnswered,
+}) => {
+    const [selectedValue, setSelectedValue] = useState<string | null>(null);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+    const [lives, setLives] = useState(3);
+    const [showGameOver, setShowGameOver] = useState(false);
     const [isChecked, setIsChecked] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
-
-
-    // Progress bar and lives
-    const [totalQuestions] = useState(10); // Total number of questions in the game
-    // This should be managed by the game logic, here it's just a placeholder
-    const [answeredQuestions, setAnsweredQuestions] = useState(0);
-    const [lives, setLives] = useState(3); // Initial lives
-    const correctAnswerIndex = 0; // Assuming the first choice is the correct answer
-
-    const [showGameOver, setShowGameOver] = useState(false);
+    const correctAnswer = data.answer;
+    const options = data.options;
 
     useEffect(() => {
         if (lives === 0) {
@@ -36,26 +45,31 @@ const MultipleChoice: React.FC = () => {
     // Handle selection and checking
     const handleCheck = () => {
         if (selectedIndex === null) return;
-        const correct = selectedIndex === correctAnswerIndex;
+        const selectedOpt = options[selectedIndex];
+
+        const correct = selectedOpt.toLowerCase() === correctAnswer.toLowerCase();
         setIsCorrect(correct);
         setIsChecked(true);
 
-        if (correct) {
-            // Correct: increase progress
-            setAnsweredQuestions(prev => prev + 1);
-        } else {
-            // Incorrect: decrease lives
-            setLives(prev => Math.max(0, prev - 1));
-        }
+        if (!correct) setLives((prev) => prev - 1);
     };
 
-    const handleClose = () => {
-        console.log('Close button clicked');
+    const handleNext = () => {
+        onAnswered(isCorrect); // thông báo lên cha là câu này đã trả lời
+        handleReset();
     };
+
     const handleReset = () => {
+        setSelectedValue(null);
         setSelectedIndex(null);
         setIsChecked(false);
         setIsCorrect(false);
+    };
+
+    const handleOptionClick = (optValue: string, idx: number) => {
+        if (isChecked) return;
+        setSelectedValue(optValue);
+        setSelectedIndex(idx);
     };
 
     return (
@@ -74,7 +88,7 @@ const MultipleChoice: React.FC = () => {
                 totalQuestions={totalQuestions}
                 answeredQuestions={answeredQuestions}
                 lives={lives}
-                onClose={handleClose}
+                onClose
             />
             <Typography.Title level={4}>Chọn đáp án đúng</Typography.Title>
 
@@ -85,14 +99,14 @@ const MultipleChoice: React.FC = () => {
                     width={70}
                     height={50}
                 />
-                <WordBox>ba</WordBox>
+                <WordBox>{data.prompt}</WordBox>
             </PersonSay>
 
 
             <Space direction="vertical" style={{ width: "100%" }} size="middle">
-                {choices.map((choice, index) => {
-                    const isSelected = selectedIndex === index;
-                    const isCorrectChoice = index === correctAnswerIndex;
+                {options.map((choice, index) => {
+                    const isSelected = selectedValue === choice;
+                    const isCorrectChoice = choice === correctAnswer;
 
                     const bgColor = isChecked
                         ? isCorrectChoice
@@ -118,7 +132,8 @@ const MultipleChoice: React.FC = () => {
                             key={index}
                             bgColor={bgColor}
                             borderColor={borderColor}
-                            onClick={() => !isChecked && setSelectedIndex(index)}
+                            // onClick={() => !isChecked && setSelectedIndex(index)}
+                            onClick={() => handleOptionClick(choice, index)}
                             isClickable={!isChecked}
                         >
                             {choice}
@@ -133,6 +148,7 @@ const MultipleChoice: React.FC = () => {
                 selectedIndex={selectedIndex}
                 handleCheck={handleCheck}
                 handleReset={handleReset}
+                handleNext={handleNext}
             />
 
         </Wrapper>

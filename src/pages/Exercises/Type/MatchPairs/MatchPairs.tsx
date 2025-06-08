@@ -3,22 +3,35 @@ import React, { useState, useEffect } from 'react';
 import { Content, LeftOption, MatchArea, RightOption, Title, Wrapper } from './MatchPairs.styled';
 import ProgressBar from '@/components/ProgressBar';
 import BottomBar from '@/components/BottomBar/BottomBar';
+import GameOver from '@/components/ProgressBar/GameOver/GameOver';
 
 interface WordPair {
     id: number;
-    vi: string;
-    en: string;
+    left: string;
+    right: string;
 }
 
-const wordPairs: WordPair[] = [
-    { id: 0, vi: 'sữa', en: 'milk' },
-    { id: 1, vi: 'xin chào', en: 'hello' },
-    { id: 2, vi: 'cà phê', en: 'coffee' },
-    { id: 3, vi: 'đường', en: 'sugar' },
-    { id: 4, vi: 'trà', en: 'tea' },
-];
+interface MatchPairsProps {
+    data: {
+        question_id: number;
+        type: string;
+        prompt: string;
+        pairs: WordPair[];
+    };
+    totalQuestions: number;
+    answeredQuestions: number;
+    onAnswered: (correct: boolean) => void;
+}
 
-const MatchPairs: React.FC = () => {
+const MatchPairs: React.FC<MatchPairsProps> = ({
+    data,
+    totalQuestions,
+    answeredQuestions,
+    onAnswered
+}) => {
+    const { pairs, prompt } = data;
+    // Tổng số cặp (5)
+    const totalPairs = pairs.length;
     // ID của từ TIẾNG VIỆT và TIẾNG ANH đang chọn tạm
     const [selectedVi, setSelectedVi] = useState<number | null>(null);
     const [selectedEn, setSelectedEn] = useState<number | null>(null);
@@ -36,23 +49,14 @@ const MatchPairs: React.FC = () => {
 
     // Danh sách tiếng Anh đã shuffle 1 lần khi mount
     const [shuffledEnPairs, setShuffledEnPairs] = useState<WordPair[]>([]);
-
-    // Tổng số cặp (5)
-    const totalPairs = wordPairs.length;
-
-    // answered: số lần user đã “KIỂM TRA” thành công (sau khi nối đủ 5 cặp)
-    const [answered, setAnswered] = useState(0);
-
-    // hasAutoChecked: để tránh auto-check lặp lại khi matchedIds.length === totalPairs
     const [hasAutoChecked, setHasAutoChecked] = useState(false);
-
-    // isCheckedBar / isCorrectBar: điều khiển feedback trong BottomBar
+    const [lives, setLives] = useState(3);
+    const [showGameOver, setShowGameOver] = useState(false);
     const [isCheckedBar, setIsCheckedBar] = useState(false);
     const [isCorrectBar, setIsCorrectBar] = useState(false);
 
-    // Shuffle tiếng Anh khi component mount
     useEffect(() => {
-        const shuffled = [...wordPairs].sort(() => Math.random() - 0.5);
+        const shuffled = [...pairs].sort(() => Math.random() - 0.5);
         setShuffledEnPairs(shuffled);
     }, []);
 
@@ -93,10 +97,10 @@ const MatchPairs: React.FC = () => {
 
     // Hàm kiểm tra cặp (viId, enId)
     const checkPair = (viId: number, enId: number) => {
-        const pairVi = wordPairs.find(p => p.id === viId)!;
-        const pairEn = wordPairs.find(p => p.id === enId)!;
+        const pairVi = pairs.find(p => p.id === viId)!;
+        const pairEn = pairs.find(p => p.id === enId)!;
 
-        const isMatch = pairVi.en === pairEn.en;
+        const isMatch = pairVi.left === pairEn.left;
 
         if (isMatch) {
             // 1. Gán recentMatchedPair để “nháy xanh + hiển thị sao” 800 ms
@@ -130,26 +134,13 @@ const MatchPairs: React.FC = () => {
         setIsCheckedBar(true);
 
         // Tăng progress
-        setAnswered(prev => prev + 1);
+        // setAnswered(prev => prev + 1);
+        if (!isCorrectBar) setLives((prev) => prev - 1);
     };
 
     // Khi user bấm “TIẾP TỤC”
     const handleNextBar = () => {
-        // Reset toàn bộ để user có thể chơi lại
-        setMatchedIds([]);
-        setMatchedPairs([]);
-        setHasAutoChecked(false);
-        setIsCheckedBar(false);
-        setIsCorrectBar(false);
-
-        // Shuffle lại tiếng Anh
-        const reshuffled = [...wordPairs].sort(() => Math.random() - 0.5);
-        setShuffledEnPairs(reshuffled);
-
-        setSelectedVi(null);
-        setSelectedEn(null);
-        setWrongPair(null);
-        setRecentMatchedPair(null);
+        onAnswered(isCorrectBar); // thông báo lên cha là câu này đã trả lời
     };
 
     // BottomBar: enable “KIỂM TRA” chỉ khi matchedIds.length === totalPairs
@@ -211,7 +202,7 @@ const MatchPairs: React.FC = () => {
 
         return (
             <div
-                key={id.toString() + (isViColumn ? 'vi' : 'en')}
+                key={id.toString() + (isViColumn ? 'left' : 'right')}
                 style={{ position: 'relative', marginBottom: 12 }}
             >
                 <button
@@ -252,19 +243,32 @@ const MatchPairs: React.FC = () => {
 
     return (
         <Wrapper>
-            {/* Progress Bar */}
-            {/* <ProgressBar totalQuestions={totalPairs} answeredQuestions={answered} /> */}
+            {showGameOver && (
+                <GameOver
+                    onCancel={() => setShowGameOver(false)}
+                    onRecover={() => {
+                        setLives(1);
+                        setShowGameOver(false);
+                    }}
+                />
+            )}
+            <ProgressBar
+                totalQuestions={totalQuestions}
+                answeredQuestions={answeredQuestions}
+                lives={lives}
+                onClose
+            />
 
             <Content>
-                <Title style={{ margin: '16px 0' }}>Chọn cặp từ</Title>
+                <Title style={{ margin: '16px 0' }}>{prompt}</Title>
 
                 <MatchArea
                 >
                     {/* Cột tiếng Việt */}
                     <LeftOption>
-                        {wordPairs.map((pair) =>
+                        {pairs.map((pair) =>
                             // renderButton(pair.vi, pair.id, true, idx)
-                            renderButton(pair.vi, pair.id, true)
+                            renderButton(pair.left, pair.id, true)
                         )}
                     </LeftOption>
 
@@ -272,7 +276,7 @@ const MatchPairs: React.FC = () => {
                     <RightOption>
                         {shuffledEnPairs.map((pair) =>
                             // renderButton(pair.en, pair.id, false, idx)
-                            renderButton(pair.en, pair.id, false)
+                            renderButton(pair.right, pair.id, false)
                         )}
                     </RightOption>
                 </MatchArea>

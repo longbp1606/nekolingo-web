@@ -1,48 +1,161 @@
-import { Select } from 'antd';
-import { useState } from 'react';
-import QuestionSample from './Type/QuestionSample';
-import SelectImage from './Type/SelectImage/SelectImage';
-import SortSentence from './Type/SortSentence/SortSentence';
-import MatchPairs from './Type/MatchPairs/MatchPairs';
-import MultipleChoice from './Type/MultipleChoice/MultipleChoice';
-import Listening from './Type/Listening/Listening';
-import CompleteSentences from './Type/CompleteSentences/CompleteSentences';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState, useCallback } from "react";
 
-const options = [
-    { value: 'select_image', label: 'Select image exercise' },
-    { value: 'sort_sentence', label: 'Sort complete sentences' },
-    { value: 'match_pairs', label: 'Match' },
-    { value: 'multiple_choice', label: 'Multiple Choice' },
-    { value: 'listening', label: 'Listening' },
-    { value: 'complete_sentences', label: 'Complete Sentences' },
-];
+import SelectImage from "./Type/SelectImage/SelectImage";
+import MultipleChoice from "./Type/MultipleChoice/MultipleChoice";
+import MatchPairs from "./Type/MatchPairs/MatchPairs";
+import SortSentence from "./Type/SortSentence/SortSentence";
+import Listening from "./Type/Listening/Listening";
+import CompleteSentences from "./Type/CompleteSentences/CompleteSentences";
+import { sampleData } from "../sampleData";
+import { useNavigate, useParams } from "react-router-dom";
 
-const Exercises = () => {
-    const [questionType, setQuestionType] = useState(options[0].value);
+const Exercise = () => {
+  const navigate = useNavigate();
+  const { lessonId } = useParams();
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [answeredCount, setAnsweredCount] = useState(0);
+  const [shuffled, setShuffled] = useState(false);
 
-    return (
-        <div style={{ height: '100vh', padding: '20px' }}>
-            <Select
-                defaultValue={options[0].value}
-                options={options}
-                onChange={(value) => setQuestionType(value)}
-            />
+  const shuffleArray = (array: any) => {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
 
-            {questionType === 'select_image' && <SelectImage />}
-            {questionType === 'sort_sentence' &&
-                <SortSentence
-                    numberOfSlots={5}
-                    question="Đây là một cửa hàng mới."
-                    correctAnswer="This is a new store"
-                    options={["store", "is", "laptops", "This", "taller", "coworkers", "new", "whiter", "a", "fast", "window", "friendly", "blue", "smart", "strong"]}
-                />
-            }
-            {questionType === 'match_pairs' && <MatchPairs />}
-            {questionType === 'multiple_choice' && <MultipleChoice />}
-            {questionType === 'listening' && <Listening />}
-            {questionType === 'complete_sentences' && <CompleteSentences />}
-        </div>
-    )
-}
+  const fetchQuestions = useCallback(async () => {
+    try {
+      // const res = await getSample();
+      // const data = await res.data;
 
-export default Exercises
+      const lessonObj = sampleData.lessons.find(
+        (lesson) => lesson.lesson_id === Number(lessonId)
+      );
+      if (!lessonObj) {
+        console.warn("Lesson không tồn tại!", lessonId);
+        return;
+      }
+
+      let data = lessonObj.questions;
+
+      // Shuffle chỉ lần đầu tiên khi load
+      if (!shuffled) {
+        data = shuffleArray(data);
+        setShuffled(true);
+      }
+
+      setQuestions(data);
+    } catch (error) {
+      console.error("Lỗi khi fetch questions:", error);
+    }
+  }, [lessonId, shuffled]);
+
+  // Khi mount hoặc lessonId thay đổi
+  useEffect(() => {
+    fetchQuestions();
+  }, [fetchQuestions]);
+
+  // Khi user trả lời xong 1 câu (callback từ component con)
+  const handleAnswered = () => {
+    setAnsweredCount((prev) => prev + 1);
+
+    // 1s sau (hoặc bạn có thể gọi ngay), chuyển sang câu tiếp theo
+    setTimeout(() => {
+      if (currentIdx + 1 < questions.length) {
+        setCurrentIdx((prev) => prev + 1);
+      } else {
+        navigate('/exercise/result');
+      }
+    }, 500);
+  };
+
+  // Nếu chưa load xong
+  if (!questions || questions.length === 0) {
+    return <div>Đang tải bài tập...</div>;
+  }
+
+  // Lấy question hiện tại
+  const currentQuestion = questions[currentIdx];
+
+  // Hiển thị component phụ theo type
+  const renderQuestionComponent = () => {
+    const { type } = currentQuestion;
+
+    switch (type) {
+      case "select_image":
+        return (
+          <SelectImage
+            data={currentQuestion}
+            totalQuestions={questions.length}
+            answeredQuestions={answeredCount}
+            onAnswered={handleAnswered}
+          />
+        );
+
+      case "multiple_choice":
+        return (
+          <MultipleChoice
+            data={currentQuestion}
+            totalQuestions={questions.length}
+            answeredQuestions={answeredCount}
+            onAnswered={handleAnswered}
+          />
+        );
+
+      case "match_pairs":
+        return (
+          <MatchPairs
+            data={currentQuestion}
+            totalQuestions={questions.length}
+            answeredQuestions={answeredCount}
+            onAnswered={handleAnswered}
+          />
+        );
+
+      case "sort_sentence":
+        return (
+          <SortSentence
+            data={currentQuestion}
+            totalQuestions={questions.length}
+            answeredQuestions={answeredCount}
+            onAnswered={handleAnswered}
+          />
+        );
+
+      case "listening":
+        return (
+          <Listening
+            data={currentQuestion}
+            totalQuestions={questions.length}
+            answeredQuestions={answeredCount}
+            onAnswered={handleAnswered}
+          />
+        );
+
+      case "complete_sentences":
+        return (
+          <CompleteSentences
+            data={currentQuestion}
+            totalQuestions={questions.length}
+            answeredQuestions={answeredCount}
+            onAnswered={handleAnswered}
+          />
+        );
+
+      default:
+        return <div>Loại câu hỏi "{type}" chưa được hỗ trợ.</div>;
+    }
+  };
+
+  return (
+    <div className="exercise-container">
+      {renderQuestionComponent()}
+    </div>
+  );
+};
+
+export default Exercise;

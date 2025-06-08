@@ -1,4 +1,5 @@
-import {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+    import {
     HomeWrapper,
     SectionHeader,
     SectionTitle,
@@ -23,23 +24,25 @@ import {
     ProgressBar,
     ProgressFill,
     ProgressText,
-    ProgressIcon,
     StatsRow,
     StatItem,
     StatValue,
     StatLabel,
     BodyContent,
-    StatHeader
+    StatHeader,
+    TopicContent
 } from './Home.styled'
 import { useDocumentTitle } from '@/hooks'
-import { FiHome, FiBook, FiAward, FiUser, FiArrowLeft, FiBookOpen, FiTarget, FiZap, FiCheck } from 'react-icons/fi'
-import { useState } from 'react'
+import { FiAward, FiArrowLeft, FiBookOpen, FiTarget, FiZap, FiCheck } from 'react-icons/fi'
+// import { useState } from 'react'
 import Sidebar from '@/components/Sidebar'
 import LessonRoad from '@/components/LessonRoad'
 import { theme } from '@/themes'
 import { Button, Flex, Image, Popover, Typography } from 'antd'
 import { flags } from '@/utils/assets';
 import { HeartFilled } from '@ant-design/icons'
+import { sampleData } from '../sampleData'
+import { useNavigate } from 'react-router-dom'
 
 const { Text } = Typography;
 
@@ -51,7 +54,13 @@ const languageContent = (
 
 const Home = () => {
     useDocumentTitle('Nekolingo');
-    const [activeTab, setActiveTab] = useState('home');
+    // const [activeTab, setActiveTab] = useState('home');
+    const navigate = useNavigate();
+
+    const onModuleClick = (moduleId: any) => {
+        console.log(`Module ${moduleId} clicked`);
+        navigate(`/exercise/${moduleId}`);
+    };
 
     return (
         <>
@@ -60,60 +69,37 @@ const Home = () => {
                 <HomeWrapper>
                     <HomeContent>
                         <LeftSection>
-                            <SectionHeader>
-                                <Flex vertical gap={10}>
-                                    <Flex gap={10} align='center'>
-                                        <Button className='bg-transparent text-lg' type='primary' shape='circle' icon={<FiArrowLeft />} />
-                                        <SectionTitle>
-                                            SECTION 1, UNIT 1
-                                        </SectionTitle>
-                                    </Flex>
-                                    <div className='ml-10'>Getting started</div>
-                                </Flex>
-                                <GuideButton>
-                                    <FiBookOpen />
-                                    GUIDEBOOK
-                                </GuideButton>
-                            </SectionHeader>
-                            {/* Lesson Road */}
-                            <LessonRoad
-                                modules={[
-                                    {
-                                        id: 1,
-                                        title: 'Hiragana Basics',
-                                        description: 'Learn the fundamental Japanese characters',
-                                        status: 'completed'
-                                    },
-                                    {
-                                        id: 2,
-                                        title: 'Common Greetings',
-                                        description: 'Master everyday Japanese expressions',
-                                        status: 'current'
-                                    },
-                                    {
-                                        id: 3,
-                                        title: 'Simple Sentences',
-                                        description: 'Build your first Japanese sentences',
-                                        status: 'locked'
-                                    },
-                                    {
-                                        id: 4,
-                                        title: 'Numbers & Counting',
-                                        description: 'Learn to count in Japanese',
-                                        status: 'locked'
-                                    },
-                                    {
-                                        id: 5,
-                                        title: 'Daily Vocabulary',
-                                        description: 'Essential words for everyday use',
-                                        status: 'locked'
-                                    }
-                                ]}
-                                onModuleClick={(moduleId) => {
-                                    console.log(`Module ${moduleId} clicked`);
-                                    // Handle module navigation here
-                                }}
-                            />
+                            <TopicContent>
+                                {sampleData.topics.map((topic, id) => (
+                                    <>
+                                        <SectionHeader>
+                                            <Flex vertical gap={10}>
+                                                <Flex gap={10} align='center'>
+                                                    <Button className='bg-transparent text-lg' type='primary' shape='circle' icon={<FiArrowLeft />} />
+                                                    <SectionTitle>
+                                                        SECTION {id + 1}, UNIT {id + 1}
+                                                    </SectionTitle>
+                                                </Flex>
+                                                <div className='ml-10'>{topic.title}</div>
+                                            </Flex>
+                                            <GuideButton>
+                                                <FiBookOpen />
+                                                GUIDEBOOK
+                                            </GuideButton>
+                                        </SectionHeader>
+                                        {/* Lesson Road */}
+                                        <LessonRoad
+                                            modules={topic.lessons.map((lesson) => ({
+                                                id: lesson.lesson_id,
+                                                title: lesson.title,
+                                                description: lesson.description,
+                                                status: lesson.status as "current" | "completed" | "locked"
+                                            }))}
+                                            onModuleClick={onModuleClick}
+                                        />
+                                    </>
+                                ))}
+                            </TopicContent>
                         </LeftSection>
 
                         <RightSection>

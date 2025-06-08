@@ -11,7 +11,6 @@ import {
     ModuleTitle,
     ModuleDescription,
     ModuleStatus,
-    ConnectorLine
 } from './LessonRoad.styled';
 
 interface LessonModule {
@@ -30,7 +29,7 @@ const LessonRoad: React.FC<LessonRoadProps> = ({ modules, onModuleClick }) => {
     const handleModuleClick = (module: LessonModule) => {
         if (module.status !== 'locked' && onModuleClick) {
             onModuleClick(module.id);
-            window.location.href = '/exercise';
+            window.location.href = '/exercise/' + module.id; // Navigate to the exercise page
         }
     };
 
@@ -39,7 +38,7 @@ const LessonRoad: React.FC<LessonRoadProps> = ({ modules, onModuleClick }) => {
             <Road>
                 <RoadPath />
                 <ModulesContainer>
-                    {modules.map((module, index) => (
+                    {modules.map((module) => (
                         <Module key={module.id}>
                             <ModuleCard
                                 completed={module.status === 'completed'}

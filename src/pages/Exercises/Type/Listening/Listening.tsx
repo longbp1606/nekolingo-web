@@ -12,23 +12,32 @@ import {
 import BottomBar from "@/components/BottomBar/BottomBar";
 import ProgressBar from '@/components/ProgressBar';
 import GameOver from "@/components/ProgressBar/GameOver/GameOver";
+
 const { Title } = Typography;
 
-const choices = ["I", "study", "three"];
+interface ListeningProps {
+    data: {
+        question_id: number;
+        type: string;
+        prompt: string;
+        audio_url: string;
+        options: string[];
+        answer: string;
+    };
+    totalQuestions: number;
+    answeredQuestions: number;
+    onAnswered: (correct: boolean) => void;
+}
 
-const Listening: React.FC = () => {
+const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQuestions, onAnswered }) => {
+    const { prompt, audio_url, options, answer } = data;
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const [isChecked, setIsChecked] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
-
-    // Progress bar and lives
-    const [totalQuestions] = useState(10); // Total number of questions in the game
-    // This should be managed by the game logic, here it's just a placeholder
-    const [answeredQuestions, setAnsweredQuestions] = useState(0);
-    const [lives, setLives] = useState(3); // Initial lives
-    const correctAnswerIndex = 0; // Assuming the first choice is the correct answer
-
+    const [lives, setLives] = useState(3);
     const [showGameOver, setShowGameOver] = useState(false);
+
+    const audioRef = useRef<HTMLAudioElement>(null);
 
     useEffect(() => {
         if (lives === 0) {
@@ -36,110 +45,98 @@ const Listening: React.FC = () => {
         }
     }, [lives]);
 
-    // Handle selection and checking
-    const handleCheck = () => {
-        if (selectedIndex === null) return;
-        const correct = selectedIndex === correctAnswerIndex;
-        setIsCorrect(correct);
-        setIsChecked(true);
-
-        if (correct) {
-            // Correct: increase progress
-            setAnsweredQuestions(prev => prev + 1);
-        } else {
-            // Incorrect: decrease lives
-            setLives(prev => Math.max(0, prev - 1));
+    const handlePlay = (rate: number) => {
+        if (audioRef.current) {
+            audioRef.current.playbackRate = rate;
+            audioRef.current.currentTime = 0;
+            audioRef.current.play();
         }
     };
 
-    const handleClose = () => {
-        console.log('Close button clicked');
+    const handleCheck = () => {
+        if (selectedIndex === null) return;
+        const selectedValue = options[selectedIndex];
+        const correct = selectedValue.trim().toLowerCase() === answer.trim().toLowerCase();
+        setIsCorrect(correct);
+        setIsChecked(true);
+        if (!correct) setLives(prev => Math.max(0, prev - 1));
+    };
+
+    const handleNext = () => {
+        onAnswered(isCorrect);
+        setSelectedIndex(null);
+        setIsChecked(false);
+        setIsCorrect(false);
     };
 
     const handleReset = () => {
         setSelectedIndex(null);
         setIsChecked(false);
         setIsCorrect(false);
+        setLives(3);
     };
 
-    const audioRef = useRef<HTMLAudioElement>(null);
-
-    const handlePlayNormal = () => {
-        if (audioRef.current) {
-            audioRef.current.playbackRate = 1.0;
-            audioRef.current.currentTime = 0;
-            audioRef.current.play();
-        }
-    };
-
-    const handlePlaySlow = () => {
-        if (audioRef.current) {
-            audioRef.current.playbackRate = 0.6;
-            audioRef.current.currentTime = 0;
-            audioRef.current.play();
-        }
-    };
-
+    if (showGameOver) {
+        return (
+            <GameOver
+                onCancel={() => setShowGameOver(false)}
+                onRecover={() => {
+                    setLives(1);
+                    setShowGameOver(false);
+                }}
+            />
+        );
+    }
 
     return (
         <ListeningWrapper>
-
-            {showGameOver && (
-                <GameOver
-                    onCancel={() => setShowGameOver(false)}
-                    onRecover={() => {
-                        setLives(1);
-                        setShowGameOver(false);
-                    }}
-                />
-            )}
             <ProgressBar
                 totalQuestions={totalQuestions}
                 answeredQuestions={answeredQuestions}
                 lives={lives}
-                onClose={handleClose}
+                onClose
             />
 
             <Title level={3} style={{ fontWeight: 700 }}>Nghe và trả lời</Title>
 
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', margin: '20px 0' }}>
-                <PlayButton onClick={handlePlayNormal}>
+                <PlayButton onClick={() => handlePlay(1.0)}>
                     <SoundOutlined style={{ fontSize: '34px', color: '#fff' }} />
                 </PlayButton>
 
-                <SlowButton onClick={handlePlaySlow}>
+                <SlowButton onClick={() => handlePlay(0.6)}>
                     <MutedOutlined style={{ fontSize: '20px', color: '#fff' }} />
                 </SlowButton>
 
-                {/* <audio ref={audioRef} src="/sound.mp3" preload="auto" /> */}
+                <audio ref={audioRef} src={audio_url} preload="auto" />
             </div>
 
-
-            <QuestionTitle>This dog is...</QuestionTitle>
+            <QuestionTitle>{prompt}</QuestionTitle>
 
             <Space direction="vertical" style={{ width: "100%" }} size="middle">
-                {choices.map((choice, index) => {
+                {options.map((choice, index) => {
                     const isSelected = selectedIndex === index;
-                    const isCorrectChoice = index === correctAnswerIndex;
+                    const isAnswerChoice = choice.trim().toLowerCase() === answer.trim().toLowerCase();
 
                     const bgColor = isChecked
-                        ? isCorrectChoice
-                            ? "#d4edda"
+                        ? isAnswerChoice
+                            ? '#d4edda'
                             : isSelected
-                                ? "#f8d7da"
-                                : "#fff"
+                                ? '#f8d7da'
+                                : '#fff'
                         : isSelected
-                            ? "#ccf2f5"
-                            : "#fff";
+                            ? '#ccf2f5'
+                            : '#fff';
 
-                    const borderColor =
-                        isChecked && isCorrectChoice
-                            ? "#52c41a"
-                            : isChecked && isSelected && !isCorrectChoice
-                                ? "#ff4d4f"
-                                : isSelected
-                                    ? "#00c2d1"
-                                    : "#d9d9d9";
+                    const borderColor = isChecked
+                        ? isAnswerChoice
+                            ? '#52c41a'
+                            : isSelected
+                                ? '#ff4d4f'
+                                : '#d9d9d9'
+                        : isSelected
+                            ? '#00c2d1'
+                            : '#d9d9d9';
 
                     return (
                         <OptionCard
@@ -161,8 +158,8 @@ const Listening: React.FC = () => {
                 selectedIndex={selectedIndex}
                 handleCheck={handleCheck}
                 handleReset={handleReset}
+                handleNext={handleNext}
             />
-
         </ListeningWrapper>
     );
 };
