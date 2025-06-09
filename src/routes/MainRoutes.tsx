@@ -3,6 +3,7 @@ import config from '@/config';
 import MainLayout from '@/layouts/MainLayout';
 import Exercises from '@/pages/Exercises';
 import Home from '@/pages/Home';
+import Leaderboard from '@/pages/Leaderboard/Leaderboard';
 import ResultProcess from '@/pages/Result';
 
 const MainRouter = () => {
@@ -11,10 +12,11 @@ const MainRouter = () => {
 
 const publicRoutes = {
     children: [
-        { path: config.routes.public.welcome, element: <Onboarding />},
-        { path: config.routes.public.home, element: <Home />},
-        { path: config.routes.user.exercise, element: <Exercises />},
+        { path: config.routes.public.welcome, element: <Onboarding /> },
+        { path: config.routes.public.home, element: <Home /> },
+        { path: config.routes.user.exercise, element: <Exercises /> },
         { path: config.routes.user.result, element: <ResultProcess /> },
+        { path: config.routes.user.leaderboard, element: <Leaderboard /> },
     ]
 };
 
