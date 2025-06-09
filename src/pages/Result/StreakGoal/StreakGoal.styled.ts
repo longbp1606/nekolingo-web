@@ -7,7 +7,7 @@ export const GoalWrapper = styled.div`
   align-items: center;
   justify-content: center;
   padding: 80px 20px;
-  background: #fff;
+  background: #fcfafc;
   margin: 0 auto;
 
   h3 {
@@ -26,7 +26,7 @@ export const GoalWrapper = styled.div`
     line-height: 1.4;
 
     b {
-      color: #ff9500 !important;
+      color: ${theme.color.orange} !important;
       font-weight: 700;
     }
   }
@@ -34,7 +34,7 @@ export const GoalWrapper = styled.div`
 
 
 export const Image = styled.img`
-    width: 300px;
+    width: 250px;
     height: 100%;
     margin: 0 auto;
 `;
@@ -48,7 +48,7 @@ export const SpeechBubble = styled.div`
   position: absolute;
   top: -20px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-75%);
   background: #fff;
   color: #333;
   padding: 10px 16px;
@@ -62,7 +62,7 @@ export const SpeechBubble = styled.div`
     content: "";
     position: absolute;
     bottom: -8px;
-    left: 70%;
+    left: 90%;
     transform: translateX(-50%);
     border-width: 8px 8px 0 8px;
     border-style: solid;

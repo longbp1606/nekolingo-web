@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { GoalWrapper, GoalOption, OptionList, Image, ImageWrapper, SpeechBubble } from './StreakGoal.styled';
-import goal from "@/assets/goal.jpg";
+import goal from "@/assets/goal.gif";
 import ButtonResult from '@/components/ButtonResult/ButtonResult';
 import { theme } from '@/themes';
 
