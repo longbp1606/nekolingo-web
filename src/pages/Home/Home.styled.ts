@@ -76,6 +76,12 @@ export const LeftSection = styled.div`
     max-width: 600px;
 `;
 
+export const TopicContent = styled.div`
+    display: flex;
+    flex-direction: column; 
+    gap: 20px;
+`;
+
 export const RightSection = styled.div`
     width: 320px;
     display: flex;

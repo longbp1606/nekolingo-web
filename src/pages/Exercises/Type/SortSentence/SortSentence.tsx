@@ -2,33 +2,44 @@ import React, { useState, useEffect } from 'react';
 import { Content, PersonSay, SentenceContainer, Title, Vietnamese, WordBox, WordsContainer, WordSlot, Wrapper } from './SortSentence.styled';
 import ProgressBar from '@/components/ProgressBar';
 import BottomBar from '@/components/BottomBar/BottomBar';
+import GameOver from '@/components/ProgressBar/GameOver/GameOver';
 
 interface SortSentenceProps {
-    numberOfSlots: number;
-    question: string;
-    correctAnswer: string;
-    options: string[];
+    data: {
+        question_id: number;
+        type: string;
+        prompt: string;
+        sample_sentence: string;
+        words: string[];
+        answer: string;
+    };
+    totalQuestions: number;
+    answeredQuestions: number;
+    onAnswered: (correct: boolean) => void;
 }
 
-const shuffleArray = (array: string[]) => {
-    const newArr = [...array];
-    for (let i = newArr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
-    }
-    return newArr;
-};
+const SortSentence: React.FC<SortSentenceProps> = ({
+    data, totalQuestions, answeredQuestions, onAnswered
+}) => {
+    const { prompt, sample_sentence, words, answer } = data;
+    const correctWords = answer.split(' ');
+    const slotCount = correctWords.length;
 
-const SortSentence: React.FC<SortSentenceProps> = ({ numberOfSlots, question, options }) => {
-    const [shuffledOptions, setShuffledOptions] = useState<string[]>([]);
+    // const [shuffledOptions, setShuffledOptions] = useState<string[]>([]);
+    const [shuffledWords, setShuffledWords] = useState<string[]>([]);
     const [selectedWords, setSelectedWords] = useState<string[]>([]);
     const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isCorrect, setIsCorrect] = useState<boolean>(false);
-    const [answered, setAnswered] = useState(0);
+    const [lives, setLives] = useState(3);
+    const [showGameOver, setShowGameOver] = useState(false);
+
     useEffect(() => {
-        setShuffledOptions(shuffleArray(options));
-        setSelectedWords([]);
-    }, [question, options]);
+        setSelectedWords(Array(slotCount).fill(''));
+        setShuffledWords(words.sort(() => Math.random() - 0.5));
+        // setShuffledOptions(shuffleArray(options));
+        setIsChecked(false);
+        setIsCorrect(false);
+    }, [prompt, words, slotCount]);
 
     const handleSlotClick = (slotIndex: number): void => {
         if (isChecked) return;
@@ -41,7 +52,7 @@ const SortSentence: React.FC<SortSentenceProps> = ({ numberOfSlots, question, op
             setSelectedWords(newSelectedWords);
 
             // Add a word back to the available list
-            setShuffledOptions([...shuffledOptions, wordToRemove]);
+            setShuffledWords(prev => [...prev, wordToRemove]);
         }
     };
 
@@ -58,54 +69,60 @@ const SortSentence: React.FC<SortSentenceProps> = ({ numberOfSlots, question, op
             setSelectedWords(newSelectedWords);
 
             // Remove a word from the available list
-            const newAvailableWords = shuffledOptions.filter((_, i) => i !== index);
-            setShuffledOptions(newAvailableWords);
+            // const newAvailableWords = shuffledOptions.filter((_, i) => i !== index);
+            // setShuffledOptions(newAvailableWords);
+            setShuffledWords(prev => prev.filter((_, i) => i !== index));
         }
     };
 
     const handleCheck = (): void => {
-        // Check if the sentence is complete
-        if (selectedWords.some(word => word === "")) return;
+        // if (selectedWords.some(word => word === "")) return;
+        if (selectedWords.includes('')) return;
 
-        // 	Compare with the correct sentence
-        const userSentence = selectedWords.filter(word => word !== "");
-        const correctWithoutA = ["This", "is", "a", "new", "store"];
+        // // 	Compare with the correct sentence
+        // const userSentence = selectedWords.filter(word => word !== "");
+        // const correctWithoutA = ["This", "is", "a", "new", "store"];
 
-        const correct = userSentence.length === correctWithoutA.length &&
-            userSentence.every((word, index) => word === correctWithoutA[index]);
+        // const correct = userSentence.length === correctWithoutA.length &&
+        //     userSentence.every((word, index) => word === correctWithoutA[index]);
+        const correct = correctWords.every((word, index) => word === selectedWords[index]);
 
         setIsCorrect(correct);
         setIsChecked(true);
-        setAnswered(prev => prev + 1);
+        if (!correct) setLives(prev => prev - 1);
     };
 
     const handleReset = (): void => {
-        setSelectedWords(Array(numberOfSlots).fill(""));
-        // setAvailableWords(["store", "is", "laptops", "This", "taller", "coworkers", "new", "whiter", "a", "fast", "window", "friendly", "blue", "smart", "strong"]);
+        setSelectedWords(Array(slotCount).fill(''));
+        setShuffledWords(words.sort(() => Math.random() - 0.5));
         setIsChecked(false);
         setIsCorrect(false);
     };
 
-    //Initialize selectedWords if not present
-    useEffect(() => {
-        if (selectedWords.length === 0) {
-            setSelectedWords(Array(numberOfSlots).fill(""));
-        }
-    }, [selectedWords.length, numberOfSlots]);
-
-
     const handleNext = () => {
-        // Reset toàn bộ để user có thể chơi lại
-        setIsChecked(false);
-        setIsCorrect(false);
+        onAnswered(isCorrect);
     };
 
     return (
         <Wrapper>
-            {/* <ProgressBar totalQuestions={2} answeredQuestions={answered} /> */}
+            {showGameOver && (
+                <GameOver
+                    onCancel={() => setShowGameOver(false)}
+                    onRecover={() => {
+                        setLives(1);
+                        setShowGameOver(false);
+                    }}
+                />
+            )}
+            <ProgressBar
+                totalQuestions={totalQuestions}
+                answeredQuestions={answeredQuestions}
+                lives={lives}
+                onClose
+            />
 
             <Content>
-                <Title>Viết lại bằng Tiếng Anh</Title>
+                <Title>{prompt}</Title>
                 <PersonSay>
                     <img
                         src="https://firebasestorage.googleapis.com/v0/b/orchid-92a2a.appspot.com/o/Nh%C3%A1p%2Fgirl-say.png?alt=media&token=9db5fc7a-0d65-4808-b114-81430b710929"
@@ -113,7 +130,7 @@ const SortSentence: React.FC<SortSentenceProps> = ({ numberOfSlots, question, op
                         width={70}
                         height={70}
                     />
-                    <Vietnamese><strong>{question}</strong></Vietnamese>
+                    <Vietnamese><strong>{sample_sentence}</strong></Vietnamese>
                 </PersonSay>
 
 
@@ -131,7 +148,7 @@ const SortSentence: React.FC<SortSentenceProps> = ({ numberOfSlots, question, op
                 </SentenceContainer>
 
                 <WordsContainer>
-                    {shuffledOptions.map((word, index) => (
+                    {shuffledWords.map((word, index) => (
                         <WordBox
                             key={`${word}-${index}`}
                             isChecked={isChecked}

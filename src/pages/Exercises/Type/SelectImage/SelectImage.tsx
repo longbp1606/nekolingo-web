@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Content,
   MeanText,
@@ -6,60 +6,67 @@ import {
   Question,
   SelectWrapper,
   SubTitle,
-} from './SelectImage.styled';
-import ProgressBar from '@/components/ProgressBar';
-import BottomBar from '@/components/BottomBar/BottomBar';
+} from "./SelectImage.styled";
+import ProgressBar from "@/components/ProgressBar";
+import BottomBar from "@/components/BottomBar/BottomBar";
+import GameOver from "@/components/ProgressBar/GameOver/GameOver";
 
 interface Option {
   label: string;
-  image: string;
+  image_url: string;
   value: string;
 }
 
-const options: Option[] = [
-  {
-    label: 'milk',
-    image:
-      'https://firebasestorage.googleapis.com/v0/b/orchid-92a2a.appspot.com/o/Nh%C3%A1p%2Fmilk.png?alt=media&token=9fbdcc66-ed60-435d-a213-b252e5546e26',
-    value: 'milk',
-  },
-  {
-    label: 'tea',
-    image:
-      'https://firebasestorage.googleapis.com/v0/b/orchid-92a2a.appspot.com/o/Nh%C3%A1p%2Ftea.png?alt=media&token=ae8c05e7-ee1b-4b82-a099-61916187102b',
-    value: 'tea',
-  },
-  {
-    label: 'coffee',
-    image:
-      'https://firebasestorage.googleapis.com/v0/b/orchid-92a2a.appspot.com/o/Nh%C3%A1p%2Fcoffee-cup.png?alt=media&token=ed69ac36-cbb8-4930-afef-56617715aaa3',
-    value: 'coffee',
-  },
-];
+interface SelectImageProps {
+  data: {
+    prompt: string;
+    options: Option[];
+    answer: string;
+  };
+  totalQuestions: number;
+  answeredQuestions: number;
+  onAnswered: (correct: boolean) => void;
+}
 
-const correctAnswerIndex = 1; // “tea” là đáp án đúng (index = 1)
-
-const SelectImage: React.FC = () => {
-  // Lưu label (hoặc value) đang được chọn, để highlight hiệu ứng “selected”
+const SelectImage: React.FC<SelectImageProps> = ({
+  data,
+  totalQuestions,
+  answeredQuestions,
+  onAnswered,
+}) => {
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
-  // Lưu chỉ số (index) vừa được chọn, để check đúng/sai khi bấm “KIỂM TRA”
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
-  const [answered, setAnswered] = useState(0); // Progress
+  const [lives, setLives] = useState(3);
+  const [showGameOver, setShowGameOver] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const correctAnswer = data.answer;
+  const options = data.options;
 
-  // Khi bấm “KIỂM TRA”
+  useEffect(() => {
+    if (lives === 0) setShowGameOver(true);
+  }, [lives]);
+
   const handleCheck = () => {
-    if (selectedIndex === null) return; // Chưa chọn gì thì không làm gì
+    if (selectedIndex === null) return;
 
-    const correct = selectedIndex === correctAnswerIndex;
+    const selectedOpt = options[selectedIndex];
+    const correct = selectedOpt.value.toLowerCase() === correctAnswer.toLowerCase();
+
     setIsCorrect(correct);
     setIsChecked(true);
-    setAnswered((prev) => prev + 1);
+
+      // onAnswered(correct);
+      // handleReset();
+      if (!correct) setLives((prev) => prev - 1);
+
   };
 
-  // Khi bấm “BỎ QUA” hoặc “TIẾP TỤC” (reset chọn và feedback)
+  const handleNext = () => {
+    onAnswered(isCorrect); // thông báo lên cha là câu này đã trả lời
+    handleReset();
+  };
+
   const handleReset = () => {
     setSelectedValue(null);
     setSelectedIndex(null);
@@ -67,45 +74,57 @@ const SelectImage: React.FC = () => {
     setIsCorrect(false);
   };
 
-  // Khi user click vào một option bất kỳ:
-  // - setSelectedValue để highlight border
-  // - setSelectedIndex luôn = idx (để có thể check đúng/sai)
   const handleOptionClick = (optValue: string, idx: number) => {
-    if (isChecked) return; // Nếu đã check rồi thì không cho chọn thêm
+    if (isChecked) return;
     setSelectedValue(optValue);
     setSelectedIndex(idx);
   };
 
   return (
     <SelectWrapper>
-      {/* <ProgressBar totalQuestions={2} answeredQuestions={answered} /> */}
-
+      {showGameOver && (
+        <GameOver
+          onCancel={() => setShowGameOver(false)}
+          onRecover={() => {
+            setLives(1);
+            setShowGameOver(false);
+          }}
+        />
+      )}
+      <ProgressBar
+        totalQuestions={totalQuestions}
+        answeredQuestions={answeredQuestions}
+        lives={lives}
+        onClose
+      />
       <Content>
         <SubTitle>TỪ VỰNG MỚI</SubTitle>
-        <Question>Đâu là "trà"?</Question>
-
+        <Question>{data.prompt}</Question>
         <OptionsContainer>
           {options.map((opt, idx) => {
-            // Nếu đã check và idx === correctAnswerIndex → tô xanh (nếu muốn) 
-            // Nếu đã check và idx === selectedIndex && !isCorrect → tô đỏ (nếu muốn)
-            // Ở đây mình giữ highlight “selected” trước khi check,
-            // có thể bổ sung thêm class “correct” / “wrong” nếu muốn style.
             const isSelected = selectedValue === opt.value;
+            const isAnswerCorrect = opt.value === correctAnswer;
 
             return (
               <div
                 key={idx}
                 className={`
                   option-card 
-                  ${isSelected ? 'selected' : ''} 
-                  ${isChecked && idx === correctAnswerIndex ? 'correct' : ''} 
-                  ${isChecked && idx === selectedIndex && !isCorrect ? 'wrong' : ''}
+                  ${isSelected ? "selected" : ""}
+                  ${isChecked && isAnswerCorrect ? "correct" : ""}
+                  ${
+                    isChecked &&
+                    selectedIndex === idx &&
+                    opt.value !== correctAnswer
+                      ? "wrong"
+                      : ""
+                  }
                 `}
                 onClick={() => handleOptionClick(opt.value, idx)}
               >
-                <img src={opt.image} alt={opt.label} />
+                <img src={opt.image_url} alt={opt.label} />
                 <MeanText>
-                  <p>{opt.label}</p>
+                  <p>{opt.value}</p>
                   <span className="option-number">{idx + 1}</span>
                 </MeanText>
               </div>
@@ -120,6 +139,7 @@ const SelectImage: React.FC = () => {
         selectedIndex={selectedIndex}
         handleCheck={handleCheck}
         handleReset={handleReset}
+        handleNext={handleNext}
       />
     </SelectWrapper>
   );

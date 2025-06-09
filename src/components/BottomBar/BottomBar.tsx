@@ -50,7 +50,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
                         </FeedbackBox>
                         <NextButtonSuccess
                             className={isCorrect ? 'success' : 'fail'}
-                            onClick={handleNext || handleReset}
+                            onClick={handleNext}
                         >
                             TIẾP TỤC
                         </NextButtonSuccess>
