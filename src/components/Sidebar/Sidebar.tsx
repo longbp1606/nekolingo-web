@@ -1,6 +1,6 @@
 import { Image, Typography } from 'antd';
 import * as Styled from './Sidebar.styled';
-import { Link, useLocation, useRoutes } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { theme } from '@/themes';
 import { symbols } from '@/utils/assets';
 

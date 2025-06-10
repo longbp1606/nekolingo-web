@@ -6,6 +6,8 @@ const routes = {
   user: {
     exercise: "/exercise/:lessonId",
     result: "/exercise/result",
+    practice: "/practice",
+    quest: "/quest",
     leaderboard: "/leaderboard",
   },
   api: {
