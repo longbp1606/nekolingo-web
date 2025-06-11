@@ -29,6 +29,7 @@ import { theme } from '@/themes';
 import { Popover, Flex, Image, Typography } from 'antd';
 import { FiAward, FiTarget, FiZap, FiCheck } from 'react-icons/fi';
 import { HeartFilled } from '@ant-design/icons';
+import StatsBar from '../StatsBar/StatsBar';
 
 const { Text } = Typography;
 
@@ -41,7 +42,7 @@ const languageContent = (
 const RightSidebar = () => {
     return (
         <RightSection>
-            <StatHeader>
+            {/* <StatHeader>
                 <Popover trigger={"hover"} content={languageContent}>
                     <Image src={flags.japan} alt='language' width={50} preview={false} />
                 </Popover>
@@ -51,7 +52,8 @@ const RightSidebar = () => {
                         <Text className='text-xl font-bold'>5</Text>
                     </Flex>
                 </Popover>
-            </StatHeader>
+            </StatHeader> */}
+            <StatsBar />
 
             <LeagueCard>
                 <CardHeader>
