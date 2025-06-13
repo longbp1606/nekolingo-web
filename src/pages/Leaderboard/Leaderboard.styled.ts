@@ -7,6 +7,7 @@ export const DeleteButton = styled.button`
   padding: 6px 20px;
   border-radius: 4px;
   transition: all 0.3s;
+  margin-top: 10px;
   font-weight: 600;
   background-color: ${theme.color.bgBlue};
   color: ${theme.color.primary};
@@ -21,57 +22,59 @@ export const DeleteButton = styled.button`
   }
 `;
 
-export const BodyContent = styled.div`
-  background-color: #f5f5f5;
+export const HomeWrapper = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
-  padding-top: 240px; 
-  padding-bottom: 10px;
+  font-family: "Quicksand", sans-serif;
+`;
+
+export const BodyContent = styled.div`
+  padding-left: 256px;
+`;
+
+export const HomeContent = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 40px;
+  width: 100%;
+  margin-top: 20px;
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+  }
 `;
 
 export const FixedHeader = styled.div`
-  position: fixed;
-  top: 0;
-  left: 256px;
-  right: 256px;
   background-color: white;
   border-bottom: 1px solid #e0e0e0;
+  position: fixed;
+  top: 0;
   padding: 20px 0 0;
   z-index: 100;
   align-items: center;
   justify-content: center;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  width: 100%;
+  max-width: 600px;
+`;
+
+export const LeftSection = styled.div`
+  flex: 1;
+  max-width: 600px;
 `;
 
 export const Sidebar = styled.div`
-  position: fixed;
-  right: 0;
-  top: 0;
-  width: 256px;
-  height: 100vh;
-  background-color: #fff;
-  border-left: 1px solid #e0e0e0;
-  padding: 20px;
-  overflow-y: auto;
+  width: 320px;
   display: flex;
   flex-direction: column;
   z-index: 1000;
-`;
-
-export const StatsBar = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
-  padding: 10px 0;
-`;
-
-export const StatItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 5px;
 `;
 
 export const StatIcon = styled.div`
@@ -81,13 +84,6 @@ export const StatIcon = styled.div`
   align-items: center;
   justify-content: center;
 `;
-
-export const StatValue = styled.span`
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-`;
-
 export const SidebarTitle = styled.h3`
   font-size: 16px;
   color: #666;
@@ -124,6 +120,16 @@ export const IconGrid = styled.div`
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   margin-bottom: 10px;
+  justify-items: center;
+  align-items: center;
+`;
+
+export const Card = styled.div`
+    background-color: ${theme.color.white};
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
 `;
 
 export const IconButton = styled.button<{ selected: boolean }>`
@@ -166,11 +172,10 @@ export const IconButton = styled.button<{ selected: boolean }>`
 export const LeaderboardContainer = styled.div`
   background-color: white;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   padding: 24px;
   width: 100%;
   max-width: 600px;
-  margin: 0 auto;
+  margin: 200px auto 20px;
 `;
 
 export const TournamentSelector = styled.div`
@@ -333,7 +338,7 @@ export const UserInfo = styled.div`
 
 export const UserName = styled.div`
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   color: #333;
   white-space: nowrap;
   overflow: hidden;
@@ -341,19 +346,17 @@ export const UserName = styled.div`
 `;
 
 export const UserScore = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
   flex-shrink: 0;
 `;
 
 export const FooterWrapper = styled.div`
-  position: fixed;
-  bottom: 0;
-  right: 46px;
   font-size: 12px;
   color: #999;
   text-align: center;
+  margin-top: 40px;
 `;
 
 export const FooterRow = styled.div`

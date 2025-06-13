@@ -4,6 +4,7 @@ import { HeartOutlined, } from '@ant-design/icons';
 import {
     BodyContent,
     LeaderboardContainer,
+    LeftSection,
     TournamentTitle,
     TournamentSubtitle,
     TournamentDays,
@@ -22,9 +23,6 @@ import {
     CompassDirection,
     IconGrid,
     IconButton,
-    // StatsBar,
-    // StatItem,
-    // StatValue,
     FixedHeader,
     TournamentSelector,
     TournamentOption,
@@ -32,7 +30,10 @@ import {
     DeleteButton,
     FooterWrapper,
     FooterRow,
-    FooterLink
+    FooterLink,
+    HomeWrapper,
+    HomeContent,
+    Card,
 } from './Leaderboard.styled';
 import Sidebar from '@/components/Sidebar';
 import { theme } from '@/themes';
@@ -45,7 +46,7 @@ const Leaderboard = () => {
         bronze: {
             icon: '🥉',
             title: 'Giải đấu Đồng',
-            subtitle: 'Tốp 15 sẽ được thăng hạng lên giải đấu cao hơn',
+            subtitle: 'Top 15 sẽ được thăng hạng lên giải đấu cao hơn',
             gradient: 'linear-gradient(135deg, #CD7F32, #F4E4BC)',
             data: [
                 { rank: 1, name: 'xFaKvB9u', score: '164 KN', avatar: 'X', color: '#ff9500', isOnline: true },
@@ -68,7 +69,7 @@ const Leaderboard = () => {
         silver: {
             icon: '🥈',
             title: 'Giải đấu Bạc',
-            subtitle: 'Tốp 10 sẽ được thăng hạng lên giải đấu cao hơn',
+            subtitle: 'Top 10 sẽ được thăng hạng lên giải đấu cao hơn',
             gradient: 'linear-gradient(135deg, #C0C0C0, #E8E8E8)',
             data: [
                 { rank: 1, name: 'ProGamer2024', score: '892 KN', avatar: 'P', color: '#ff9500', isOnline: true },
@@ -83,7 +84,7 @@ const Leaderboard = () => {
         gold: {
             icon: '🥇',
             title: 'Giải đấu Vàng',
-            subtitle: 'Tốp 5 sẽ được thăng hạng lên giải đấu cao hơn',
+            subtitle: 'Top 5 sẽ được thăng hạng lên giải đấu cao hơn',
             gradient: 'linear-gradient(135deg, #FFD700, #FFF8DC)',
             data: [
                 { rank: 1, name: 'GoldLegend', score: '2.1M KN', avatar: '👑', color: '#ff9500', isOnline: true },
@@ -150,154 +151,139 @@ const Leaderboard = () => {
     return (
         <>
             <Sidebar />
+
             <BodyContent>
-                <FixedHeader>
-                    <TournamentSelector>
-                        {Object.entries(tournaments).map(([key, tournament]) => (
-                            <TournamentOption
-                                key={key}
-                                isActive={selectedTournament === key}
-                                gradient={tournament.gradient}
-                                onClick={() => handleTournamentChange(key)}
-                            >
-                                {tournament.icon}
-                            </TournamentOption>
-                        ))}
-                    </TournamentSelector>
-                    <TournamentContent>
-                        <TournamentTitle>{currentTournament.title}</TournamentTitle>
-                        <TournamentSubtitle>
-                            {currentTournament.subtitle}
-                        </TournamentSubtitle>
-                        <TournamentDays>6 ngày</TournamentDays>
-                    </TournamentContent>
-                </FixedHeader>
+                <HomeWrapper>
+                    <HomeContent>
+                        <LeftSection>
+                            <FixedHeader>
+                                <TournamentSelector>
+                                    {Object.entries(tournaments).map(([key, tournament]) => (
+                                        <TournamentOption
+                                            key={key}
+                                            isActive={selectedTournament === key}
+                                            gradient={tournament.gradient}
+                                            onClick={() => handleTournamentChange(key)}
+                                        >
+                                            {tournament.icon}
+                                        </TournamentOption>
+                                    ))}
+                                </TournamentSelector>
+                                <TournamentContent>
+                                    <TournamentTitle>{currentTournament.title}</TournamentTitle>
+                                    <TournamentSubtitle>
+                                        {currentTournament.subtitle}
+                                    </TournamentSubtitle>
+                                    <TournamentDays>6 ngày</TournamentDays>
+                                </TournamentContent>
+                            </FixedHeader>
 
 
-                <LeaderboardContainer>
-                    <LeaderboardList>
-                        {currentTournament.data.map((player, index) => (
-                            <LeaderboardItem key={index}>
-                                <RankBadge rank={player.rank} color={getRankColor(player.rank)}>
-                                    {player.rank}
-                                </RankBadge>
+                            <LeaderboardContainer>
+                                <LeaderboardList>
+                                    {currentTournament.data.map((player, index) => (
+                                        <LeaderboardItem key={index}>
+                                            <RankBadge rank={player.rank} color={getRankColor(player.rank)}>
+                                                {player.rank}
+                                            </RankBadge>
 
-                                <div style={{ position: 'relative' }}>
-                                    <UserAvatar color={player.color}>
-                                        {player.avatar}
-                                    </UserAvatar>
-                                    {player.isOnline && <OnlineIndicator />}
-                                </div>
+                                            <div style={{ position: 'relative' }}>
+                                                <UserAvatar color={player.color}>
+                                                    {player.avatar}
+                                                </UserAvatar>
+                                                {player.isOnline && <OnlineIndicator />}
+                                            </div>
 
-                                <UserInfo>
-                                    <UserName>{player.name}</UserName>
-                                </UserInfo>
+                                            <UserInfo>
+                                                <UserName>{player.name}</UserName>
+                                            </UserInfo>
 
-                                <UserScore>{player.score}</UserScore>
-                            </LeaderboardItem>
-                        ))}
-                    </LeaderboardList>
-                </LeaderboardContainer>
+                                            <UserScore>{player.score}</UserScore>
+                                        </LeaderboardItem>
+                                    ))}
+                                </LeaderboardList>
+                            </LeaderboardContainer>
+                        </LeftSection>
+
+
+                        <StyledSidebar>
+                            <StatsBar />
+                            <Card>
+                                <SidebarTitle>Đặt biểu tượng trang thái</SidebarTitle>
+
+                                <CompassContainer>
+                                    <CompassCircle>
+                                        <CompassDirection>N</CompassDirection>
+                                        {selectedStatusIcon && (
+                                            <div
+                                                style={{
+                                                    position: "absolute",
+                                                    top: "-6px",
+                                                    right: "-6px",
+                                                    background: "#fff",
+                                                    borderRadius: "50%",
+                                                    border: "2px solid #ccc",
+                                                    fontSize: "18px",
+                                                    padding: "2px",
+                                                    zIndex: 1,
+                                                }}
+                                            >
+                                                {selectedStatusIcon}
+                                            </div>
+                                        )}
+                                        <div
+                                            style={{
+                                                position: "absolute",
+                                                bottom: 0,
+                                                right: 10,
+                                                width: 12,
+                                                height: 12,
+                                                backgroundColor: `${theme.color.green}`,
+                                                borderRadius: "50%",
+                                            }}
+                                        />
+                                    </CompassCircle>
+                                </CompassContainer>
+                                <IconGrid>
+                                    {statusIcons.map((icon, index) => (
+                                        <IconButton
+                                            key={index}
+                                            selected={selectedStatusIcon === icon}
+                                            onClick={() => setSelectedStatusIcon(icon)}
+                                        >
+                                            <span>{icon}</span>
+                                        </IconButton>
+                                    ))}
+                                </IconGrid>
+                                {selectedStatusIcon && (
+                                    <div style={{ textAlign: "center", marginTop: "8px" }}>
+                                        <DeleteButton onClick={() => setSelectedStatusIcon(null)}>
+                                            XÓA
+                                        </DeleteButton>
+                                    </div>
+                                )}
+
+                            </Card>
+
+
+                            <FooterWrapper>
+                                <FooterRow>
+                                    <FooterLink>GIỚI THIỆU</FooterLink>
+                                    <FooterLink>CỬA HÀNG</FooterLink>
+                                </FooterRow>
+                                <FooterRow>
+                                    <FooterLink>NHÀ ĐẦU TƯ</FooterLink>
+                                    <FooterLink>ĐIỀU KHOẢN</FooterLink>
+                                </FooterRow>
+                                <FooterRow>
+                                    <FooterLink>QUYỀN RIÊNG TƯ</FooterLink>
+                                </FooterRow>
+                            </FooterWrapper>
+                        </StyledSidebar>
+                    </HomeContent>
+                </HomeWrapper>
             </BodyContent>
-            <StyledSidebar>
-                {/* <StatsBar>
-                    <StatItem>
-                        <img
-                            src="https://flagcdn.com/w40/vn.png"
-                            alt="Vietnam Flag"
-                            width="20"
-                            height="14"
-                            style={{ borderRadius: "2px" }}
-                        />
-                        <StatValue>VN</StatValue>
-                    </StatItem>
 
-                    <StatItem>
-                        <img
-                            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff9500'%3E%3Cpath d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/%3E%3C/svg%3E"
-                            alt="flame"
-                            width="16"
-                            height="16"
-                        />
-                        <StatValue>3</StatValue>
-                    </StatItem>
-
-                    <StatItem>
-                        <HeartOutlined style={{ color: "#ff6b6b", fontSize: "16px" }} />
-                        <StatValue>8</StatValue>
-                    </StatItem>
-                </StatsBar> */}
-                <StatsBar />
-
-                <SidebarTitle>Đặt biểu tượng trang thái</SidebarTitle>
-
-                <CompassContainer>
-                    <CompassCircle>
-                        <CompassDirection>N</CompassDirection>
-                        {selectedStatusIcon && (
-                            <div
-                                style={{
-                                    position: "absolute",
-                                    top: "-6px",
-                                    right: "-6px",
-                                    background: "#fff",
-                                    borderRadius: "50%",
-                                    border: "2px solid #ccc",
-                                    fontSize: "18px",
-                                    padding: "2px",
-                                    zIndex: 1,
-                                }}
-                            >
-                                {selectedStatusIcon}
-                            </div>
-                        )}
-                        <div
-                            style={{
-                                position: "absolute",
-                                bottom: 0,
-                                right: 10,
-                                width: 12,
-                                height: 12,
-                                backgroundColor: `${theme.color.green}`,
-                                borderRadius: "50%",
-                            }}
-                        />
-                    </CompassCircle>
-                </CompassContainer>
-                <IconGrid>
-                    {statusIcons.map((icon, index) => (
-                        <IconButton
-                            key={index}
-                            selected={selectedStatusIcon === icon}
-                            onClick={() => setSelectedStatusIcon(icon)}
-                        >
-                            <span>{icon}</span>
-                        </IconButton>
-                    ))}
-                </IconGrid>
-                {selectedStatusIcon && (
-                    <div style={{ textAlign: "center", marginTop: "8px" }}>
-                        <DeleteButton onClick={() => setSelectedStatusIcon(null)}>
-                            XÓA
-                        </DeleteButton>
-                    </div>
-                )}
-
-                <FooterWrapper>
-                    <FooterRow>
-                        <FooterLink>GIỚI THIỆU</FooterLink>
-                        <FooterLink>CỬA HÀNG</FooterLink>
-                    </FooterRow>
-                    <FooterRow>
-                        <FooterLink>NHÀ ĐẦU TƯ</FooterLink>
-                        <FooterLink>ĐIỀU KHOẢN</FooterLink>
-                    </FooterRow>
-                    <FooterRow>
-                        <FooterLink>QUYỀN RIÊNG TƯ</FooterLink>
-                    </FooterRow>
-                </FooterWrapper>
-
-            </StyledSidebar>
         </>
     );
 };

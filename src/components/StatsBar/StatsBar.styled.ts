@@ -1,3 +1,4 @@
+import { theme } from '@/themes';
 import styled, { keyframes, css } from 'styled-components';
 
 // Animations
@@ -36,14 +37,15 @@ const heartBeat = keyframes`
 // Main Container
 export const StatsBarContainer = styled.div`
   display: flex;
+  gap: 8px;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-radius: 16px;
+  background-color: ${theme.color.white};
+  border-radius: 12px;
   padding: 8px 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
   border: 2px solid #f1f5f9;
-  max-width: 240px;
+  max-width: 320px;
   width: 100%;
   margin: 0 auto;
   backdrop-filter: blur(10px);
@@ -55,10 +57,10 @@ export const StatsBarContainer = styled.div`
 
 // Stat Item Wrapper
 export const StatItemWrapper = styled.div<{
-    color: string;
-    bgColor: string;
-    borderColor: string;
-    isActive: boolean;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+  isActive: boolean;
 }>`
   position: relative;
   cursor: pointer;
@@ -128,6 +130,17 @@ export const HeartIcon = styled.div<{ filled?: boolean; color?: string }>`
   }
 `;
 
+export const HeartIconArray = styled.div<{ filled?: boolean; color?: string }>`
+  font-size: 24px;
+  transition: all 0.2s ease;
+  filter: drop-shadow(0 1px 2px rgba(255, 107, 107, 0.3));
+  
+  &:hover {
+    transform: scale(1.1);
+    animation: ${heartBeat} 0.6s ease-in-out;
+  }
+`;
+
 // Stat Value
 export const StatValue = styled.span<{ color: string }>`
   font-weight: 700;
@@ -142,8 +155,7 @@ export const DropdownContent = styled.div`
   background: white;
   border-radius: 16px;
   padding: 16px;
-  min-width: 220px;
-  max-width: 280px;
+  max-width: 400px;
   animation: ${bounceIn} 0.3s ease-out;
   border: 2px solid #f1f5f9;
 `;
@@ -203,15 +215,15 @@ export const DayCircle = styled.div<{ completed: boolean; color: string }>`
     height: 32px;
     border-radius: 50%;
     background: ${props => props.completed
-        ? `linear-gradient(135deg, ${props.color} 0%, ${props.color}dd 100%)`
-        : '#e2e8f0'
-    };
+    ? `linear-gradient(135deg, ${props.color} 0%, ${props.color}dd 100%)`
+    : '#e2e8f0'
+  };
     border: 2px solid ${props => props.completed ? props.color : '#cbd5e1'};
     transition: all 0.3s ease;
     box-shadow: ${props => props.completed
-        ? `0 2px 8px ${props.color}40`
-        : '0 1px 3px rgba(0, 0, 0, 0.1)'
-    };
+    ? `0 2px 8px ${props.color}40`
+    : '0 1px 3px rgba(0, 0, 0, 0.1)'
+  };
   }
   
   span {
@@ -268,7 +280,7 @@ export const DropdownOverlay = styled.div`
 export const ResponsiveWrapper = styled.div`
   @media (max-width: 768px) {
     ${StatsBarContainer} {
-      max-width: 220px;
+      max-width: 320px;
       padding: 6px 10px;
     }
     
@@ -291,4 +303,104 @@ export const ResponsiveWrapper = styled.div`
       padding: 12px;
     }
   }
+`;
+
+// Export all styled components
+// Course selection styles
+export const CourseList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+`;
+
+export const CourseItem = styled.div<{ active?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: ${props => props.active ? `${theme.color.bgBlue}` : 'transparent'};
+  border: 2px solid ${props => props.active ? `${theme.color.primary}` : 'transparent'};
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+`;
+
+export const CourseName = styled.span`
+  font-weight: 600;
+  font-size: 16px;
+  color: ${theme.color.primary};
+`;
+
+export const AddCourseItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f5f5f5;
+  }
+`;
+
+// Heart shop styles
+export const HeartShopContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e5e5;
+`;
+
+export const HeartShopItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 2px solid #e5e5e5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border: 2px solid ${theme.color.red};
+    background: ${theme.color.bgRed};
+    border-bottom: 4px solid ${theme.color.red};
+    transform: translateY(-2px);
+  }
+`;
+
+export const HeartShopIcon = styled.div`
+  font-size: 24px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const HeartShopText = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+export const HeartShopPrice = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+export const HeartCount = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 16px;
+  font-weight: 600;
 `;
