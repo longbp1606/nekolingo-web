@@ -68,7 +68,7 @@ const Sidebar = () => {
                             style={path === item.path ? activeItem : {}}
                         >
                             <Image src={item.icon} alt={item.label} width={40} preview={false}/> 
-                            <Title level={4}>{item.label}</Title>
+                            <Title level={4} style={{ color: theme.color.title }}>{item.label}</Title>
                         </Styled.NavbarItemContainer>
                     </Link>
                 ))}

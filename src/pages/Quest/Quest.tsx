@@ -26,6 +26,7 @@ import Sidebar from '@/components/Sidebar'
 import { Button, Flex, Image, Popover, Progress, Typography } from 'antd'
 import { flags } from '@/utils/assets';
 import { HeartFilled } from '@ant-design/icons';
+import { theme } from '@/themes';
 
 const { Text } = Typography;
 
@@ -63,7 +64,7 @@ const Quest = () => {
                   <DailyQuestCard>
                     <Flex justify="space-between" align="center">
                       <ContentChart>
-                        <strong>⚡ Kiếm 10 KN</strong>
+                        <strong style={{ color: theme.color.title }}>⚡ Kiếm 10 KN</strong>
                         <div style={{ position: 'relative', width: '100%' }}>
                           <Progress
                             percent={100}
@@ -102,7 +103,7 @@ const Quest = () => {
                   <DailyQuestCard>
                     <Flex justify="space-between" align="center">
                       <ContentChart>
-                        <strong>🎯 Đạt điểm chính xác từ 80% trở lên của 3 bài học</strong>
+                        <strong style={{ color: theme.color.title }}>🎯 Đạt điểm chính xác từ 80% trở lên của 3 bài học</strong>
                         <div style={{ position: 'relative', width: '100%' }}>
                           <Progress
                             percent={66}
@@ -141,7 +142,7 @@ const Quest = () => {
                   <DailyQuestCard>
                     <Flex justify="space-between" align="center">
                       <ContentChart>
-                        <strong>🔊 Nghe 7 bài tập</strong>
+                        <strong style={{ color: theme.color.title }}>🔊 Nghe 7 bài tập</strong>
                         <div style={{ position: 'relative', width: '100%' }}>
                           <Progress
                             percent={28}
@@ -194,8 +195,8 @@ const Quest = () => {
               <MonthlyChallengeBox>
                 <SideCardContent>
                   <SideCardText>
-                    <h4>Thử thách tháng sắp mở!</h4>
-                    <p>Hoàn thành các thử thách hằng tháng để giành được huy hiệu độc đáo</p>
+                    <h4 style={{ color: theme.color.title }}>Thử thách tháng sắp mở!</h4>
+                    <p style={{ color: theme.color.description }}>Hoàn thành các thử thách hằng tháng để giành được huy hiệu độc đáo</p>
                   </SideCardText>
                   <img
                     src="https://d35aaqx5ub95lt.cloudfront.net/images/goals/e07e459ea20aef826b42caa71498d85f.svg"

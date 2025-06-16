@@ -1,3 +1,4 @@
+import { theme } from "@/themes";
 import styled from "styled-components";
 
 export const HomeWrapper = styled.div`
@@ -53,7 +54,7 @@ export const SectionHeader = styled.div`
 export const SectionTitle = styled.h2`
   font-size: 25px;
   font-weight: 700;
-  color: #1c1e21;
+  color: ${theme.color.title};
   margin: 12px 0;
 `;
 
@@ -223,4 +224,11 @@ export const CardText = styled.div`
 export const CardTitle = styled.div`
   display: flex;
   gap: 10px;
+  .practice-title {
+    color: ${theme.color.title};
+}
+
+.practice-subtitle {
+  color: ${theme.color.description};
+}
 `;

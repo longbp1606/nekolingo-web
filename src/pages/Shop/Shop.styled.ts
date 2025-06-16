@@ -34,21 +34,6 @@ export const LeftSection = styled.div`
   max-width: 600px;
 `;
 
-export const Sidebar = styled.div`
-  width: 320px;
-  display: flex;
-  flex-direction: column;
-  z-index: 1000;
-`;
-
-export const Card = styled.div`
-    background-color: ${theme.color.white};
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-`;
-
 export const DeepPracticeBox = styled.div`
   background: linear-gradient(180deg, #001b65, #3e1084); 
   color: white;
@@ -119,14 +104,12 @@ export const SuperImage = styled.img`
 export const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  min-height: 100vh;
 `;
 
 export const Title = styled.h1`
   font-size: 25px;
   font-weight: 700;
-  color: #4b4b4b;
+  color: ${theme.color.title};
   margin: 30px 0 20px 0;
 `;
 
@@ -137,7 +120,7 @@ export const Section = styled.div`
 export const SectionTitle = styled.h2`
   font-size: 25px;
   font-weight: 700;
-  color: #4b4b4b;
+  color: ${theme.color.title};
   margin: 0px 0 20px 0;
 `;
 
@@ -195,37 +178,15 @@ export const ContentArea = styled.div`
 export const HeartTitle = styled.h3`
   font-size: 18px;
   font-weight: 700;
-  color: #4b4b4b;
+  color: ${theme.color.title};
   margin: 0 0 8px 0;
 `;
 
 export const HeartDescription = styled.p`
   font-size: 16px;
-  color: #777;
+  color: ${theme.color.description};
   margin: 0;
   line-height: 1.4;
-`;
-
-export const StatusBadge = styled.div`
-  background: #e5e5e5;
-  color: #999;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-`;
-
-export const FreeTrialBadge = styled.div`
-  background: #ff69b4;
-  color: white;
-  font-size: 14px;
-  font-weight: 700;
-  padding: 8px 16px;
-  border-radius: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 `;
 
 export const PurchaseButton = styled.div`

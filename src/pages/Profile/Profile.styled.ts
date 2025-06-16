@@ -151,7 +151,7 @@ export const ProfileName = styled.h1`
   font-size: 28px;
   font-weight: 700;
   margin: 0 0 5px 0;
-  color: #4b4b4b;
+  color: ${theme.color.title};
 `;
 
 export const ProfileHandle = styled.p`
@@ -162,7 +162,7 @@ export const ProfileHandle = styled.p`
 
 export const ProfileJoinDate = styled.p`
   font-size: 14px;
-  color: #888;
+  color: ${theme.color.description};
   margin: 0 0 20px 0;
 `;
 
@@ -228,13 +228,13 @@ export const StatImg = styled.img`
 export const StatValue = styled.div`
   font-size: 20px;
   font-weight: 700;
-  color: #4b4b4b;
+  color: ${theme.color.title};
   line-height: 1.2;
 `;
 
 export const StatLabel = styled.div`
   font-size: 12px;
-  color: #b2afaf;
+  color: ${theme.color.description};
   line-height: 1.2;
 `;
 
@@ -281,7 +281,7 @@ export const TabButton = styled.button<{ $active: boolean }>`
     
     &:active {
     border: none;
-        color: ${props => props.$active ? `${theme.color.primary}` : '#4b4b4b'};
+        color: ${props => props.$active ? `${theme.color.primary}` : '${theme.color.title}'};
     }
 `;
 
@@ -387,7 +387,7 @@ export const Character = styled.div`
 
 export const EmptyMessage = styled.p`
     font-size: 14px;
-    color: #666;
+    color: ${theme.color.description};
     margin-top: 15px;
     line-height: 1.5;
 `;
@@ -399,14 +399,14 @@ export const Title = styled.h3`
   font-size: 25px;
   font-weight: 700;
   margin: 0;
-  color: #4b4b4b;
+  color: ${theme.color.title};
   margin-bottom: 10px;
 `;
 
 export const AddFriendsTitle = styled.h3`
     font-size: 16px;
     font-weight: 600;
-    color: #4b4b4b;
+    color: ${theme.color.title};
     margin-bottom: 10px;
 `;
 
@@ -440,7 +440,7 @@ export const FriendIcon = styled.div`
 export const FriendText = styled.span`
     flex: 1;
     font-size: 14px;
-    color: #4b4b4b; 
+    color: ${theme.color.title}; 
     font-weight: 600;
 `;
 

@@ -218,7 +218,7 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
                         cursor: isMatched || matchedIds.length === totalPairs ? 'not-allowed' : 'pointer',
                         opacity: isMatched ? 0.6 : 1,
                         fontSize: '19px',
-                        color: '#4b4b4b',
+                        color: '${theme.color.title}',
                     }}
                 >
                     {/* <span className="option-number">{idx + 1}</span> */}

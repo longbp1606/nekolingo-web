@@ -29,7 +29,7 @@ export const AchievementTitle = styled.h3`
   font-size: 25px;
   font-weight: 700;
   margin: 0;
-  color: #4b4b4b;
+  color: ${theme.color.title};
 `;
 
 export const ViewAllLink = styled.a`
@@ -130,12 +130,12 @@ export const AchievementName = styled.h4`
   font-size: 16px;
   font-weight: 600;
   margin: 0 0 4px 0;
-  color: #4b4b4b;
+  color: ${theme.color.title};
 `;
 
 export const AchievementDesc = styled.p`
   font-size: 14px;
-  color: #b2afaf;
+  color: ${theme.color.description};
   margin: 0;
   line-height: 1.4;
 `;
