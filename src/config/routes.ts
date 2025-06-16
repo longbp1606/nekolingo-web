@@ -11,6 +11,7 @@ const routes = {
     leaderboard: "/leaderboard",
     profile: "/profile",
     shop: "/shop",
+    achievements: "/profile/achievements",
   },
   api: {
     loginGoogle: "/auth/signin",

@@ -23,20 +23,7 @@ import {
     StatImg,
     StatValue,
     StatLabel,
-    AchievementSection,
-    AchievementHeader,
-    AchievementTitle,
-    AchievementText,
-    ViewAllLink,
-    AchievementList,
-    AchievementItem,
-    AchievementIconWrapper,
-    AchievementInfo,
-    AchievementName,
-    AchievementDesc,
-    AchievementProgress,
     EditButton,
-    AchievementLead,
     TabsContainer,
     TabButton,
     TabContent,
@@ -51,7 +38,7 @@ import {
     Img,
     ImgIcon,
     ImgIconGlass,
-    AchievementImg,
+    Title,
 } from './Profile.styled';
 import Sidebar from '@/components/Sidebar';
 import StatsBar from '@/components/StatsBar/StatsBar';
@@ -65,8 +52,8 @@ import glass from "@/assets/glass.png";
 import {
     profile,
     stats,
-    achievements
 } from './data';
+import AchievementList from '@/components/AchievementList/AchievementList';
 
 
 
@@ -103,7 +90,7 @@ const Profile = () => {
                             </ProfileHeader>
 
                             <Card>
-                                <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: '600' }}>Thống kê</h3>
+                                <Title>Thống kê</Title>
                                 <StatsGrid>
                                     {stats.map((stat, index) => (
                                         <StatCard key={index}>
@@ -116,41 +103,7 @@ const Profile = () => {
                                     ))}
                                 </StatsGrid>
                             </Card>
-
-                            <Card>
-                                <AchievementSection>
-                                    <AchievementHeader>
-                                        <AchievementTitle>Thành tích</AchievementTitle>
-                                        <ViewAllLink>XEM TẤT CẢ</ViewAllLink>
-                                    </AchievementHeader>
-                                    <AchievementList>
-                                        {achievements.map((ach, index) => (
-                                            <AchievementItem key={index}>
-                                                <AchievementIconWrapper className={ach.className}>
-                                                    <AchievementImg className="streak" src={ach.icon} alt={ach.name} />
-                                                    <AchievementText className={ach.className}>{ach.level}</AchievementText>
-                                                </AchievementIconWrapper>
-
-                                                <AchievementInfo>
-                                                    <AchievementLead>
-                                                        <AchievementName>{ach.name}</AchievementName>
-                                                        <AchievementDesc>{ach.progressText}</AchievementDesc>
-                                                    </AchievementLead>
-                                                    <AchievementProgress>
-                                                        <div className="progress-bar" style={{ height: '12px' }}>
-                                                            <div
-                                                                className={`progress-fill ${ach.percentage === 100 ? "complete" : "incomplete"}`}
-                                                                style={{ width: `${ach.percentage}%` }}
-                                                            ></div>
-                                                        </div>
-                                                    </AchievementProgress>
-                                                    <AchievementDesc>{ach.desc}</AchievementDesc>
-                                                </AchievementInfo>
-                                            </AchievementItem>
-                                        ))}
-                                    </AchievementList>
-                                </AchievementSection>
-                            </Card>
+                            <AchievementList limit={3} showViewAll={true} />
                         </LeftSection>
                         <StyledSidebar>
                             <StatsBar />
