@@ -9,6 +9,9 @@ const routes = {
     practice: "/practice",
     quest: "/quest",
     leaderboard: "/leaderboard",
+    profile: "/profile",
+    shop: "/shop",
+    achievements: "/profile/achievements",
   },
   api: {
     loginGoogle: "/auth/signin",

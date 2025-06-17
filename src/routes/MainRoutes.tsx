@@ -7,6 +7,9 @@ import Practice from '@/pages/Practice/Practice';
 import Quest from '@/pages/Quest/Quest';
 import Leaderboard from '@/pages/Leaderboard/Leaderboard';
 import ResultProcess from '@/pages/Result';
+import Profile from '@/pages/Profile/Profile';
+import Shop from '@/pages/Shop/Shop';
+import AllAchievement from '@/pages/Profile/AllAchievement/AllAchievement';
 
 const MainRouter = () => {
     return <MainLayout />;
@@ -21,6 +24,10 @@ const publicRoutes = {
         { path: config.routes.user.practice, element: <Practice /> },
         { path: config.routes.user.quest, element: <Quest /> },
         { path: config.routes.user.leaderboard, element: <Leaderboard /> },
+        { path: config.routes.user.profile, element: <Profile /> },
+        { path: config.routes.user.shop, element: <Shop /> },
+        { path: config.routes.user.achievements, element: <AllAchievement /> },
+
     ]
 };
 
