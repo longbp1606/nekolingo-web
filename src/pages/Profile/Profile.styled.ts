@@ -3,14 +3,13 @@ import styled from "styled-components";
 
 export const HomeWrapper = styled.div`
   max-width: 1200px;
-  background-color: ${theme.color.white};
   margin: 0 auto;
   padding: 0 20px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   font-family: "Quicksand", sans-serif;
-  margin-bottom: 20px;
+  padding-bottom: 20px;
 `;
 
 export const BodyContent = styled.div`
@@ -342,6 +341,7 @@ export const AddFriendsTitle = styled.h3`
 export const FriendOption = styled.div`
     display: flex;
     align-items: center;
+    gap: 16px;
     cursor: pointer;
     transition: all 0.2s;
     border-radius: 8px;
@@ -352,6 +352,10 @@ export const FriendText = styled.span`
     font-size: 14px;
     color: ${theme.color.title}; 
     font-weight: 600;
+
+    &:hover {
+    color: ${theme.color.primary}; 
+    }
 `;
 
 export const ArrowIcon = styled.div`

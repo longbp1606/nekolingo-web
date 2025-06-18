@@ -16,7 +16,6 @@ import {
     ProfileHandle,
     ProfileJoinDate,
     FollowSection,
-    // FollowButton,
     FollowStats,
     StatsGrid,
     StatCard,
@@ -27,12 +26,10 @@ import {
     TabsContainer,
     TabButton,
     TabContent,
-    // Character,
     EmptyMessage,
     AddFriendsSection,
     AddFriendsTitle,
     FriendOption,
-    // FriendIcon,
     FriendText,
     ArrowIcon,
     Img,
@@ -48,6 +45,8 @@ import following from "@/assets/following.gif";
 import addFriend from "@/assets/addfriend.gif";
 import add from "@/assets/add.png";
 import glass from "@/assets/glass.png";
+import { Link } from 'react-router-dom';
+import config from '@/config';
 
 
 import {
@@ -55,11 +54,13 @@ import {
     stats,
 } from './data';
 import AchievementList from '@/components/AchievementList/AchievementList';
+import PopupInvite from '@/components/PopupInvite/PopupInvite';
 
 
 
 const Profile = () => {
     const [activeTab, setActiveTab] = useState<'following' | 'followers'>('following');
+    const [showPopup, setShowPopup] = useState(false);
 
     return (
         <>
@@ -147,13 +148,13 @@ const Profile = () => {
                                     <AddFriendsTitle>Thêm bạn bè</AddFriendsTitle>
                                     <FriendOption>
                                         <ImgIconGlass src={glass} alt="Glass" />
-                                        <FriendText>Tìm bạn bè</FriendText>
+                                        <FriendText as={Link} to={config.routes.user.search}>Tìm bạn bè</FriendText>
                                         <ArrowIcon>
                                             <RightOutlined />
                                         </ArrowIcon>
                                     </FriendOption>
 
-                                    <FriendOption>
+                                    <FriendOption onClick={() => setShowPopup(true)}>
                                         <ImgIcon src={add} alt="Add" />
                                         <FriendText>Mời bạn bè</FriendText>
                                         <ArrowIcon>
@@ -179,6 +180,7 @@ const Profile = () => {
                     </HomeContent>
                 </HomeWrapper>
             </BodyContent>
+            {showPopup && <PopupInvite onClose={() => setShowPopup(false)} />}
         </>
     );
 };

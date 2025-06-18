@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Menu } from 'antd';
-import { HeartOutlined, } from '@ant-design/icons';
 import {
     BodyContent,
     LeaderboardContainer,
