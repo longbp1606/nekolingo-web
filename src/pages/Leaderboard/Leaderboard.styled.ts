@@ -50,6 +50,7 @@ export const HomeContent = styled.div`
 `;
 
 export const FixedHeader = styled.div`
+  background-color: ${theme.color.white};
   border-bottom: 1px solid #e0e0e0;
   position: fixed;
   top: 0;
