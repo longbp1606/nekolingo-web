@@ -16,15 +16,6 @@ const bounceIn = keyframes`
   }
 `;
 
-const pulseGlow = keyframes`
-  0%, 100% {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  50% {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  }
-`;
-
 const heartBeat = keyframes`
   0%, 100% {
     transform: scale(1);
@@ -40,19 +31,11 @@ export const StatsBarContainer = styled.div`
   gap: 8px;
   justify-content: space-between;
   align-items: center;
-  background-color: ${theme.color.white};
   border-radius: 12px;
-  padding: 8px 12px;
-   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-  border: 2px solid #f1f5f9;
   max-width: 320px;
   width: 100%;
   margin: 0 auto;
-  backdrop-filter: blur(10px);
   
-  &:hover {
-    animation: ${pulseGlow} 1s ease-in-out;
-  }
 `;
 
 // Stat Item Wrapper
@@ -208,36 +191,38 @@ export const DayCircle = styled.div<{ completed: boolean; color: string }>`
   align-items: center;
   gap: 4px;
   position: relative;
-  
+
   &::before {
     content: '';
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: ${props => props.completed
-    ? `linear-gradient(135deg, ${props.color} 0%, ${props.color}dd 100%)`
-    : '#e2e8f0'
-  };
-    border: 2px solid ${props => props.completed ? props.color : '#cbd5e1'};
+    background: ${props =>
+    props.completed
+      ? `linear-gradient(135deg, ${props.color} 0%, ${props.color}dd 100%)`
+      : '#e2e8f0'};
+    border: 2px solid ${props => (props.completed ? props.color : '#cbd5e1')};
     transition: all 0.3s ease;
-    box-shadow: ${props => props.completed
-    ? `0 2px 8px ${props.color}40`
-    : '0 1px 3px rgba(0, 0, 0, 0.1)'
-  };
+    box-shadow: ${props =>
+    props.completed
+      ? `0 2px 8px ${props.color}40`
+      : '0 1px 3px rgba(0, 0, 0, 0.1)'};
+    z-index: 0;
   }
-  
+
   span {
     font-size: 10px;
     font-weight: 600;
-    color: ${props => props.completed ? props.color : '#94a3b8'};
+    color: ${props => (props.completed ? props.color : '#94a3b8')};
     text-transform: uppercase;
+    z-index: 2;
   }
 `;
 
 export const CheckIcon = styled.div`
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 16px;
+  left: 16px;
   transform: translate(-50%, -50%);
   color: white;
   font-size: 12px;

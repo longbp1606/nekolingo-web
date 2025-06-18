@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 export const HomeWrapper = styled.div`
   max-width: 1200px;
+  background-color: ${theme.color.white};
   margin: 0 auto;
   padding: 0 20px;
   display: flex;
@@ -46,6 +47,12 @@ export const Card = styled.div`
     border-radius: 12px;
     padding: 16px;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+`;
+
+export const MainCard = styled.div`
+    background-color:  ${theme.color.white} !important;
+    border-radius: 12px;
     margin-top: 20px;
 `;
 
@@ -131,6 +138,10 @@ export const EditButton = styled.button`
     border: 2px solid ${theme.color.primary};
     border-bottom: 4px solid ${theme.color.primary};
   }
+
+  &:focus {
+    outline: none;
+  }
   
   .anticon {
     font-size: 18px;
@@ -173,17 +184,6 @@ export const FollowSection = styled.div`
   gap: 15px;
 `;
 
-// export const FollowButton = styled.button`
-//   color: white;
-//   border: none;
-//   border-radius: 20px;
-//   padding: 8px 20px;
-//   font-size: 14px;
-//   font-weight: 600;
-//   cursor: pointer;
-//   transition: all 0.2s;
-// `;
-
 export const FollowStats = styled.div`
   display: flex;
   align-items: center;
@@ -208,12 +208,11 @@ export const StatCard = styled.div`
   align-items: center;
   gap: 12px;
   padding: 16px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  border-radius: 12px;
   transition: all 0.2s;
+  border: 2px solid #e5e5e5;
   
   &:hover {
-    background-color: #f0f0f0;
     transform: translateY(-2px);
   }
 `;
@@ -315,76 +314,6 @@ export const ImgIconGlass = styled.img`
   padding: 10px;
 `;
 
-export const Character = styled.div`
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-    .character-body {
-        width: 40px;
-        height: 50px;
-        border-radius: 20px 20px 8px 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-        position: relative;
-        
-        &::before {
-            content: '';
-            position: absolute;
-            top: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: inherit;
-        }
-        
-        &.pink {
-            background-color: #ffb3d9;
-        }
-        
-        &.purple {
-            background-color: #b19cd9;
-        }
-        
-        &.blue {
-            background-color: #87ceeb;
-        }
-        
-        &.orange {
-            background-color: #ffb84d;
-        }
-        
-        &.dark {
-            background-color: #666;
-        }
-        
-        &.brown {
-            background-color: #8b4513;
-        }
-        
-        &.red {
-            background-color: #ff6b6b;
-        }
-        
-        &.green {
-            background-color: #51cf66;
-        }
-        
-        &.brown-light {
-            background-color: #d2691e;
-        }
-        
-        &.yellow {
-            background-color: #ffd43b;
-        }
-    }
-`;
-
 export const EmptyMessage = styled.p`
     font-size: 14px;
     color: ${theme.color.description};
@@ -416,25 +345,6 @@ export const FriendOption = styled.div`
     cursor: pointer;
     transition: all 0.2s;
     border-radius: 8px;
-`;
-
-export const FriendIcon = styled.div`
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    margin-right: 16px;
-    
-    &.search {
-        background-color: #e6f7ff;
-    }
-    
-    &.invite {
-        background-color: #f6ffed;
-    }
 `;
 
 export const FriendText = styled.span`

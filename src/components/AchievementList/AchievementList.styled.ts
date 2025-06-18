@@ -4,8 +4,6 @@ import styled from "styled-components";
 export const Card = styled.div`
     background-color: ${theme.color.white};
     border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
 `;
 
@@ -47,7 +45,8 @@ export const ViewAllLink = styled.a`
 export const AchievementListWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
 `;
 
 export const AchievementItem = styled.div`
@@ -55,14 +54,21 @@ export const AchievementItem = styled.div`
   align-items: flex-start;
   gap: 16px;
   padding: 16px;
-  background-color: #fafafa;
   border-radius: 12px;
   transition: all 0.2s;
-  
-  &:hover {
-    background-color: #f0f0f0;
+  position: relative;
+
+  & + &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0; 
+    right: 0;
+    height: 2px;
+    background-color: #e5e5e5;
   }
 `;
+
 
 export const AchievementText = styled.p`
     font-size: 12px;

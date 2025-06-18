@@ -9,7 +9,6 @@ export const HomeWrapper = styled.div`
   flex-direction: column;
   min-height: 100vh;
   font-family: "Quicksand", sans-serif;
-  margin-bottom: 20px;
 `;
 
 export const BodyContent = styled.div`
@@ -114,7 +113,7 @@ export const Title = styled.h1`
 `;
 
 export const Section = styled.div`
-  margin-bottom: 10px;
+margin-bottom: 10px;
 `;
 
 export const SectionTitle = styled.h2`
@@ -128,8 +127,9 @@ export const HeartCard = styled.div`
   display: flex;
   align-items: center;
   padding: 24px 0;
-  border-top: 1px solid #e5e5e5;
+  border-top: 2px solid #e5e5e5;
   background: transparent;
+  gap: 16px;
 `;
 
 export const HeartIcon = styled.div`
@@ -139,7 +139,7 @@ export const HeartIcon = styled.div`
    display: flex;
    align-items: center;
    justify-content: center;
-   margin-right: 24px;
+   margin-right: 5px;
    flex-shrink: 0;
 `;
 
@@ -200,6 +200,10 @@ export const PurchaseButton = styled.div`
   gap: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
+  
+  min-width: 170px; 
+  justify-content: center; 
+  text-align: center;
 
   &.buy {
     background: ${theme.color.bgGreen};
@@ -234,6 +238,7 @@ export const PurchaseButton = styled.div`
     }
   }
 `;
+
 
 export const GemsIcon = styled.div`
   width: 20px;

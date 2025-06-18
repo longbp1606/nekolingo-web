@@ -39,6 +39,7 @@ import {
     ImgIcon,
     ImgIconGlass,
     Title,
+    MainCard,
 } from './Profile.styled';
 import Sidebar from '@/components/Sidebar';
 import StatsBar from '@/components/StatsBar/StatsBar';
@@ -89,7 +90,7 @@ const Profile = () => {
                                 </ProfileInfo>
                             </ProfileHeader>
 
-                            <Card>
+                            <MainCard>
                                 <Title>Thống kê</Title>
                                 <StatsGrid>
                                     {stats.map((stat, index) => (
@@ -102,7 +103,7 @@ const Profile = () => {
                                         </StatCard>
                                     ))}
                                 </StatsGrid>
-                            </Card>
+                            </MainCard>
                             <AchievementList limit={3} showViewAll={true} />
                         </LeftSection>
                         <StyledSidebar>
