@@ -96,7 +96,7 @@ export const ModuleNumber = styled.div<ModuleProps>`
         theme.color.grey};
     color: ${props => 
         props.completed || props.current ? theme.color.white : 
-        theme.color.textSecondary};
+        theme.color.description};
     font-weight: bold;
     font-size: 18px;
     margin-bottom: 12px;
@@ -107,7 +107,7 @@ export const ModuleTitle = styled.h3`
     font-size: 16px;
     font-weight: bold;
     margin: 8px 0;
-    color: ${theme.color.textPrimary};
+    color: ${theme.color.title};
     text-align: center;
 `;
 

@@ -86,7 +86,7 @@ export const StatIcon = styled.div`
 `;
 export const SidebarTitle = styled.h3`
   font-size: 16px;
-  color: #666;
+  color: ${theme.color.description};
   margin-bottom: 20px;
   text-align: center;
   margin-top: 20px;
@@ -246,7 +246,7 @@ export const TournamentIcon = styled.div`
 export const TournamentTitle = styled.h2`
   font-size: 24px;
   font-weight: 600;
-  color: #333;
+  color: ${theme.color.title};
   margin: 0;
   text-align: center;
 
@@ -254,7 +254,7 @@ export const TournamentTitle = styled.h2`
 
 export const TournamentSubtitle = styled.p`
   font-size: 14px;
-  color: #666;
+  color: ${theme.color.description};
   margin: 4px 0;
   line-height: 1.4;
   text-align: center;
@@ -339,7 +339,7 @@ export const UserInfo = styled.div`
 export const UserName = styled.div`
   font-size: 16px;
   font-weight: 600;
-  color: #333;
+  color: ${theme.color.title};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -348,13 +348,13 @@ export const UserName = styled.div`
 export const UserScore = styled.div`
   font-size: 14px;
   font-weight: 500;
-  color: #666;
+  color: ${theme.color.description};
   flex-shrink: 0;
 `;
 
 export const FooterWrapper = styled.div`
   font-size: 12px;
-  color: #999;
+  color: ${theme.color.description};
   text-align: center;
   margin-top: 40px;
 `;

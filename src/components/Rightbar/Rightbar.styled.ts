@@ -37,7 +37,7 @@ export const CardHeader = styled.div`
 export const CardTitle = styled.h3`
     font-size: 18px;
     font-weight: bold;
-    color: ${theme.color.textPrimary};
+    color: ${theme.color.title};
     margin: 0;
 `;
 
@@ -77,7 +77,7 @@ export const LeagueRank = styled.div`
     color: ${theme.color.textPrimary};
     
     span {
-        color: ${theme.color.success};
+        color: ${theme.color.green};
     }
 `;
 
@@ -121,7 +121,7 @@ export const QuestInfo = styled.div`
 export const QuestTitle = styled.div`
     font-weight: bold;
     font-size: 14px;
-    color: ${theme.color.textPrimary};
+    color: ${theme.color.title};
 `;
 
 export const ProgressBar = styled.div`
@@ -147,7 +147,7 @@ export const ProgressText = styled.div`
     transform: translateY(-50%);
     font-size: 12px;
     font-weight: bold;
-    color: ${theme.color.textPrimary};
+    color: ${theme.color.title};
 `;
 
 export const ProgressIcon = styled.div`
@@ -181,12 +181,12 @@ export const StatItem = styled.div`
 export const StatValue = styled.div`
     font-size: 20px;
     font-weight: bold;
-    color: ${theme.color.textPrimary};
+    color: ${theme.color.title};
 `;
 
 export const StatLabel = styled.div`
     font-size: 12px;
-    color: ${theme.color.textSecondary};
+    color: ${theme.color.description};
     margin-top: 4px;
 `;
 

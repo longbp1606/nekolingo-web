@@ -15,6 +15,8 @@ const ORANGE: string = '#FFA500';
 const LIGHT_PURPLE: string = '#AB47BC';
 const DARK_PURPLE: string = '#9C27B0';
 const DARK_PRIMARY: string = '#009EB2';
+const TITLE: string = '#4B4B4B';
+const DESCRIPTION: string = '#777';
 
 export const theme = {
     light: '',
@@ -38,6 +40,8 @@ export const theme = {
         lightOrange: LIGHT_ORANGE,
         lightPurple: LIGHT_PURPLE,
         darkPurple: DARK_PURPLE,
+        title: TITLE,
+        description: DESCRIPTION,
         google: '#DB4437',
         facebook: '#1877F2',
         info: '#1677FF',
