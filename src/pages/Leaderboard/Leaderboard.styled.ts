@@ -50,7 +50,6 @@ export const HomeContent = styled.div`
 `;
 
 export const FixedHeader = styled.div`
-  background-color: white;
   border-bottom: 1px solid #e0e0e0;
   position: fixed;
   top: 0;
@@ -172,10 +171,10 @@ export const IconButton = styled.button<{ selected: boolean }>`
 export const LeaderboardContainer = styled.div`
   background-color: white;
   border-radius: 12px;
-  padding: 24px;
+  padding: 24px 0;
   width: 100%;
   max-width: 600px;
-  margin: 200px auto 20px;
+  margin: 200px auto 0px;
 `;
 
 export const TournamentSelector = styled.div`
