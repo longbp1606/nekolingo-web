@@ -14,6 +14,11 @@ const routes = {
     achievements: "/profile/achievements",
     search: "/search",
   },
+  admin: {
+    dashboard: "/admin/dashboard",
+    lesson: "/admin/lesson",
+    user: "/admin/user", 
+  },
   api: {
     loginGoogle: "/auth/signin",
   },
