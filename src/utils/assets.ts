@@ -19,6 +19,15 @@ import parchmentSymbol from '@/assets/icons/symbols/parchment.png';
 import shopSymbol from '@/assets/icons/symbols/shop.png';
 import trophySymbol from '@/assets/icons/symbols/trophy.png';
 
+import topicSymbol from '@/assets/icons/adminSymbols/topics.png';
+import grammarSymbol from '@/assets/icons/adminSymbols/grammar.png';
+import vocabularySymbol from '@/assets/icons/adminSymbols/vocabulary.png';
+import categorySymbol from '@/assets/icons/adminSymbols/cates.png';
+import languageSymbol from '@/assets/icons/adminSymbols/language.png';
+import courseSymbol from '@/assets/icons/adminSymbols/course.png';
+import lessonSymbol from '@/assets/icons/adminSymbols/lesson.png';
+import exerciseSymbol from '@/assets/icons/adminSymbols/exercise.png';
+
 // Export root SVGs
 export const rootSvgs = {
   catMascot,
@@ -44,9 +53,21 @@ export const symbols = {
   trophy: trophySymbol
 };
 
+export const adminSymbols = {
+  topic: topicSymbol,
+  grammar: grammarSymbol,
+  vocabulary: vocabularySymbol,
+  category: categorySymbol,
+  language: languageSymbol,
+  course: courseSymbol,
+  lesson: lessonSymbol,
+  exercise: exerciseSymbol,
+};
+
 // Export all assets for convenience
 export default {
   ...rootSvgs,
   flags,
-  symbols
+  symbols,
+  adminSymbols
 };

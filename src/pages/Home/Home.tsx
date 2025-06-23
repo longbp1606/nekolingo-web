@@ -23,11 +23,26 @@ const Home = () => {
     useDocumentTitle('Nekolingo');
     // const [activeTab, setActiveTab] = useState('home');
     const navigate = useNavigate();
+    const role = localStorage.getItem('role'); // hoặc từ context
 
     const onModuleClick = (moduleId: any) => {
         console.log(`Module ${moduleId} clicked`);
         navigate(`/exercise/${moduleId}`);
     };
+
+    if (role === 'admin') {
+        return (
+            <>
+                <Sidebar />
+                <BodyContent>
+                    <HomeWrapper>
+                        <h1>Welcome Admin!</h1>
+                        <p>Vui lòng chọn chức năng ở menu bên trái.</p>
+                    </HomeWrapper>
+                </BodyContent>
+            </>
+        );
+    }
 
     return (
         <>
