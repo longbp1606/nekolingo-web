@@ -1,12 +1,12 @@
 import { Outlet } from "react-router-dom";
-import AdminSidebar from "./AdminSidebar";
 import styled from "styled-components";
 import { theme } from "@/themes";
+import AdminSidebar from "@/components/AdminSidebar";
 
 const LayoutContainer = styled.div`
     display: flex;
     min-height: 100vh;
-    background-color: ${theme.color.border};
+    // background-color: ${theme.color.border};
 `;
 
 const MainContent = styled.div`
@@ -19,7 +19,8 @@ const MainContent = styled.div`
 const AdminLayout = () => {
     return (
         <LayoutContainer>
-            <AdminSidebar />
+            {/* <AdminSidebar /> */}
+            <AdminSidebar/>
             <MainContent>
                 <Outlet />
             </MainContent>

@@ -80,7 +80,7 @@
 // export default Sidebar
 
 import { Image, Typography } from 'antd';
-import * as Styled from './Sidebar.styled';
+import * as Styled from './AdminSidebar.styled';
 import { Link, useLocation } from 'react-router-dom';
 import { theme } from '@/themes';
 import { adminSymbols, symbols } from '@/utils/assets';
@@ -92,16 +92,6 @@ interface NavbarElement {
     label: string,
     icon: string,
 }
-
-// Menu cho Customer
-const customerNavbar: NavbarElement[] = [
-    { path: '/', label: 'Learn', icon: symbols.birdhouse },
-    { path: '/practice', label: 'Practice', icon: symbols.dumbbell },
-    { path: '/leaderboard', label: 'Leaderboard', icon: symbols.trophy },
-    { path: '/quest', label: 'Quest', icon: symbols.parchment },
-    { path: '/shop', label: 'Shop', icon: symbols.shop },
-    { path: '/profile', label: 'Profile', icon: symbols.account }
-];
 
 // Menu cho Admin
 const adminNavbar: NavbarElement[] = [
@@ -122,20 +112,20 @@ const activeItem = {
     backgroundColor: theme.color.lightPrimary,
 };
 
-const Sidebar = () => {
+const AdminSidebar = () => {
     const location = useLocation();
     const path = location.pathname;
 
-    const role = localStorage.getItem('role'); // hoặc context: useAuth().role
+    // const role = localStorage.getItem('role'); // hoặc context: useAuth().role
 
-    const navbarItems = role === 'admin' ? adminNavbar : customerNavbar;
+    // const navbarItems = role === 'admin' ? adminNavbar : customerNavbar;
 
     return (
         <Styled.SidebarWrapper>
             <Styled.HeaderTitle level={3}>Nekolingo</Styled.HeaderTitle>
 
             <Styled.SidebarContainer vertical gap={10}>
-                {navbarItems.map((item) => (
+                {adminNavbar.map((item) => (
                     <Link to={item.path} key={item.path}>
                         <Styled.NavbarItemContainer
                             align='center'
@@ -152,4 +142,4 @@ const Sidebar = () => {
     );
 };
 
-export default Sidebar;
+export default AdminSidebar;

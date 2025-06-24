@@ -18,8 +18,16 @@ const routes = {
   },
   admin: {
     dashboard: "/admin/dashboard",
-    lesson: "/admin/lesson",
     user: "/admin/user", 
+    topic: "/admin/topic",
+    grammar: "/admin/grammar",
+    vocabulary: "/admin/vocabulary",
+    category: "/admin/category",
+    language: "/admin/language",
+    course: "/admin/course",
+    lesson: "/admin/lesson",
+    exercise: "/admin/exercise",
+    account: "/admin/account",
   },
   api: {
     loginGoogle: "/auth/signin",
