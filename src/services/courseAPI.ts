@@ -14,8 +14,18 @@ export type UpdateCourse = {
   language_to?: string;
 };
 
-export const getListCourses = (page: number, take: number) => {
-  return get(`/api/course?page=${page}&take=${take}`);
+export const getListCourses = (
+  page: number,
+  take: number
+) => {
+  let url = "/api/course?";
+  if (page !== undefined) {
+    url += `&page=${page}`;
+  }
+  if (take !== undefined) {
+    url += `&take=${take}`;
+  }
+  return get(url);
 };
 
 export const getCourseDetail = (id: string) => {
