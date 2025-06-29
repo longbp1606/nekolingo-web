@@ -34,7 +34,7 @@ export const LeftSection = styled.div`
 `;
 
 export const DeepPracticeBox = styled.div`
-  background: linear-gradient(180deg, #001b65, #3e1084); 
+  background: linear-gradient(135deg, #001b65, #3e1084); 
   color: white;
   border-radius: 16px;
   padding: 24px;
@@ -69,6 +69,11 @@ export const DeepPracticeBox = styled.div`
   .open-btn:hover {
     border: 1px solid #ffffff;
     color: #3f22ec !important;
+   }
+  
+
+  .open-btn:focus {
+    outline: none;
     }
   }
 
@@ -88,6 +93,7 @@ export const DeepPracticeBox = styled.div`
 }
 .super-box {
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 12px;
     margin: 10px 0;

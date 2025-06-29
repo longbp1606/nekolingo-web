@@ -11,7 +11,7 @@ export const GoalWrapper = styled.div`
   margin: 0 auto;
 
   h3 {
-    color: #333;
+    color: ${theme.color.title};
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 10px;
@@ -19,7 +19,7 @@ export const GoalWrapper = styled.div`
   }
 
   p {
-    color: #666;
+    color: ${theme.color.title};
     font-size: 14px;
     text-align: center;
     margin: 10px 0 30px 0;
@@ -50,9 +50,9 @@ export const SpeechBubble = styled.div`
   left: 50%;
   transform: translateX(-75%);
   background: #fff;
-  color: #333;
+  color: ${theme.color.title};
   padding: 10px 16px;
-  border-radius: 12px;
+  border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   font-weight: 500;
   font-size: 14px;
@@ -84,11 +84,11 @@ export const GoalOption = styled.div<{ selected?: boolean }>`
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 1px solid transparent;
-  border-bottom: 3px solid #f0f0f0; 
+  border: 2px solid transparent;
+  border-bottom: 4px solid #e5e5e5; 
 
   ${props => props.selected ? `
     background: ${theme.color.bgBlue};
@@ -96,19 +96,18 @@ export const GoalOption = styled.div<{ selected?: boolean }>`
     box-shadow: 0 2px 8px rgba(24, 144, 255, 0.15);
   ` : `
     background: white;
-    border-color: #f0f0f0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 2px solid #e5e5e5;
+    border-bottom: 4px solid #e5e5e5; 
     
     &:hover {
-      border-color: #d9d9d9;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      border-color: #e5e5e5;
     }
   `}
 
   div:first-child {
     font-weight: 600;
     font-size: 16px;
-    color: ${props => props.selected ? `${theme.color.primary}` : '#333'};
+    color: ${props => props.selected ? `${theme.color.primary}` : `${theme.color.title}`};
   }
 
   div:last-child {

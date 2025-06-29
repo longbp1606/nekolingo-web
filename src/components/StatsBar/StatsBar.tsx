@@ -73,15 +73,6 @@ const StatsBar: React.FC = () => {
         code: 'EN'
     });
 
-    // const availableCourses: Course[] = [
-    //     { id: 'en', name: 'Tiếng Anh', flag: 'us', code: 'EN' },
-    //     { id: 'fr', name: 'Tiếng Pháp', flag: 'fr', code: 'FR' },
-    //     { id: 'es', name: 'Tiếng Tây Ban Nha', flag: 'es', code: 'ES' },
-    //     { id: 'de', name: 'Tiếng Đức', flag: 'de', code: 'DE' },
-    //     { id: 'ja', name: 'Tiếng Nhật', flag: 'jp', code: 'JP' },
-    //     { id: 'ko', name: 'Tiếng Hàn', flag: 'kr', code: 'KR' }
-    // ];
-
     const heartShopItems: HeartShopItemData[] = [
         {
             id: 'unlimited',
@@ -110,8 +101,8 @@ const StatsBar: React.FC = () => {
                 <img
                     src={`https://flagcdn.com/w40/${selectedCourse.flag}.png`}
                     alt={`${selectedCourse.name} Flag`}
-                    width="20"
-                    height="14"
+                    width="33"
+                    height="36"
                     style={{ borderRadius: "2px" }}
                 />
             ),
@@ -294,14 +285,6 @@ const StatsBar: React.FC = () => {
                         <StatContent>
                             <StatIcon>{item.icon}</StatIcon>
                             <StatValue color={item.color}>{item.value}</StatValue>
-                            <CaretDownOutlined
-                                style={{
-                                    color: item.color,
-                                    fontSize: '12px',
-                                    transition: 'transform 0.2s ease',
-                                    transform: openDropdown === item.id ? 'rotate(180deg)' : 'rotate(0deg)'
-                                }}
-                            />
                         </StatContent>
                     </StatItemWrapper>
                 </Dropdown>

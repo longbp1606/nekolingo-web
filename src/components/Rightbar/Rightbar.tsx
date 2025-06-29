@@ -1,4 +1,3 @@
-// RightSidebar.tsx
 import {
     Card,
     CardHeader,
@@ -21,38 +20,15 @@ import {
     StatItem,
     StatValue,
     StatLabel,
-    StatHeader,
     RightSection,
 } from './Rightbar.styled';
-import { flags } from '@/utils/assets';
 import { theme } from '@/themes';
-import { Popover, Flex, Image, Typography } from 'antd';
 import { FiAward, FiTarget, FiZap, FiCheck } from 'react-icons/fi';
-import { HeartFilled } from '@ant-design/icons';
 import StatsBar from '../StatsBar/StatsBar';
-
-const { Text } = Typography;
-
-const languageContent = (
-    <Flex gap={10} align='center'>
-        Language
-    </Flex>
-)
 
 const RightSidebar = () => {
     return (
         <RightSection>
-            {/* <StatHeader>
-                <Popover trigger={"hover"} content={languageContent}>
-                    <Image src={flags.japan} alt='language' width={50} preview={false} />
-                </Popover>
-                <Popover>
-                    <Flex gap={10} align='center'>
-                        <HeartFilled className='text-xl text-red-500' />
-                        <Text className='text-xl font-bold'>5</Text>
-                    </Flex>
-                </Popover>
-            </StatHeader> */}
             <StatsBar />
 
             <LeagueCard>

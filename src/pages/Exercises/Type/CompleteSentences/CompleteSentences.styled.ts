@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Typography } from "antd";
+import { theme } from "@/themes";
 
 const { Text } = Typography;
 
@@ -17,11 +18,12 @@ export const Image = styled.img`
 
 export const Vietnamese = styled(Text)`
   font-size: 16px !important;
-  border: 1px solid #ccc;
+  border: 2px solid #e5e5e5;
   padding: 8px 24px;
   border-radius: 10px;
   display: inline-block;
   margin-top: 8px;
+  color: ${theme.color.title};
 `;
 
 export const SentenceContainer = styled.div`
@@ -60,12 +62,17 @@ export const WordSlot = styled.div<WordSlotProps>`
   font-size: 14px;
   font-weight: 500;
   transition: all 0.2s ease;
+  outline: none;
 
   &:hover {
     ${props => props.hasWord && !props.isChecked && `
-      background-color: #52d8e0;
+      background-color: ${theme.color.bgBlue} !important;
       transform: translateY(-1px);
     `}
+  }
+
+  &:focus {
+    outline: none;
   }
 `;
 
@@ -83,38 +90,39 @@ export const WordsContainer = styled.div`
   justify-content: center;
 `;
 
-
-
 interface WordBoxProps {
   isChecked: boolean;
 }
 
 export const WordBox = styled.div<WordBoxProps>`
   padding: 8px 16px;
-  border: 2px solid #d9d9d9;
-  border-bottom: 3px solid #d9d9d9;
-  border-radius: 6px;
+  border: 2px solid #e5e5e5;
+  border-bottom: 4px solid #e5e5e5;
+  border-radius: 10px;
   background-color: #ffffff;
   cursor: ${props => !props.isChecked ? 'pointer' : 'default'};
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
+  color: ${theme.color.title};
   transition: all 0.2s ease;
   opacity: ${props => props.isChecked ? 0.6 : 1};
+  outline: none;
 
   &:hover {
     ${props => !props.isChecked && `
-      background-color: #e6f7ff;
-      border-color: #00c2d1;
-      border-bottom: 4px solid #00c2d1; 
-      transform: translateY(-1px);
-      box-shadow: 0 2px 4px rgba(24, 144, 255, 0.1);
+      background-color: ${theme.color.bgBlue};
+      border: 2px solid ${theme.color.primary};
+      border-bottom: 4px solid ${theme.color.primary};
     `}
+  }
+
+  &:focus {
+    outline: none;
   }
 
   &:active {
     ${props => !props.isChecked && `
-      transform: translateY(0);
-      box-shadow: 0 1px 2px rgba(24, 144, 255, 0.1);
+      transform: translateY(1px);
     `}
   }
 `;

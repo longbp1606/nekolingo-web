@@ -37,7 +37,7 @@ export const Message = styled.p`
   font-size: 17px;
   font-weight: 600;
   margin-bottom: 24px;
-  color: #333;
+  color: ${theme.color.title};
 `;
 
 export const ContinueButton = styled(Button)`

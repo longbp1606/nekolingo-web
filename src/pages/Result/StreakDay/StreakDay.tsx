@@ -31,17 +31,17 @@ const StreakDay: React.FC<Props> = ({ onContinue }) => {
                         ))}
                     </DayList>
 
-                    <p>Streak tăng khi bạn luyện tập hằng ngày, chỉ một ngày không luyện tập bạn sẽ mất hết streak!</p>
+                    <p style={{color: `${theme.color.description}`}}>Streak tăng khi bạn luyện tập hằng ngày, chỉ một ngày không luyện tập bạn sẽ mất hết streak!</p>
                 </StreakBox>
 
                 <ButtonResult
                     leftButton={{
                         show: true,
                         title: 'Xem lại bài học',
-                        color: '#888',
+                        color: `${theme.color.title}`,
                         background: 'white',
-                        border: '2px solid #eee',
-                        borderBottom: '5px solid #eee',
+                        border: '2px solid #e5e5e5',
+                        borderBottom: '5px solid #e5e5e5',
                         hoverBackground: `${theme.color.bgBlue}`,
                         hoverColor: `${theme.color.primary}`,
                         hoverBorder: `${theme.color.primary}`,
@@ -52,7 +52,7 @@ const StreakDay: React.FC<Props> = ({ onContinue }) => {
                         title: 'Tiếp tục',
                         color: 'white',
                         background: `${theme.color.green}`,
-                        border: '2px solid #eee',
+                        border: '2px solid #e5e5e5',
                         borderBottom: `5px solid ${theme.color.darkGreen}`,
                         hoverBackground: `${theme.color.bgBlue}`,
                         hoverColor: `${theme.color.primary}`,

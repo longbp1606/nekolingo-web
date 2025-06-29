@@ -114,8 +114,8 @@ export const DayItem = styled.div<{ active?: boolean }>`
       animation: fadeInCheck 1.5s ease-in-out;
     }
   ` : `
-    background: #e8e8ed;
-    color: #8e8e93;
+    background: #e5e5e5;
+    color: ${theme.color.title};
   `}
   
   transition: all 0.2s ease;

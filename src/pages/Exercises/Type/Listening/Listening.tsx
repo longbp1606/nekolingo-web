@@ -5,13 +5,14 @@ import {
     ListeningWrapper,
     PlayButton,
     SlowButton,
-    QuestionTitle,
+    // QuestionTitle,
     OptionCard,
 } from "./Listening.styled";
 
 import BottomBar from "@/components/BottomBar/BottomBar";
 import ProgressBar from '@/components/ProgressBar';
 import GameOver from "@/components/ProgressBar/GameOver/GameOver";
+import { theme } from "@/themes";
 
 const { Title } = Typography;
 
@@ -30,7 +31,7 @@ interface ListeningProps {
 }
 
 const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQuestions, onAnswered }) => {
-    const { prompt, audio_url, options, answer } = data;
+    const { audio_url, options, answer } = data;
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const [isChecked, setIsChecked] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
@@ -97,7 +98,7 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
                 onClose
             />
 
-            <Title level={3} style={{ fontWeight: 700 }}>Nghe và trả lời</Title>
+            <Title level={3} style={{ fontWeight: 'bold', color: `${theme.color.title}`, fontSize: '24px' }}>Nghe và trả lời</Title>
 
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', margin: '20px 0' }}>
                 <PlayButton onClick={() => handlePlay(1.0)}>
@@ -111,9 +112,9 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
                 <audio ref={audioRef} src={audio_url} preload="auto" />
             </div>
 
-            <QuestionTitle>{prompt}</QuestionTitle>
+            {/* <QuestionTitle>{prompt}</QuestionTitle> */}
 
-            <Space direction="vertical" style={{ width: "100%" }} size="middle">
+            <Space direction="vertical" style={{ width: "100%", marginTop: '16px' }} size="middle">
                 {options.map((choice, index) => {
                     const isSelected = selectedIndex === index;
                     const isAnswerChoice = choice.trim().toLowerCase() === answer.trim().toLowerCase();
@@ -133,10 +134,10 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
                             ? '#52c41a'
                             : isSelected
                                 ? '#ff4d4f'
-                                : '#d9d9d9'
+                                : '#e5e5e5'
                         : isSelected
                             ? '#00c2d1'
-                            : '#d9d9d9';
+                            : '#e5e5e5';
 
                     return (
                         <OptionCard

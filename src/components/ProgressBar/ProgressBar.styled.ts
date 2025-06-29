@@ -28,7 +28,7 @@ export const CloseButton = styled.button`
 `;
 
 export const ProgressBarContainer = styled.div`
-  background: #e0e0e0;
+  background: #e5e5e5;
   height: 10px;
   flex: 1;
   border-radius: 5px;

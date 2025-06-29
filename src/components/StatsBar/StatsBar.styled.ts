@@ -1,5 +1,5 @@
 import { theme } from '@/themes';
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 // Animations
 const bounceIn = keyframes`
@@ -48,23 +48,11 @@ export const StatItemWrapper = styled.div<{
   position: relative;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 12px;
-  padding: 6px 4px;
-  background: ${props => props.bgColor};
-  border: 2px solid ${props => props.borderColor};
+  border-radius: 10px;
   flex: 1;
-  margin: 0 2px;
-  
-  ${props => props.isActive && css`
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 6px 20px ${props.color}30;
-    border-color: ${props.color};
-    background: linear-gradient(135deg, ${props.bgColor} 0%, ${props.color}10 100%);
-  `}
   
   &:hover {
     transform: translateY(-1px) scale(1.02);
-    box-shadow: 0 4px 15px ${props => props.color}25;
   }
   
   &:active {
@@ -77,7 +65,7 @@ export const StatContent = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
-  min-width: 45px;
+  min-width: 30px;
   justify-content: center;
 `;
 
@@ -86,8 +74,6 @@ export const StatIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
   transition: transform 0.2s ease;
   
   img {
@@ -97,13 +83,13 @@ export const StatIcon = styled.div`
 `;
 
 export const StreakIcon = styled.div`
-  font-size: 14px;
+  font-size: 24px;
   filter: drop-shadow(0 1px 2px rgba(255, 149, 0, 0.3));
   animation: ${heartBeat} 2s ease-in-out infinite;
 `;
 
 export const HeartIcon = styled.div<{ filled?: boolean; color?: string }>`
-  font-size: 14px;
+  font-size: 24px;
   transition: all 0.2s ease;
   filter: drop-shadow(0 1px 2px rgba(255, 107, 107, 0.3));
   

@@ -12,7 +12,7 @@ import {
   CommunicationSection,
   CardContent,
   CardText,
-  CardTitle
+  CardTitle,
 } from './Practice.styled'
 import { useDocumentTitle } from '@/hooks'
 import Sidebar from '@/components/Sidebar'

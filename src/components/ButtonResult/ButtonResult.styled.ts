@@ -10,7 +10,7 @@ export const BottomBarWrapper = styled.div`
   display: flex;
   justify-content: center;
   background-color: white;
-  border-top: 2px solid #eee;
+  border-top: 2px solid #e5e5e5;
   z-index: 1000;
 
   &.correct {
@@ -45,10 +45,10 @@ export const ResultButton = styled.button<{
   cursor: pointer;
   transition: all 0.2s ease;
 
-  color: ${({ $color }) => $color || '#333'};
+  color: ${({ $color }) => $color || `${theme.color.title}`};
   background-color: ${({ $background }) => $background || '#f0f0f0'};
-  border: ${({ $border }) => $border || '2px solid #eee'};
-  border-bottom: ${({ $borderBottom }) => $borderBottom || '5px solid #ccc'};
+  border: ${({ $border }) => $border || '2px solid #e5e5e5'};
+  border-bottom: ${({ $borderBottom }) => $borderBottom || '5px solid #e5e5e5'};
 
    &:hover {
     background-color: ${({ $hoverBackground }) => $hoverBackground || '#f0f0f0'};

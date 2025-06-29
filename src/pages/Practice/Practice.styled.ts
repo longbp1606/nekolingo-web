@@ -1,6 +1,11 @@
 import { theme } from "@/themes";
 import styled from "styled-components";
 
+export const BodyContent = styled.div`
+  padding-left: 256px;
+  padding-bottom: 20px;
+`;
+
 export const HomeWrapper = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -8,11 +13,6 @@ export const HomeWrapper = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  font-family: "Quicksand", sans-serif;
-`;
-
-export const BodyContent = styled.div`
-  padding-left: 256px;
 `;
 
 export const HomeContent = styled.div`
@@ -38,16 +38,10 @@ export const SectionHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   color: white;
-  //   padding: 12px 16px;
-  margin-top: 16px;
-
-  //   margin-bottom: 16px;
   max-width: 600px;
   overflow: hidden;
-  //   padding: 16px;
   position: relative;
   z-index: 100;
-  //   margin-top: 16px;
   gap: 20px;
 `;
 
@@ -55,14 +49,12 @@ export const SectionTitle = styled.h2`
   font-size: 25px;
   font-weight: 700;
   color: ${theme.color.title};
-  margin: 12px 0;
 `;
 
 export const TopicContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding-bottom: 40px;
+  gap: 16px;
 `;
 
 export const GuideButton = styled.button`
@@ -136,11 +128,17 @@ export const DeepPracticeBox = styled.div`
 
 // Các thẻ luyện nghe / nói
 export const PracticeCard = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e5e5;
+  background-color: ${theme.color.white};
+  border: 2px solid #e5e5e5;
+  border-bottom: 5px solid #e5e5e5;
   border-radius: 12px;
-  box-shadow: 0 3px 2px #e5e5e5;
   cursor: pointer;
+  background: 
+  linear-gradient(145deg, #ffffff, #f8fafc),
+  url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="1" cy="1" r="1" fill="%23e5e7eb" /></svg>');
+  background-repeat: repeat;
+  background-size: 60px 60px;
+  background-blend-mode: overlay;
 
   &:hover {
     background: #eeeeee;

@@ -44,8 +44,8 @@ export const Sidebar = styled.div`
 export const Card = styled.div`
     background-color: ${theme.color.white};
     border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border: 2px solid #e5e5e5;
     margin-top: 20px;
 `;
 
@@ -74,10 +74,8 @@ export const FooterLink = styled.span`
   }
 `;
 
-//Profile
-// Profile Header Styles
 export const ProfileHeader = styled.div`
-  background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%);
+background: linear-gradient(135deg, #B0E0E6, #87CEEB, #6CA6CD);
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 20px;

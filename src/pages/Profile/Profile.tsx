@@ -143,7 +143,7 @@ const Profile = () => {
                                     )}
                                 </TabContent>
                             </Card>
-                            <Card>
+                            <Card style={{padding: '16px'}}>
                                 <AddFriendsSection>
                                     <AddFriendsTitle>Thêm bạn bè</AddFriendsTitle>
                                     <FriendOption>
