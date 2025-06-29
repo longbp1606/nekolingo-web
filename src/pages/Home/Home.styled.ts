@@ -1,47 +1,121 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { theme } from "@/themes";
 
+// Animations
+export const bounce = keyframes`
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+  60% { transform: translateY(-4px); }
+`;
+
+export const wiggle = keyframes`
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+`;
+
+export const glow = keyframes`
+  0%, 100% { box-shadow: 0 0 20px rgba(88, 166, 255, 0.4); }
+  50% { box-shadow: 0 0 30px rgba(88, 166, 255, 0.8); }
+`;
+
+export const sparkle = keyframes`
+  0% { opacity: 0; transform: scale(0) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(180deg); }
+  100% { opacity: 0; transform: scale(0) rotate(360deg); }
+`;
+
+export const FloatingIcon = styled.div`
+  position: absolute;
+  font-size: 28px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+
+  &:nth-child(1) {
+    top: 10%;
+    left: 5%;
+    color: #FFD93D;
+    animation: ${bounce} 4s ease-in-out infinite;
+  }
+
+  &:nth-child(2) {
+    bottom: 15%;
+    right: 10%;
+    color: #FF6B6B;
+    animation: ${sparkle} 6s ease-in-out infinite;
+  }
+`;
+
 export const SectionHeader = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: ${theme.color.primary};
-    color: white;
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    max-width: 600px;
-    overflow: hidden;
-    padding: 16px;
-    position: relative;
-    z-index: 100;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    margin-top: 16px;
-    gap: 20px
+  display: flex;
+  justify-content: space-between;
+   align-items: center; 
+  position: relative;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  max-width: 640px;
+  border-radius: 20px;
+  overflow: hidden;
+  color: #1f2937;
+
+  background: 
+    linear-gradient(145deg, #ffffff, #f8fafc), 
+    url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="1" cy="1" r="1" fill="%23e5e7eb" /></svg>');
+  background-repeat: repeat;
+  background-size: 60px 60px;
+  background-blend-mode: overlay;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+  border: 2px solid rgba(0, 0, 0, 0.05);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px;
+  }
 `;
 
 export const SectionTitle = styled.div`
     display: flex;
     align-items: center;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 12px;
     margin-right: 128px;
+    color: ${theme.color.title};
 `;
 
 export const GuideButton = styled.button`
     display: flex;
     align-items: center;
     gap: 8px;
-    background-color: white;
-    color: ${theme.color.primary};
+    background-color: ${theme.color.bgBlue};
+    color: ${theme.color.title};
     border: none;
-    border-radius: 8px;
-    padding: 8px 12px;
+    border-radius: 12px;
+    padding: 8px;
     font-weight: bold;
     cursor: pointer;
     font-size: 14px;
+    border: 2px solid ${theme.color.primary};
+    height: 50px;
+    justify-content: center;
+    border-bottom: 5px solid ${theme.color.primary};
+
+    &:hover {
+    color: white;
+    background-color: ${theme.color.primary};
+    border: 2px solid ${theme.color.primary};
+     border-bottom: 5px solid ${theme.color.primary};
+    }
+`;
+
+export const TopicTitle = styled.div`
+    font-size: 20px;
+    font-weight: 600;
+    color: ${theme.color.title};
 `;
 
 export const BodyContent = styled.div`

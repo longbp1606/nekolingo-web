@@ -1,3 +1,4 @@
+import { theme } from "@/themes";
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
@@ -14,10 +15,10 @@ export const Content = styled.div`
 `;
 
 export const Title = styled.h2`
-  font-size: 32px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: bold;
   margin-bottom: 8px;
-  color: #3c3c3c;
+  color: ${theme.color.title};
 `;
 
 export const MatchArea = styled.div`

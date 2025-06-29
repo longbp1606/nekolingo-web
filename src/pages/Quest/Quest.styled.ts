@@ -1,5 +1,5 @@
 import { theme } from "@/themes";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 
 export const HomeWrapper = styled.div`
@@ -32,40 +32,11 @@ export const HomeContent = styled.div`
 export const TopicContent = styled.div`
   display: flex;
   flex-direction: column;
-  //   gap: 24px;
-`;
-
-export const SectionHeader = styled.div`
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-export const SectionTitle = styled.h2`
-  font-size: 25px;
-  font-weight: 700;
-  color: ${theme.color.title};
-  margin: 12px 0;
 `;
 
 export const LeftSection = styled.div`
   flex: 1;
   max-width: 600px;
-`;
-
-export const RightSection = styled.div`
-  width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-export const MonthlyChallengeBox = styled.div`
-  background: #ffffff;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  font-size: 14px;
 `;
 
 export const SideCardContent = styled.div`
@@ -78,7 +49,6 @@ export const SideCardText = styled.div`
   flex-direction: column;
   gap: 8px;
   color: #1f2937;
-  padding: 16px;
 
   h4 {
     font-size: 16px;
@@ -113,79 +83,12 @@ export const RewardImage = styled.div`
   background-repeat: no-repeat;
 `;
 
-export const DailyQuestCard = styled.div`
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-  margin-top: 12px;
-  margin-bottom: 12px;
-
-  .progress-label {
-    font-size: 12px;
-    margin-top: 4px;
-    color: #000;
-    position: absolute;
-    right: 16px;
-  }
-
-  .icon {
-    font-size: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    color: #fff;
-  }
-`;
-
-export const FooterLinks = styled.div`
-  margin-top: 20px;
-  font-size: 12px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  color: #bbbbbb;
-  a {
-    cursor: pointer;
-    text-decoration: none;
-    color: #aaa;
-  }
-`;
-
-export const StatHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 16px;
-`;
-
-export const GroupCard = styled.div`
-  display: flex;
-  flex-direction: column;
-  border-radius: 20px;
-  padding: 0px 20px;
-  border: 1px solid #ddd;
-`;
-
-export const DividerLine = styled.div`
-  width: auto;
-  height: 1px;
-  background-color: #ddd;
-`;
-
-export const ContentChart = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
 
 export const ButtonArea = styled.div`
   width: 100%;
-  padding: 0px 20px 20px 20px;
+  padding: 0;
+  padding-right: 16px;
+  padding-top: 16px;
 
   .learn-btn {
     width: 100%;
@@ -201,4 +104,296 @@ export const ButtonArea = styled.div`
   .learn-btn:hover {
     background: #eeeeee !important;
   }
+`;
+
+export const StyledSidebar = styled.div`
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+`;
+
+export const CardSide = styled.div`
+    background-color: ${theme.color.white};
+    border-radius: 12px;
+    border: 2px solid #e5e5e5;
+    transition: box-shadow 0.3s;
+    margin-top: 24px;
+    padding: 20px 0;
+    padding-left: 16px;
+`;
+
+export const FooterWrapper = styled.div`
+  font-size: 12px;
+  color: ${theme.color.description};
+  text-align: center;
+  margin-top: 40px;
+`;
+
+export const FooterRow = styled.div`
+  margin-bottom: 10px;
+`;
+
+export const FooterLink = styled.span`
+  margin-right: 15px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+`;
+
+export const Card = styled.div`
+    background-color: ${theme.color.white};
+    border-radius: 12px;
+    margin-top: 20px;
+`;
+
+export const AchievementImg = styled.img`
+  width: 100%;
+  height: 90px;
+  display: block;
+`;
+
+// Achievement Styles
+export const AchievementSection = styled.div``;
+
+export const AchievementHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+export const AchievementTitle = styled.h3`
+  font-size: 25px;
+  font-weight: 700;
+  margin: 0;
+  color: ${theme.color.title};
+`;
+
+export const ViewAllLink = styled.div`
+  font-size: 12px;
+  color: ${theme.color.primary};
+  text-decoration: none;
+  font-weight: 600;
+`;
+
+export const AchievementListWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
+`;
+
+export const AchievementItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  transition: all 0.2s;
+  position: relative;
+
+  & + &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0; 
+    right: 0;
+    height: 2px;
+    background-color: #e5e5e5;
+  }
+`;
+
+
+export const AchievementText = styled.p`
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0;
+  &.fire {
+    color: ${theme.color.red};
+  }
+  
+  &.scholar {
+    color: ${theme.color.green};
+  }
+  
+  &.student {
+    color: ${theme.color.primary};
+  }
+`;
+
+export const AchievementLead = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+export const AchievementIconWrapper = styled.div`
+  height: 100%;
+  width: 90px;
+`;
+
+export const AchievementInfo = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-right: 25px;
+`;
+
+export const AchievementName = styled.h4`
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: ${theme.color.title};
+`;
+
+export const AchievementDesc = styled.p`
+position: absolute;
+top: 73px;
+right: 230px;
+  font-size: 12px;
+  font-weight: 600;
+  color: ${theme.color.title};
+  margin: 0;
+  line-height: 1.4;
+`;
+
+export const AchievementProgress = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .progress-bar {
+    flex: 1;
+    height: 12px;
+    background: linear-gradient(90deg, #f0f0f0, #e0e0e0);
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.4s ease, background 0.4s ease;
+      background-size: 400% 400%;
+      animation: gradientFlow 3s ease infinite;
+    }
+
+   .progress-fill.complete {
+  background: linear-gradient(270deg, #A8E063, #58CC02, #379500);
+  background-size: 400% 400%;
+  animation: gradientFlow 3s ease infinite;
+}
+
+.progress-fill.incomplete {
+  background: linear-gradient(270deg, #FFA500, #FFD700, #FFC300);
+  background-size: 400% 400%;
+  animation: gradientFlow 3s ease infinite;
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+  }
+`;
+
+export const CardWrapper = styled.div`
+  background: linear-gradient(135deg, #FFB3E6, #FF84D8, #E950A3);
+  border-radius: 12px;
+  padding: 20px;
+  color: white;
+  width: 100%;
+`;
+
+export const HeaderTag = styled.span`
+  background-color: white;
+  color: #ff84d8;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 4px;
+`;
+
+export const Title = styled.h3`
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 1px;
+`;
+
+export const SubText = styled.p`
+  font-size: 12px;
+  opacity: 0.8;
+  margin: 4px 0 50px;
+`;
+
+export const ProgressWrapper = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+
+  .nameProgress {
+    font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: ${theme.color.title};
+  }
+`;
+
+export const ProgressBar = styled.div`
+  flex: 1;
+  height: 18px;
+  background: linear-gradient(90deg, #f0f0f0, #e0e0e0);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+`;
+
+export const ProgressFill = styled.div`
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease, background 0.4s ease;
+  background-size: 400% 400%;
+  animation: gradientFlow 3s ease infinite;
+ background: linear-gradient(270deg, #FFB3E6, #FF84D8, #E950A3);
+
+`;
+
+export const ProgressText = styled.span`
+  font-weight: bold;
+  position: absolute;
+  right: 52.5%;
+  font-size: 12px;
+  color: ${theme.color.title};
+`;
+
+export const Avatar = styled.img`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
 `;

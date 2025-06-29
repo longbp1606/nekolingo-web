@@ -208,7 +208,7 @@ const Leaderboard = () => {
                         <StyledSidebar>
                             <StatsBar />
                             <Card>
-                                <SidebarTitle>Đặt biểu tượng trang thái</SidebarTitle>
+                                <SidebarTitle>Đặt biểu tượng trạng thái</SidebarTitle>
 
                                 <CompassContainer>
                                     <CompassCircle>
