@@ -7,6 +7,8 @@ import { ContentCard, FilterArea } from "./Topic.styled";
 import InputCourse from "@/components/InputCourse/InputCourse";
 import CTable from "@/components/CustomedTable/CTable";
 import CAddButton from "@/components/AddButton/AddButton";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const Topic = () => {
   const [data, setData] = useState<any[]>([]);
@@ -169,14 +171,14 @@ const Topic = () => {
         destroyOnClose
       >
         <Form layout="vertical" form={form}>
-          <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+          <Form.Item name="title" label="Title" rules={[{ required: true, message: "Please enter title" }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="order" label="Order" rules={[{ required: true }]}>
+          <Form.Item name="order" label="Order" rules={[{ required: true, message: "Please enter order" }]}>
             <InputNumber style={{ width: "100%" }} />
           </Form.Item>
-          <Form.Item name="description" label="Description" rules={[{ required: true }]}>
-            <Input.TextArea rows={4} />
+          <Form.Item name="description" label="Description" rules={[{ required: true, message: "Please enter description" }]}>
+            <ReactQuill theme="snow" style={{ height: '100%' }} />
           </Form.Item>
         </Form>
       </Modal>

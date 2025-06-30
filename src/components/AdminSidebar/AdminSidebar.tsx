@@ -95,13 +95,12 @@ interface NavbarElement {
 
 // Menu cho Admin
 const adminNavbar: NavbarElement[] = [
-    { path: '/admin/topic', label: 'Topic', icon: adminSymbols.topic },
-    { path: '/admin/grammar', label: 'Grammar', icon: adminSymbols.grammar },
-    { path: '/admin/vocabulary', label: 'Vocabulary', icon: adminSymbols.vocabulary },
-    // { path: '/admin/vocab-topic', label: 'VocabTopic', icon: adminSymbols.category },
     { path: '/admin/language', label: 'Language', icon: adminSymbols.language },
     { path: '/admin/course', label: 'Course', icon: adminSymbols.course },
+    { path: '/admin/topic', label: 'Topic', icon: adminSymbols.topic },
     { path: '/admin/lesson', label: 'Lesson', icon: adminSymbols.lesson },
+    { path: '/admin/vocabulary', label: 'Vocabulary', icon: adminSymbols.vocabulary },
+    { path: '/admin/grammar', label: 'Grammar', icon: adminSymbols.grammar },
     { path: '/admin/exercise', label: 'Exercise', icon: adminSymbols.exercise },
     { path: '/admin/user', label: 'User', icon: symbols.account }
 ];

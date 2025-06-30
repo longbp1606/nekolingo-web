@@ -1,7 +1,9 @@
 import config from "@/config";
 import AdminLayout from "@/layouts/AdminLayout"
+import Course from "@/pages/Admin/Course/Course";
 import Dashboard from "@/pages/Admin/Dashboard";
 import Grammar from "@/pages/Admin/Grammar/Grammar";
+import Language from "@/pages/Admin/Language/Language";
 import Topic from "@/pages/Admin/Topic/Topic";
 
 const AdminRouter = () => {
@@ -15,8 +17,8 @@ const adminRoutes = {
         { path: config.routes.admin.grammar, element: <Grammar /> },
         { path: config.routes.admin.vocabulary, element: <Topic /> },
         { path: config.routes.admin.category, element: <Topic /> },
-        { path: config.routes.admin.language, element: <Topic /> },
-        { path: config.routes.admin.course, element: <Topic /> },
+        { path: config.routes.admin.language, element: <Language /> },
+        { path: config.routes.admin.course, element: <Course /> },
         { path: config.routes.admin.lesson, element: <Topic /> },
         { path: config.routes.admin.exercise, element: <Topic /> },
         { path: config.routes.admin.user, element: <Topic /> },
