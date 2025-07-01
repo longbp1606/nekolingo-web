@@ -51,14 +51,14 @@ export const PopupHeader = styled.div`
 export const PopupTitle = styled.h2`
   font-size: 28px;
   font-weight: 700;
-  color: #333;
+  color: ${theme.color.title};
   margin: 0 0 8px 0;
   line-height: 1.3;
 `;
 
 export const PopupSubtitle = styled.p`
   font-size: 16px;
-  color: #888;
+  color: ${theme.color.description};
   margin: 0;
   font-weight: 400;
 `;
@@ -156,14 +156,14 @@ export const CardContent = styled.div`
 export const VietnameseText = styled.div`
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: ${theme.color.title};
   line-height: 1.4;
   margin-bottom: auto;
 `;
 
 export const EnglishText = styled.div`
   font-size: 13px;
-  color: #666;
+  color: ${theme.color.description};
   line-height: 1.3;
   font-style: italic;
   margin-top: auto;
@@ -207,7 +207,7 @@ export const DetailTitle = styled.h3`
   margin: 0;
   font-size: 20px;
   font-weight: 700;
-  color: #333;
+  color: ${theme.color.title};
 `;
 
 export const DetailContent = styled.div`

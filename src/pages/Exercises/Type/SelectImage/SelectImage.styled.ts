@@ -23,10 +23,10 @@ export const SubTitle = styled.h4`
 `;
 
 export const Question = styled.h2`
-  font-size: 32px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: bold;
   margin-bottom: 8px;
-  color: #3c3c3c;
+  color: ${theme.color.title};
   margin-bottom: 25px;
 `;
 
@@ -38,8 +38,9 @@ export const OptionsContainer = styled.div`
   .option-card {
     flex: 1;
     background-color: #fff;
-    border: 2px solid #dfe6e9;
-    border-radius: 12px;
+    border: 2px solid #e5e5e5;
+    border-bottom: 5px solid #e5e5e5;
+    border-radius: 10px;
     padding: 16px;
     text-align: center;
     cursor: pointer;
@@ -60,10 +61,16 @@ export const OptionsContainer = styled.div`
     margin: 0;
   }
 
-  .option-card:hover {
-    background-color: #f1f2f6;
-    border-color:  ${theme.color.primary};
-  }
+  .option-card.correct {
+  border: 3px solid ${theme.color.green} !important;
+  background-color: ${theme.color.bgGreen} !important;
+  border-bottom: 5px solid ${theme.color.green} !important;
+}
+.option-card.wrong {
+ background-color: ${theme.color.bgRed} !important;
+  border: 3px solid ${theme.color.red} !important;
+  border-bottom: 5px solid ${theme.color.red} !important;
+}
 
   .option-card.selected {
     background-color: ${transparentize(0.3, theme.color.lightPrimary)}; 
@@ -71,20 +78,23 @@ export const OptionsContainer = styled.div`
   }
 
   .option-number {
-    // position: absolute;
     bottom: 8px;
     right: 12px;
-    // background: #f1f2f6;
     border-radius: 5px;
-    border: 1px solid #dfe6e9;
+    border: 1px solid #e5e5e5;
     padding: 3px 8px;
     font-size: 12px;
     font-weight: bold;
-    color: #636e72;
+    color: ${theme.color.description};
   }
 `;
 
 export const MeanText = styled.h2`
   display: flex;
   justify-content: space-between;
+
+  p {
+  color: ${theme.color.title};
+  font-size: 16px;
+  }
 `;

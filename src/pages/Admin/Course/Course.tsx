@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Button,
   Form,
@@ -9,6 +9,7 @@ import {
   message,
   Modal,
   notification,
+  Select,
 } from "antd";
 import type { TablePaginationConfig } from "antd";
 import {
@@ -18,12 +19,12 @@ import {
   updateGrammar,
   deleteGrammar,
 } from "@/services/grammarAPI";  // hãy chắc path đúng
-import { ContentCard, FilterArea } from "./Grammar.styled";
+import { ContentCard, FilterArea, LangFromTo } from "./Course.styled";
 import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
+import { getListLanguages } from "@/services/languageAPI";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 
 export type GrammarItem = {
   id: string;
@@ -32,7 +33,7 @@ export type GrammarItem = {
   condition: string;
 };
 
-const Grammar = () => {
+const Course = () => {
   const [data, setData] = useState<GrammarItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
@@ -45,6 +46,17 @@ const Grammar = () => {
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
   const hasErrorNotified = useRef(false);
+  const [languageOptions, setLanguageOptions] = useState<string[]>([]);
+
+  const fetchOptions = useCallback(async () => {
+    try {
+      const res = await getListLanguages(1, 10);
+      const options = res.data.languages.map((item: any) => item.name);
+      setLanguageOptions([...options]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }, []);
 
   const fetchAll = async () => {
     setLoading(true);
@@ -58,7 +70,7 @@ const Grammar = () => {
         notification.error({
           key: "fetch-grammar-error",
           message: "Error",
-          description: error?.response?.data?.message || "Error fetching grammars",
+          description: error?.response?.data?.message || "Error fetching languages",
         });
         hasErrorNotified.current = true;
       }
@@ -68,6 +80,7 @@ const Grammar = () => {
   };
 
   useEffect(() => {
+    fetchOptions();
     fetchAll();
   }, []);
 
@@ -122,9 +135,10 @@ const Grammar = () => {
   };
 
   const columns = [
-    { title: "Name", dataIndex: "name", key: "name" },
-    { title: "Condition", dataIndex: "condition", key: "condition" },
+    { title: "Title", dataIndex: "title", key: "title" },
     { title: "Description", dataIndex: "description", key: "description" },
+    { title: "From language", dataIndex: "language_from", key: "language_from" },
+    { title: "To language", dataIndex: "language_to", key: "language_to" },
     {
       title: "Actions",
       key: "actions",
@@ -169,7 +183,7 @@ const Grammar = () => {
               setPanelVisible(true);
             }}
           >
-            Add Grammar
+            Add Language
           </CAddButton>
         </FilterArea>
 
@@ -187,7 +201,7 @@ const Grammar = () => {
       </ContentCard>
 
       <Modal
-        title={selectedRecord ? "Edit Grammar" : "Add Grammar"}
+        title={selectedRecord ? "Edit Course" : "Add Course"}
         visible={panelVisible}
         onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
@@ -196,16 +210,9 @@ const Grammar = () => {
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            name="name"
-            label="Name"
-            rules={[{ required: true, message: "Please enter name" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="condition"
-            label="Condition"
-            rules={[{ required: true, message: "Please enter condition" }]}
+            name="title"
+            label="Title"
+            rules={[{ required: true, message: "Please enter title" }]}
           >
             <Input />
           </Form.Item>
@@ -216,10 +223,42 @@ const Grammar = () => {
           >
             <ReactQuill theme="snow" style={{ height: '100%' }} />
           </Form.Item>
+          <LangFromTo>
+          <Form.Item
+            name="language_from"
+            label="From language"
+            rules={[{ required: true, message: "Please choose from language" }]}
+            style={{ width: "100%"}}
+          >
+            <Select
+              style={{
+                width: "100%",
+                height: 32,
+                borderRadius: 12,
+              }}
+              options={[languageOptions]}
+            />
+          </Form.Item>
+          <Form.Item
+            name="language_to"
+            label="To language"
+            rules={[{ required: true, message: "Please choose to language" }]}
+            style={{ width: "100%"}}
+          >
+            <Select
+              style={{
+                width: "100%",
+                height: 32,
+                borderRadius: 12,
+              }}
+              options={[languageOptions]}
+            />
+          </Form.Item>
+          </LangFromTo>
         </Form>
       </Modal>
     </div>
   );
 };
 
-export default Grammar;
+export default Course;

@@ -23,6 +23,7 @@ import {
     CorrectAnswer,
     DetailOverlay
 } from './ReviewPopup.styled';
+import { theme } from '@/themes';
 
 interface ReviewItem {
     vietnamese: string;
@@ -220,7 +221,7 @@ const ReviewPopup: React.FC<ReviewPopupProps> = ({ visible, onClose }) => {
                         </DetailHeader>
 
                         <DetailContent>
-                            <div style={{ marginBottom: '16px', fontWeight: 600, color: '#333' }}>
+                            <div style={{ marginBottom: '16px', fontWeight: 600, color: `${theme.color.title}` }}>
                                 {selectedItem.vietnamese}
                             </div>
 

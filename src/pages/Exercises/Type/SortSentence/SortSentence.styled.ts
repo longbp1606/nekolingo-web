@@ -1,7 +1,6 @@
 import { Typography } from "antd";
 import styled from "styled-components";
 import { theme } from "@/themes";
-
 const { Text } = Typography;
 
 export const Wrapper = styled.div`
@@ -18,10 +17,10 @@ export const Content = styled.div`
 `;
 
 export const Title = styled.h2`
-  font-size: 32px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: bold;
   margin-bottom: 8px;
-  color: #3c3c3c;
+  color: ${theme.color.title};
 `;
 
 export const SentenceContainer = styled.div`
@@ -58,18 +57,22 @@ export const WordSlot = styled.div<WordSlotProps>`
   color: ${(props) => (props.hasWord ? "#ffffff" : "#999999")};
   cursor: ${(props) =>
     props.hasWord && !props.isChecked ? "pointer" : "default"};
-  font-size: 19px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   transition: all 0.2s ease;
-
+  outline: none;
+  
   &:hover {
     ${(props) =>
-      props.hasWord &&
-      !props.isChecked &&
-      `
-    //   background-color: #40a9ff;
+    props.hasWord &&
+    !props.isChecked &&
+    `
       transform: translateY(-1px);
     `}
+  }
+  
+  &:focus {
+    outline: none;
   }
 `;
 
@@ -93,32 +96,37 @@ interface WordBoxProps {
 
 export const WordBox = styled.div<WordBoxProps>`
   padding: 8px 16px;
-  border: 2px solid #d9d9d9;
-  border-radius: 12px;
+  border: 2px solid #e5e5e5;
+  border-bottom: 4px solid #e5e5e5;
+  border-radius: 10px;
   background-color: #ffffff;
   cursor: ${(props) => (!props.isChecked ? "pointer" : "default")};
-  font-size: 19px;
+  font-size: 16px;
   font-weight: 500;
+  color: ${theme.color.title};
   transition: all 0.2s ease;
   opacity: ${(props) => (props.isChecked ? 0.6 : 1)};
-
+  outline: none;
+  
   &:hover {
     ${(props) =>
-      !props.isChecked &&
-      `
-      background-color: #e6f7ff;
-      border-color: #1890ff;
-      transform: translateY(-1px);
-      box-shadow: 0 2px 4px rgba(24, 144, 255, 0.1);
+    !props.isChecked &&
+    `
+      background-color: ${theme.color.bgBlue};
+      border: 2px solid ${theme.color.primary};
+      border-bottom: 4px solid ${theme.color.primary};
     `}
   }
-
+  
+  &:focus {
+    outline: none;
+  }
+  
   &:active {
     ${(props) =>
-      !props.isChecked &&
-      `
-      transform: translateY(0);
-      box-shadow: 0 1px 2px rgba(24, 144, 255, 0.1);
+    !props.isChecked &&
+    `
+      transform: translateY(1px);
     `}
   }
 `;
@@ -126,43 +134,23 @@ export const WordBox = styled.div<WordBoxProps>`
 export const PersonSay = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   margin: 12px 0;
-
   img {
     border-radius: 50%;
     background-color: #d6f0ff;
   }
-
-  // .speech-bubble {
-  //     background: #f2f2f2;
-  //     border-radius: 16px;
-  //     padding: 10px 16px;
-  //     font-size: 16px;
-  //     position: relative;
-  // }
-
-  // .speech-bubble::after {
-  //     content: '';
-  //     position: absolute;
-  //     top: 50%;
-  //     left: -10px;
-  //     transform: translateY(-50%);
-  //     width: 0;
-  //     height: 0;
-  //     border-top: 10px solid transparent;
-  //     border-bottom: 10px solid transparent;
-  //     border-right: 10px solid #f2f2f2;
-  // }
 `;
 
 export const Vietnamese = styled(Text)`
   font-size: 16px !important;
-  border: 1px solid #ccc;
+  border: 2px solid #e5e5e5;
   padding: 8px 24px;
   border-radius: 10px;
   display: inline-block;
   margin-top: 8px;
+  color: ${theme.color.title};
 `;
 
 export const SentenceBox = styled.div`
@@ -188,9 +176,14 @@ export const WordButton = styled.button`
   background-color: #fff;
   cursor: pointer;
   transition: all 0.2s ease;
-
+  outline: none;
+  
   &:hover {
     background-color: #eee;
+  }
+  
+  &:focus {
+    outline: none;
   }
 `;
 

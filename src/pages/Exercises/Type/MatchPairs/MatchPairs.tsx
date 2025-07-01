@@ -4,6 +4,7 @@ import { Content, LeftOption, MatchArea, RightOption, Title, Wrapper } from './M
 import ProgressBar from '@/components/ProgressBar';
 import BottomBar from '@/components/BottomBar/BottomBar';
 import GameOver from '@/components/ProgressBar/GameOver/GameOver';
+import { theme } from '@/themes';
 
 interface WordPair {
     id: number;
@@ -36,7 +37,7 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
     const [selectedVi, setSelectedVi] = useState<number | null>(null);
     const [selectedEn, setSelectedEn] = useState<number | null>(null);
 
-    // matchedIds: lưu ID (tiếng Việt) của những cặp “thực sự” đã nối đúng (sau khi nháy xanh)
+    // matchedIds: lưu ID (tiếng Việt) của những cặp "thực sự" đã nối đúng (sau khi nháy xanh)
     const [matchedIds, setMatchedIds] = useState<number[]>([]);
     // matchedPairs: lưu chi tiết các cặp đúng (viId, enId) tương ứng với matchedIds
     const [matchedPairs, setMatchedPairs] = useState<{ viId: number; enId: number }[]>([]);
@@ -103,7 +104,7 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
         const isMatch = pairVi.left === pairEn.left;
 
         if (isMatch) {
-            // 1. Gán recentMatchedPair để “nháy xanh + hiển thị sao” 800 ms
+            // 1. Gán recentMatchedPair để "nháy xanh + hiển thị sao" 800 ms
             setRecentMatchedPair({ viId, enId });
 
             // 2. Sau 800 ms, reset recentMatchedPair và mới add vào matchedIds/matchedPairs (disabled)
@@ -127,7 +128,7 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
         }
     };
 
-    // Khi user “KIỂM TRA” (auto-called khi đủ 5 cặp)
+    // Khi user "KIỂM TRA" (auto-called khi đủ 5 cặp)
     const handleCheckBar = () => {
         // Vì nối đủ 5 cặp ⇒ đúng
         setIsCorrectBar(true);
@@ -138,12 +139,12 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
         if (!isCorrectBar) setLives((prev) => prev - 1);
     };
 
-    // Khi user bấm “TIẾP TỤC”
+    // Khi user bấm "TIẾP TỤC"
     const handleNextBar = () => {
         onAnswered(isCorrectBar); // thông báo lên cha là câu này đã trả lời
     };
 
-    // BottomBar: enable “KIỂM TRA” chỉ khi matchedIds.length === totalPairs
+    // BottomBar: enable "KIỂM TRA" chỉ khi matchedIds.length === totalPairs
     const bottomBarSelectedIndex = matchedIds.length === totalPairs ? 1 : null;
 
     // Helper để render button:
@@ -153,7 +154,7 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
         isViColumn: boolean,
         // idx: number,
     ) => {
-        // 1) isMatched: cặp đã “kết thúc” (đã ghi vào matchedIds)
+        // 1) isMatched: cặp đã "kết thúc" (đã ghi vào matchedIds)
         const isMatched = isViColumn
             ? matchedIds.includes(id)
             : matchedPairs.some(pair => pair.enId === id);
@@ -180,24 +181,29 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
 
         // Thiết lập màu nền (bgColor) và viền (borderColor)
         let bgColor = '#fff';
-        let borderColor = '#ccc';
+        let borderColor = '2px solid #e5e5e5';
+        let borderBottom = '4px solid #e5e5e5';
 
         if (isMatched) {
             // → màu xám nhạt (disabled)
             bgColor = '#f0f0f0';
-            borderColor = '#d9d9d9';
+            borderColor = '2px solid #d9d9d9';
+            borderBottom = '4px solid #d9d9d9';
         } else if (isRecentMatch) {
-            // → màu xanh nhạt + viền xanh, show sao
-            bgColor = '#c8f7c5';
-            borderColor = '#4caf50';
+            // → màu xanh nhạt + viền xanh (correct)
+            bgColor = `${theme.color.bgGreen}`;
+            borderColor = `2px solid ${theme.color.green}`;
+            borderBottom = `4px solid ${theme.color.green}`;
         } else if (isWrong) {
-            // → màu đỏ nhạt + viền đỏ
-            bgColor = '#f8d7da';
-            borderColor = '#ff4d4f';
+            // → màu đỏ nhạt + viền đỏ (wrong)
+            bgColor = `${theme.color.bgRed}`;
+            borderColor = `2px solid ${theme.color.red}`;
+            borderBottom = `4px solid ${theme.color.red}`;
         } else if (isSelected) {
-            // → màu xanh dương nhạt + viền xanh dương
-            bgColor = '#dfe6e9';
-            borderColor = '#0984e3';
+            // → màu xanh dương nhạt + viền xanh dương (hover/selected)
+            bgColor = `${theme.color.bgBlue}`;
+            borderColor = `2px solid ${theme.color.primary}`;
+            borderBottom = `4px solid ${theme.color.primary}`;
         }
 
         return (
@@ -207,18 +213,35 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
             >
                 <button
                     onClick={() => (isViColumn ? handleClickVi(id) : handleClickEn(id))}
-                    // Chỉ disable nếu “kết thúc match” hoặc đang highlight sai hoặc đã nối đủ 5 cặp
+                    // Chỉ disable nếu "kết thúc match" hoặc đang highlight sai hoặc đã nối đủ 5 cặp
                     disabled={isMatched || Boolean(wrongPair) || matchedIds.length === totalPairs}
                     style={{
                         width: '100%',
-                        padding: '8px',
-                        borderRadius: '12px',
+                        padding: '11px 8px',
+                        borderRadius: '10px',
                         backgroundColor: bgColor,
-                        border: `2px solid ${borderColor}`,
+                        border: borderColor,
+                        borderBottom: borderBottom,
                         cursor: isMatched || matchedIds.length === totalPairs ? 'not-allowed' : 'pointer',
                         opacity: isMatched ? 0.6 : 1,
-                        fontSize: '19px',
-                        color: '${theme.color.title}',
+                        fontSize: '16px',
+                        color: `${theme.color.title}`,
+                        transition: 'all 0.2s ease',
+                        outline: 'none',
+                    }}
+                    onMouseEnter={(e) => {
+                        if (!isMatched && !wrongPair && matchedIds.length !== totalPairs && !isSelected && !isRecentMatch) {
+                            e.currentTarget.style.backgroundColor = `${theme.color.bgBlue}`;
+                            e.currentTarget.style.border = `2px solid ${theme.color.primary}`;
+                            e.currentTarget.style.borderBottom = `4px solid ${theme.color.primary}`;
+                        }
+                    }}
+                    onMouseLeave={(e) => {
+                        if (!isMatched && !wrongPair && matchedIds.length !== totalPairs && !isSelected && !isRecentMatch) {
+                            e.currentTarget.style.backgroundColor = '#fff';
+                            e.currentTarget.style.border = '2px solid #e5e5e5';
+                            e.currentTarget.style.borderBottom = '4px solid #e5e5e5';
+                        }
                     }}
                 >
                     {/* <span className="option-number">{idx + 1}</span> */}
