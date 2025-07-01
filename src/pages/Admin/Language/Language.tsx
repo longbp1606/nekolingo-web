@@ -10,37 +10,29 @@ import {
   Modal,
   notification,
 } from "antd";
-import type { TablePaginationConfig } from "antd";
-import {
-  getListGrammars,
-  getGrammarDetail,
-  createGrammar,
-  updateGrammar,
-  deleteGrammar,
-} from "@/services/grammarAPI";  // hãy chắc path đúng
-import { ContentCard, FilterArea } from "./Grammar.styled";
+import type { TablePaginationConfig } from "antd";// hãy chắc path đúng
+import { ContentCard, FilterArea } from "./Language.styled";
 import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import { createLanguage, deleteLanguage, getLanguageDetail, getListLanguages, updateLanguage } from "@/services/languageAPI";
 
-export type GrammarItem = {
+export type LanguageItem = {
   id: string;
   name: string;
-  description: string;
-  condition: string;
+	code: string;
+	flag_url?: string;
 };
 
-const Grammar = () => {
-  const [data, setData] = useState<GrammarItem[]>([]);
+const Language = () => {
+  const [data, setData] = useState<LanguageItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 5,
     total: 0,
   });
-  const [selectedRecord, setSelectedRecord] = useState<GrammarItem | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<LanguageItem | null>(null);
   const [panelVisible, setPanelVisible] = useState(false);
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
@@ -49,16 +41,16 @@ const Grammar = () => {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const res = await getListGrammars();
-      const list: GrammarItem[] = res.data || [];
+      const res = await getListLanguages(pagination.current || 0, pagination.pageSize || 0);
+      const list: LanguageItem[] = res.data || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
       if (!hasErrorNotified.current) {
         notification.error({
-          key: "fetch-grammar-error",
+          key: "fetch-language-error",
           message: "Error",
-          description: error?.response?.data?.message || "Error fetching grammars",
+          description: error?.response?.data?.message || "Error fetching languages",
         });
         hasErrorNotified.current = true;
       }
@@ -71,11 +63,11 @@ const Grammar = () => {
     fetchAll();
   }, []);
 
-  const handleRowClick = async (record: GrammarItem) => {
+  const handleRowClick = async (record: LanguageItem) => {
     setLoading(true);
     try {
       // Optionally fetch detail if you need more fields:
-      const res = await getGrammarDetail(record.id);
+      const res = await getLanguageDetail(record.id);
       setSelectedRecord(res.data);
       form.setFieldsValue(res.data);
       setPanelVisible(true);
@@ -89,7 +81,7 @@ const Grammar = () => {
   const handleDelete = async (id: string) => {
     setLoading(true);
     try {
-      await deleteGrammar(id);
+      await deleteLanguage(id);
       message.success("Deleted successfully");
       await fetchAll();
     } catch {
@@ -104,10 +96,10 @@ const Grammar = () => {
     setLoading(true);
     try {
       if (selectedRecord) {
-        await updateGrammar(selectedRecord.id, values);
+        await updateLanguage(selectedRecord.id, values);
         message.success("Updated successfully");
       } else {
-        await createGrammar(values);
+        await createLanguage(values);
         message.success("Created successfully");
       }
       setPanelVisible(false);
@@ -123,14 +115,14 @@ const Grammar = () => {
 
   const columns = [
     { title: "Name", dataIndex: "name", key: "name" },
-    { title: "Condition", dataIndex: "condition", key: "condition" },
-    { title: "Description", dataIndex: "description", key: "description" },
+    { title: "Code", dataIndex: "code", key: "code" },
+    { title: "Flag url", dataIndex: "flag_url", key: "flag_url" },
     {
       title: "Actions",
       key: "actions",
-      render: (_: any, record: GrammarItem) => (
+      render: (_: any, record: LanguageItem) => (
         <Popconfirm
-          title="Delete this grammar?"
+          title="Delete this language?"
           onConfirm={() => handleDelete(record.id)}
         >
           <Button danger size="small">
@@ -169,7 +161,7 @@ const Grammar = () => {
               setPanelVisible(true);
             }}
           >
-            Add Grammar
+            Add Language
           </CAddButton>
         </FilterArea>
 
@@ -187,7 +179,7 @@ const Grammar = () => {
       </ContentCard>
 
       <Modal
-        title={selectedRecord ? "Edit Grammar" : "Add Grammar"}
+        title={selectedRecord ? "Edit Language" : "Add Language"}
         visible={panelVisible}
         onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
@@ -203,18 +195,17 @@ const Grammar = () => {
             <Input />
           </Form.Item>
           <Form.Item
-            name="condition"
-            label="Condition"
-            rules={[{ required: true, message: "Please enter condition" }]}
+            name="code"
+            label="Code"
+            rules={[{ required: true, message: "Please enter code" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            name="description"
-            label="Description"
-            rules={[{ required: true, message: "Please enter description" }]}
+            name="flag_url"
+            label="Flag url"
           >
-            <ReactQuill theme="snow" style={{ height: '100%' }} />
+            <Input />
           </Form.Item>
         </Form>
       </Modal>
@@ -222,4 +213,4 @@ const Grammar = () => {
   );
 };
 
-export default Grammar;
+export default Language;
