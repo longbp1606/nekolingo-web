@@ -36,8 +36,8 @@ export const createCourse = (course: CreateCourse) => {
   return post(`/api/course`, course);
 };
 
-export const updateCourse = (id: string, topic: UpdateCourse) => {
-  return put(`/api/course/${id}`, topic);
+export const updateCourse = (id: string, course: UpdateCourse) => {
+  return put(`/api/course/${id}`, course);
 };
 
 export const deleteCourse = (id: string) => {

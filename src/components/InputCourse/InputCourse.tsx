@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Button, Input, Modal, Tabs } from "antd";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineBook } from "react-icons/ai";
 import dayjs from "dayjs";
 import CTable from "../CustomedTable/CTable";
@@ -19,6 +19,7 @@ const InputCourse: React.FC<InputCourseProps> = ({ onSelectCourse }) => {
   const [rowData, setRowData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedRowKey, setSelectedRowKey] = useState<string | null>(null);
+  const hasErrorNotified = useRef(false);
 
   const fetchCourses = useCallback(async () => {
     try {
@@ -26,11 +27,14 @@ const InputCourse: React.FC<InputCourseProps> = ({ onSelectCourse }) => {
       const res = await getListCourses(1, 10);
       setRowData(res.data.courses);
     } catch (error: any) {
-      notification.error({
-        message: "Error",
-        description: error?.response?.data?.message || "Error fetching course list",
-        placement: "topRight",
-      });
+      if (!hasErrorNotified.current) {
+        notification.error({
+          key: "fetch-grammar-error",
+          message: "Error",
+          description: error?.response?.data?.message || "Error fetching courses list",
+        });
+        hasErrorNotified.current = true;
+      }
     } finally {
       setLoading(false);
     }
