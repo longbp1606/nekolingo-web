@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Card, Typography } from "antd";
+import { theme } from "@/themes";
 
 const { Title } = Typography;
 
@@ -59,6 +60,7 @@ export const OptionCard = styled(Card) <{
   borderColor: string;
   isClickable: boolean;
 }>`
+ font-size: 16px !important;
   width: 60% !important;
   margin: 0 auto;
   background-color: ${({ bgColor }) => bgColor};
@@ -66,15 +68,7 @@ export const OptionCard = styled(Card) <{
   border-bottom: 4px solid ${({ borderColor }) => borderColor}; 
   cursor: ${({ isClickable }) => (isClickable ? "pointer" : "default")};
   transition: all 0.2s ease;
+  color: ${theme.color.title};
+  border-radius: 10px;
 `;
-
-// export const OptionIndex = styled.div`
-//   width: 28px;
-//   height: 28px;
-//   border: 1px solid #ccc;
-//   border-radius: 6px;
-//   text-align: center;
-//   line-height: 28px;
-//   font-weight: 600;
-// `;
 

@@ -89,7 +89,6 @@ export const SidebarTitle = styled.h3`
   color: ${theme.color.description};
   margin-bottom: 20px;
   text-align: center;
-  margin-top: 20px;
 `;
 
 export const CompassContainer = styled.div`
@@ -128,7 +127,8 @@ export const Card = styled.div`
     background-color: ${theme.color.white};
     border-radius: 12px;
     padding: 16px;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e5e5e5;
+    transition: box-shadow 0.3s;
     margin-top: 20px;
 `;
 
@@ -272,7 +272,7 @@ export const TournamentDays = styled.div`
 export const LeaderboardList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
 `;
 
 export const LeaderboardItem = styled.div`
@@ -280,12 +280,11 @@ export const LeaderboardItem = styled.div`
   align-items: center;
   gap: 16px;
   padding: 12px 16px;
-  background-color: #fafafa;
-  border-radius: 12px;
+  border-radius: 10px;
   transition: all 0.2s;
 
   &:hover {
-    background-color: #f0f0f0;
+    background-color: #eeeeee;
     transform: translateY(-1px);
   }
 `;

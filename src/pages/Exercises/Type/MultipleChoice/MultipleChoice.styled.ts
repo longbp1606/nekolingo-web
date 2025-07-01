@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Typography, Card } from "antd";
+import { theme } from "@/themes";
 
 const { Text } = Typography;
 
@@ -23,12 +24,13 @@ export const PersonSay = styled.div`
 
 
 export const WordBox = styled(Text)`
-  font-size: 16px !important;
-  border: 1px solid #ccc;
+  font-size: 24px !important;
   padding: 8px 24px;
+  color: ${theme.color.title};
   border-radius: 10px;
   display: inline-block;
-  margin-top: 8px;
+  font-weight: bold;
+  margin-bottom: 10px;
 `;
 
 export const OptionCard = styled(Card) <{
@@ -36,6 +38,7 @@ export const OptionCard = styled(Card) <{
   borderColor: string;
   isClickable: boolean;
 }>`
+ font-size: 16px !important;
   width: 60% !important;
   margin: 0 auto;
   background-color: ${({ bgColor }) => bgColor};
@@ -43,5 +46,7 @@ export const OptionCard = styled(Card) <{
   border-bottom: 4px solid ${({ borderColor }) => borderColor}; 
   cursor: ${({ isClickable }) => (isClickable ? "pointer" : "default")};
   transition: all 0.2s ease;
+  color: ${theme.color.title};
+  border-radius: 10px;
 `;
 

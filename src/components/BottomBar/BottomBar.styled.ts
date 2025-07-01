@@ -10,7 +10,7 @@ export const BottomBarWrapper = styled.div`
   display: flex;
   justify-content: center;
   background-color: white;
-  border-top: 2px solid #eee;
+  border-top: 2px solid #e5e5e5;
   z-index: 1000;
 
   &.correct {
@@ -32,9 +32,9 @@ export const ButtonGroup = styled.div`
 export const SkipButton = styled.button`
   border-radius: 10px;
   font-weight: bold;
-  color: #888;
-  border: 2px solid #eee;
-  border-bottom: 5px solid #eee;
+  color: ${theme.color.title};
+  border: 2px solid #e5e5e5;
+  border-bottom: 5px solid #e5e5e5;
   background-color: white;
   padding: 10px 36px;
   cursor: pointer;
@@ -42,7 +42,7 @@ export const SkipButton = styled.button`
 
   &:hover {
     background-color: ${theme.color.bgBlue};
-    color: #333;
+    color: ${theme.color.title};
     border-color: ${theme.color.primary};
   }
 
@@ -62,17 +62,18 @@ export const CheckButton = styled.button`
   border-radius: 10px;
   font-weight: bold;
   text-transform: uppercase;
-  background-color: #e6e6e6;
-  border: 2px solid #eee;
-  border-bottom: 5px solid #eee;
+  background-color: #fff;
+  border: 2px solid #e5e5e5;
+  border-bottom: 5px solid #e5e5e5;
   color: #555;
   padding: 10px 36px;
   cursor: pointer;
   transition: all 0.2s ease;
+  
 
  &:hover {
     background-color: ${theme.color.bgBlue};
-    color: #333;
+    color: ${theme.color.title};
     border-color: ${theme.color.primary};
   }
 
@@ -95,7 +96,7 @@ export const NextButtonSuccess = styled.button`
   text-transform: uppercase;
   background-color: ${theme.color.green};
   color: white;
-  border: 2px solid #eee;
+  border: 2px solid #e5e5e5;
   border-bottom: 5px solid ${theme.color.darkGreen};
   padding: 10px 36px;
 
@@ -106,7 +107,7 @@ export const NextButtonSuccess = styled.button`
     
   &:hover {
     background-color: ${theme.color.bgBlue};
-    color: #333;
+    color: ${theme.color.title};
     border-color: ${theme.color.primary};
   }
 `;

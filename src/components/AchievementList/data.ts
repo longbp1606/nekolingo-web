@@ -8,7 +8,7 @@ export const percentage3: number = 100;
 
 export const achievements = [
     {
-        level: "Cấp 1",
+        level: "CẤP 1",
         className: "fire",
         icon: firefire,
         name: "Lửa rồng",
@@ -17,7 +17,7 @@ export const achievements = [
         desc: "Đạt chuỗi 3 ngày streak",
     },
     {
-        level: "Cấp 2",
+        level: "CẤP 2",
         className: "scholar",
         icon: star,
         name: "Cao nhân",
@@ -26,7 +26,7 @@ export const achievements = [
         desc: "Đạt được 250 XP",
     },
     {
-        level: "Cấp 1",
+        level: "CẤP 1",
         className: "student",
         icon: scholar,
         name: "Học giả",
@@ -35,7 +35,7 @@ export const achievements = [
         desc: "Học 50 từ mỗi trong một khóa học",
     },
     {
-        level: "Cấp 1",
+        level: "CẤP 1",
         className: "fire",
         icon: firefire,
         name: "Lửa rồng",
@@ -44,7 +44,7 @@ export const achievements = [
         desc: "Đạt chuỗi 3 ngày streak",
     },
     {
-        level: "Cấp 2",
+        level: "CẤP 2",
         className: "scholar",
         icon: star,
         name: "Cao nhân",
@@ -53,7 +53,7 @@ export const achievements = [
         desc: "Đạt được 250 XP",
     },
     {
-        level: "Cấp 1",
+        level: "CẤP 1",
         className: "student",
         icon: scholar,
         name: "Học giả",

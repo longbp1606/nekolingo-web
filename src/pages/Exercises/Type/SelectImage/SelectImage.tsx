@@ -5,7 +5,6 @@ import {
   OptionsContainer,
   Question,
   SelectWrapper,
-  SubTitle,
 } from "./SelectImage.styled";
 import ProgressBar from "@/components/ProgressBar";
 import BottomBar from "@/components/BottomBar/BottomBar";
@@ -56,9 +55,9 @@ const SelectImage: React.FC<SelectImageProps> = ({
     setIsCorrect(correct);
     setIsChecked(true);
 
-      // onAnswered(correct);
-      // handleReset();
-      if (!correct) setLives((prev) => prev - 1);
+    // onAnswered(correct);
+    // handleReset();
+    if (!correct) setLives((prev) => prev - 1);
 
   };
 
@@ -98,7 +97,6 @@ const SelectImage: React.FC<SelectImageProps> = ({
         onClose
       />
       <Content>
-        <SubTitle>TỪ VỰNG MỚI</SubTitle>
         <Question>{data.prompt}</Question>
         <OptionsContainer>
           {options.map((opt, idx) => {
@@ -112,19 +110,18 @@ const SelectImage: React.FC<SelectImageProps> = ({
                   option-card 
                   ${isSelected ? "selected" : ""}
                   ${isChecked && isAnswerCorrect ? "correct" : ""}
-                  ${
-                    isChecked &&
+                  ${isChecked &&
                     selectedIndex === idx &&
                     opt.value !== correctAnswer
-                      ? "wrong"
-                      : ""
+                    ? "wrong"
+                    : ""
                   }
                 `}
                 onClick={() => handleOptionClick(opt.value, idx)}
               >
                 <img src={opt.image_url} alt={opt.label} />
                 <MeanText>
-                  <p>{opt.value}</p>
+                  <p style={{fontWeight: '500'}}>{opt.value}</p>
                   <span className="option-number">{idx + 1}</span>
                 </MeanText>
               </div>

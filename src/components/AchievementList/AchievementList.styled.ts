@@ -51,12 +51,12 @@ export const AchievementListWrapper = styled.div`
 
 export const AchievementItem = styled.div`
   display: flex;
-  align-items: flex-start;
   gap: 16px;
   padding: 16px;
   border-radius: 12px;
   transition: all 0.2s;
   position: relative;
+  align-items: center;
 
   & + &::before {
     content: '';
@@ -95,8 +95,8 @@ export const AchievementLead = styled.div`
 `;
 
 export const AchievementIconWrapper = styled.div`
-  width: 60px;
-  height: 100%;
+  width: 80px;
+  height: 100px;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
