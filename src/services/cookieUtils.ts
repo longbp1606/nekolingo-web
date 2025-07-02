@@ -19,11 +19,11 @@ class CookieUtils {
     }
 
     deleteUser() {
-        cookies.remove(config.cookies.token);
+        cookies.remove(config.cookies.accessToken);
     }
 
-    decodeJwt() {
-        const token = this.getItem(config.cookies.token);
+    decodeJwt(tokenParam: string) {
+        const token = this.getItem(tokenParam);
         if (token) {
             try {
                 const jwtUser = jwtDecode(token);
@@ -35,16 +35,32 @@ class CookieUtils {
         return undefined;
     }
 
-    getToken() {
-        return this.getItem(config.cookies.token);
+    getAccessToken() {
+        return this.getItem(config.cookies.accessToken);
     }
 
-    setToken(value = '') {
-        this.setItem(config.cookies.token, value);
+    getRefreshToken() {
+        return this.getItem(config.cookies.refreshToken);
+    }
+
+    getRole() {
+        return this.getItem(config.cookies.role);
+    }
+
+    setAccessToken(value = '') {
+        this.setItem(config.cookies.accessToken, value);
+    }
+
+    setRefreshToken(value = '') {
+        this.setItem(config.cookies.refreshToken, value);
+    }
+
+    setRole(value = '') {
+        this.setItem(config.cookies.role, value);
     }
 
     clear() {
-        cookies.remove(config.cookies.token, { path: '/'});
+        cookies.remove(config.cookies.accessToken, { path: '/'});
     }
 }
 

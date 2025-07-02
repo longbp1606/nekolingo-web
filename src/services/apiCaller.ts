@@ -9,7 +9,7 @@ export const request = (
     params: object = {},
     body: object = {},
 ): Promise<AxiosResponse> => {
-    const token = cookieUtils.getToken();
+    const token = cookieUtils.getAccessToken();
     
     return axios({
         url: config.publicRuntime.API_URL + endpoint,
