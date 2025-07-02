@@ -11,9 +11,12 @@ import Profile from '@/pages/Profile/Profile';
 import Shop from '@/pages/Shop/Shop';
 import AllAchievement from '@/pages/Profile/AllAchievement/AllAchievement';
 import FriendSearch from '@/pages/FriendSearch/FriendSearch';
+import cookieUtils from '@/services/cookieUtils';
+import { Navigate } from 'react-router-dom';
 
 const MainRouter = () => {
-    return <MainLayout />;
+    if(cookieUtils.getRole() === 1) return <Navigate to={config.routes.admin.dashboard} />;
+    else return <MainLayout />;
 };
 
 const publicRoutes = {

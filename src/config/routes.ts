@@ -2,6 +2,8 @@ const routes = {
   public: {
     home: "/",
     welcome: "/welcome",
+    login: "/login",
+    register: "/register",
   },
   user: {
     exercise: "/exercise/:lessonId",

@@ -1,4 +1,4 @@
-import { Image, Typography } from 'antd';
+import { Typography } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { theme } from '@/themes';

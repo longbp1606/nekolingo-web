@@ -8,9 +8,12 @@ import Language from "@/pages/Admin/Language/Language";
 import Lesson from "@/pages/Admin/Lesson/Lesson";
 import Topic from "@/pages/Admin/Topic/Topic";
 import Vocab from "@/pages/Admin/Vocabulary/Vocab";
+import cookieUtils from "@/services/cookieUtils";
+import { Navigate } from "react-router-dom";
 
 const AdminRouter = () => {
-    return <AdminLayout />;
+    if(cookieUtils.getRole() !== 1) return <Navigate to={config.routes.public.home} />
+    else return <AdminLayout />;
 }
 
 const adminRoutes = {
