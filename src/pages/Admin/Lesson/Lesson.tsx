@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Button,
   Form,
@@ -9,48 +9,58 @@ import {
   message,
   Modal,
   notification,
+  Select,
 } from "antd";
-import type { TablePaginationConfig } from "antd";// hãy chắc path đúng
-import { ContentCard, FilterArea } from "./Language.styled";
+import type { TablePaginationConfig } from "antd";
+import { ContentCard, FilterArea } from "./Lesson.styled";
 import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
-import { createLanguage, deleteLanguage, getLanguageDetail, getListLanguages, updateLanguage } from "@/services/languageAPI";
+import ReactQuill from "react-quill";
+import { getTopicsAll } from "@/services/topicAPI";
+import { createLesson, deleteLesson, getLessonDetail, getListLessons, updateLesson } from "@/services/lessonAPI";
 
-export type LanguageItem = {
-  id: string;
-  name: string;
-	code: string;
-	flag_url?: string;
-};
-
-const Language = () => {
-  const [data, setData] = useState<LanguageItem[]>([]);
+const Lesson = () => {
+  const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 5,
     total: 0,
   });
-  const [selectedRecord, setSelectedRecord] = useState<LanguageItem | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<any | null>(null);
   const [panelVisible, setPanelVisible] = useState(false);
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
   const hasErrorNotified = useRef(false);
+  const [topicOptions, setTopicOptions] = useState<{ label: string; value: string }[]>([]);
+
+  const fetchOptions = useCallback(async () => {
+    try {
+      const res = await getTopicsAll();
+      setTopicOptions(res.data.languages.map((item: any) => // Dạng 2
+      ({
+        label: item.description,
+        value: item.code,
+      })));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }, []);
 
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const res = await getListLanguages(pagination.current || 1, pagination.pageSize || 10);
-      const list: LanguageItem[] = res.data || [];
+      const res = await getListLessons(pagination.current || 1, pagination.pageSize || 10);
+      const list: any[] = res.data || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
       if (!hasErrorNotified.current) {
         notification.error({
-          key: "fetch-language-error",
+          key: "fetch-grammar-error",
           message: "Error",
-          description: error?.response?.data?.message || "Error fetching languages",
+          description: error?.response?.data?.message || "Error fetching lessons",
         });
         hasErrorNotified.current = true;
       }
@@ -60,14 +70,15 @@ const Language = () => {
   };
 
   useEffect(() => {
+    fetchOptions();
     fetchAll();
-  }, []);
+  }, [fetchOptions]);
 
-  const handleRowClick = async (record: LanguageItem) => {
+  const handleRowClick = async (record: any) => {
     setLoading(true);
     try {
       // Optionally fetch detail if you need more fields:
-      const res = await getLanguageDetail(record.id);
+      const res = await getLessonDetail(record.id);
       setSelectedRecord(res.data);
       form.setFieldsValue(res.data);
       setPanelVisible(true);
@@ -81,7 +92,7 @@ const Language = () => {
   const handleDelete = async (id: string) => {
     setLoading(true);
     try {
-      await deleteLanguage(id);
+      await deleteLesson(id);
       message.success("Deleted successfully");
       await fetchAll();
     } catch {
@@ -96,10 +107,10 @@ const Language = () => {
     setLoading(true);
     try {
       if (selectedRecord) {
-        await updateLanguage(selectedRecord.id, values);
+        await updateLesson(selectedRecord.id, values);
         message.success("Updated successfully");
       } else {
-        await createLanguage(values);
+        await createLesson(values);
         message.success("Created successfully");
       }
       setPanelVisible(false);
@@ -114,15 +125,16 @@ const Language = () => {
   };
 
   const columns = [
-    { title: "Name", dataIndex: "name", key: "name" },
-    { title: "Code", dataIndex: "code", key: "code" },
-    { title: "Flag url", dataIndex: "flag_url", key: "flag_url" },
+    { title: "Title", dataIndex: "title", key: "title" },
+    { title: "Description", dataIndex: "description", key: "description" },
+    { title: "Type", dataIndex: "type", key: "type" },
+    { title: "Topic", dataIndex: "topic", key: "topic.title" },
     {
       title: "Actions",
       key: "actions",
-      render: (_: any, record: LanguageItem) => (
+      render: (_: any, record: any) => (
         <Popconfirm
-          title="Delete this language?"
+          title="Delete this grammar?"
           onConfirm={() => handleDelete(record.id)}
         >
           <Button danger size="small">
@@ -161,7 +173,7 @@ const Language = () => {
               setPanelVisible(true);
             }}
           >
-            Add Language
+            Add Lesson
           </CAddButton>
         </FilterArea>
 
@@ -179,7 +191,7 @@ const Language = () => {
       </ContentCard>
 
       <Modal
-        title={selectedRecord ? "Edit Language" : "Add Language"}
+        title={selectedRecord ? "Edit Lesson" : "Add Lesson"}
         visible={panelVisible}
         onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
@@ -188,24 +200,54 @@ const Language = () => {
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            name="name"
-            label="Name"
-            rules={[{ required: true, message: "Please enter name" }]}
+            name="title"
+            label="Title"
+            rules={[{ required: true, message: "Please enter title" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            name="code"
-            label="Code"
-            rules={[{ required: true, message: "Please enter code" }]}
+            name="description"
+            label="Description"
+            rules={[{ required: true, message: "Please enter description" }]}
           >
-            <Input />
+            <ReactQuill theme="snow" style={{ height: '100%' }} />
           </Form.Item>
           <Form.Item
-            name="flag_url"
-            label="Flag url"
+            name="type"
+            label="Type"
+            rules={[{ required: true, message: "Please choose from language" }]}
+            style={{ width: "100%" }}
           >
-            <Input />
+            <Select
+              style={{
+                width: "100%",
+                height: 32,
+                borderRadius: 12,
+              }}
+              options={[
+                { value: "vocabulary", label: "Vocabulary" },
+                { value: "grammar", label: "Grammar" },
+                { value: "listening", label: "Listening" },
+                { value: "speaking", label: "Speaking" },
+                { value: "reading", label: "Reading" },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item
+            name="topic"
+            label="Topic"
+            rules={[{ required: true, message: "Please choose to topic" }]}
+            style={{ width: "100%" }}
+          >
+            <Select
+              style={{
+                width: "100%",
+                height: 32,
+                borderRadius: 12,
+              }}
+              options={[topicOptions]}
+            />
           </Form.Item>
         </Form>
       </Modal>
@@ -213,4 +255,4 @@ const Language = () => {
   );
 };
 
-export default Language;
+export default Lesson;

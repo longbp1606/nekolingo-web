@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Form, Input, InputNumber, Popconfirm, message, notification, Modal } from "antd";
 import { createTopic, deleteTopic, getListTopics, updateTopic } from "@/services/topicAPI";
 import { ContentCard, FilterArea } from "./Topic.styled";
@@ -19,6 +19,7 @@ const Topic = () => {
   const [selectedCourse, setSelectedCourse] = useState<string | undefined>();
   const [form] = Form.useForm();
   const [modalVisible, setModalVisible] = useState(false);
+  const hasErrorNotified = useRef(false);
 
   const fetchData = async (page = 1, take = 5, courseId?: string) => {
     setLoading(true);
@@ -32,11 +33,14 @@ const Topic = () => {
       setData(res.data?.data || []);
       setPagination(prev => ({ ...prev, total: res.data?.total || 0 }));
     } catch (error: any) {
-      notification.error({
-        message: "Error",
-        description: error?.response?.data?.message || "Error fetching topics",
-        placement: "topRight",
-      });
+      if (!hasErrorNotified.current) {
+        notification.error({
+          key: "fetch-grammar-error",
+          message: "Error",
+          description: error?.response?.data?.message || "Error fetching topics",
+        });
+        hasErrorNotified.current = true;
+      }
     } finally {
       setLoading(false);
     }

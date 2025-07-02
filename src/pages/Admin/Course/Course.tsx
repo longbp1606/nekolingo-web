@@ -1,5 +1,5 @@
-"use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Button,
@@ -12,36 +12,23 @@ import {
   Select,
 } from "antd";
 import type { TablePaginationConfig } from "antd";
-import {
-  getListGrammars,
-  getGrammarDetail,
-  createGrammar,
-  updateGrammar,
-  deleteGrammar,
-} from "@/services/grammarAPI";  // hãy chắc path đúng
 import { ContentCard, FilterArea, LangFromTo } from "./Course.styled";
 import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
 import { getListLanguages } from "@/services/languageAPI";
 import ReactQuill from "react-quill";
-
-export type GrammarItem = {
-  id: string;
-  name: string;
-  description: string;
-  condition: string;
-};
+import { createCourse, deleteCourse, getCourseDetail, getListCourses, updateCourse } from "@/services/courseAPI";
 
 const Course = () => {
-  const [data, setData] = useState<GrammarItem[]>([]);
+  const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 5,
     total: 0,
   });
-  const [selectedRecord, setSelectedRecord] = useState<GrammarItem | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<any | null>(null);
   const [panelVisible, setPanelVisible] = useState(false);
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
@@ -61,8 +48,8 @@ const Course = () => {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const res = await getListGrammars();
-      const list: GrammarItem[] = res.data || [];
+      const res = await getListCourses(pagination.current || 1, pagination.pageSize || 10);
+      const list: any[] = res.data || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
@@ -70,7 +57,7 @@ const Course = () => {
         notification.error({
           key: "fetch-grammar-error",
           message: "Error",
-          description: error?.response?.data?.message || "Error fetching languages",
+          description: error?.response?.data?.message || "Error fetching courses",
         });
         hasErrorNotified.current = true;
       }
@@ -82,13 +69,13 @@ const Course = () => {
   useEffect(() => {
     fetchOptions();
     fetchAll();
-  }, []);
+  }, [fetchOptions]);
 
-  const handleRowClick = async (record: GrammarItem) => {
+  const handleRowClick = async (record: any) => {
     setLoading(true);
     try {
       // Optionally fetch detail if you need more fields:
-      const res = await getGrammarDetail(record.id);
+      const res = await getCourseDetail(record.id);
       setSelectedRecord(res.data);
       form.setFieldsValue(res.data);
       setPanelVisible(true);
@@ -102,7 +89,7 @@ const Course = () => {
   const handleDelete = async (id: string) => {
     setLoading(true);
     try {
-      await deleteGrammar(id);
+      await deleteCourse(id);
       message.success("Deleted successfully");
       await fetchAll();
     } catch {
@@ -117,10 +104,10 @@ const Course = () => {
     setLoading(true);
     try {
       if (selectedRecord) {
-        await updateGrammar(selectedRecord.id, values);
+        await updateCourse(selectedRecord.id, values);
         message.success("Updated successfully");
       } else {
-        await createGrammar(values);
+        await createCourse(values);
         message.success("Created successfully");
       }
       setPanelVisible(false);
@@ -142,7 +129,7 @@ const Course = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (_: any, record: GrammarItem) => (
+      render: (_: any, record: any) => (
         <Popconfirm
           title="Delete this grammar?"
           onConfirm={() => handleDelete(record.id)}
@@ -183,7 +170,7 @@ const Course = () => {
               setPanelVisible(true);
             }}
           >
-            Add Language
+            Add Course
           </CAddButton>
         </FilterArea>
 
