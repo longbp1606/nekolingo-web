@@ -21,7 +21,6 @@ import CAddButton from "@/components/AddButton/AddButton";
 import "react-quill/dist/quill.snow.css";
 import AddExercise from "./AddExercise";
 
-
 const Exercise = () => {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -40,7 +39,7 @@ const Exercise = () => {
     setLoading(true);
     try {
       const res = await getListGrammars();
-      const list: any[] = res.data || [];
+      const list: any[] = res.data.data || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
@@ -65,7 +64,7 @@ const Exercise = () => {
     setLoading(true);
     try {
       // Optionally fetch detail if you need more fields:
-      const res = await getGrammarDetail(record.id);
+      const res = await getGrammarDetail(record._id);
       // setSelectedRecord(res.data);
       form.setFieldsValue(res.data);
       setCreating(true);
@@ -91,16 +90,16 @@ const Exercise = () => {
 
 
   const columns = [
+    { title: 'Question format', dataIndex: 'question_format', key: 'question_format' },
     { title: 'Question', dataIndex: 'question', key: 'question' },
-    { title: 'Type', dataIndex: 'type', key: 'type' },
-    { title: 'Lesson', dataIndex: ['lesson', 'title'], key: 'lesson' },
+    { title: 'Correct answer', dataIndex: 'correct_answer', key: 'correct_answer' },
     {
       title: "Actions",
       key: "actions",
       render: (_: any, record: any) => (
         <Popconfirm
           title="Delete this grammar?"
-          onConfirm={() => handleDelete(record.id)}
+          onConfirm={() => handleDelete(record._id)}
         >
           <Button danger size="small">
             Delete
@@ -123,45 +122,42 @@ const Exercise = () => {
 
   return (
     <div style={{ display: "flex", gap: 16 }}>
-       {creating ? (
-  <AddExercise onBack={() => {
-    setCreating(false);
-    fetchAll();
-  }} />
-) : (
-      <ContentCard style={{ flex: 2 }}>
-        <FilterArea>
-          <InputSearch
-            placeholder="Search..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+      {creating ? (
+        <AddExercise onBack={() => {
+          setCreating(false);
+          fetchAll();
+        }} />
+      ) : (
+        <ContentCard style={{ flex: 2 }}>
+          <FilterArea>
+            <InputSearch
+              placeholder="Search..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+            <CAddButton
+              type="primary"
+              onClick={() => {
+                setCreating(true); // thay vì mở modal
+              }}
+            >
+              Add Grammar
+            </CAddButton>
+          </FilterArea>
+
+          <CTable
+            columns={columns}
+            dataSource={filteredData.map((item) => ({ ...item, key: item._id }))}
+            rowKey="_id"
+            loading={loading}
+            pagination={pagination}
+            onChange={(pag) => setPagination(pag)}
+            onRow={(record) => ({
+              onClick: () => handleRowClick(record),
+            })}
           />
-          <CAddButton
-            type="primary"
-            onClick={() => {
-              setCreating(true); // thay vì mở modal
-            }}
-          >
-            Add Grammar
-          </CAddButton>
-        </FilterArea>
-
-       
-  <CTable
-    columns={columns}
-    dataSource={filteredData.map((item) => ({ ...item, key: item.id }))}
-    rowKey="id"
-    loading={loading}
-    pagination={pagination}
-    onChange={(pag) => setPagination(pag)}
-    onRow={(record) => ({
-      onClick: () => handleRowClick(record),
-    })}
-  />
-
-
-      </ContentCard>
-)}
+        </ContentCard>
+      )}
     </div>
   );
 };
