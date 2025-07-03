@@ -1,7 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
+import courseReducer from "./course.slice.ts";
 
 export const store = configureStore({
-    reducer: {},
+    reducer: {
+        course: courseReducer,
+    },
     middleware: (getDefaultMiddleWare) => 
         getDefaultMiddleWare({
             serializableCheck: false

@@ -115,7 +115,7 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
             {/* <QuestionTitle>{prompt}</QuestionTitle> */}
 
             <Space direction="vertical" style={{ width: "100%", marginTop: '16px' }} size="middle">
-                {options.map((choice, index) => {
+                {options?.map((choice, index) => {
                     const isSelected = selectedIndex === index;
                     const isAnswerChoice = choice.trim().toLowerCase() === answer.trim().toLowerCase();
 

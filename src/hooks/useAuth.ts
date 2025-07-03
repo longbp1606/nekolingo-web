@@ -18,8 +18,16 @@ export type UserType = {
     is_primiere: boolean;
 }
 
+const getUserID = () => {
+    const decoded = cookieUtils.decodeJwt(cookieUtils.getAccessToken()) as JwtType;
+    if (!decoded || !decoded.sub) return null;
+
+    return decoded.sub;
+}
+
 const useAuth = () => {
     const [profile, setProfile] = useState<UserType | null>(null);
+    const [userID, setUserID] = useState<string | null>(getUserID());
     const [loading, setLoading] = useState(true);
 
     const accessToken = cookieUtils.getAccessToken();
@@ -53,6 +61,7 @@ const useAuth = () => {
 
         try {
             setLoading(true);
+            setUserID(getUserID());
             fetchProfile();
         } finally {
             setLoading(false);
@@ -63,7 +72,7 @@ const useAuth = () => {
         return () => clearInterval(interval);
     }, [checkTokenExpiration]);
 
-    return { loading, profile };
+    return { loading, profile, userID };
 }
 
 export default useAuth;

@@ -15,6 +15,7 @@ import {
 } from './LessonRoad.styled';
 
 interface LessonModule {
+    index: number;
     id: number;
     title: string;
     description: string;
@@ -43,7 +44,7 @@ const LessonRoad: React.FC<LessonRoadProps> = ({ modules, onModuleClick }) => {
             <Road>
                 <RoadPath />
                 <ModulesContainer>
-                    {modules.map((module, index) => {
+                    {modules?.map((module, index) => {
                         const side = index % 2 === 0 ? 'right' : 'left';
                         return (
                             <Module key={module.id}>
@@ -59,7 +60,7 @@ const LessonRoad: React.FC<LessonRoadProps> = ({ modules, onModuleClick }) => {
                                         locked={module.status === 'locked'}
                                         side={side}
                                     >
-                                        {module.status === 'completed' ? <FiCheck /> : module.id}
+                                        {module.status === 'completed' ? <FiCheck /> : module.index + 1}
                                     </ModuleNumber>
 
                                     <ModuleTitle
