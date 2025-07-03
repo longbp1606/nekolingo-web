@@ -12,9 +12,9 @@ import GameOver from "@/components/ProgressBar/GameOver/GameOver";
 
 interface MultipleChoiceProps {
     data: {
-        prompt: string;
+        question: string;
         options: string[];
-        answer: string;
+        correct_answer: string;
     };
     totalQuestions: number;
     answeredQuestions: number;
@@ -33,7 +33,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
     const [showGameOver, setShowGameOver] = useState(false);
     const [isChecked, setIsChecked] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
-    const correctAnswer = data.answer;
+    const correctAnswer = data.correct_answer;
     const options = data.options;
 
     useEffect(() => {
@@ -47,7 +47,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
         if (selectedIndex === null) return;
         const selectedOpt = options[selectedIndex];
 
-        const correct = selectedOpt.toLowerCase() === correctAnswer.toLowerCase();
+        const correct = selectedOpt.toLowerCase() === correctAnswer?.toLowerCase();
         setIsCorrect(correct);
         setIsChecked(true);
 
@@ -97,7 +97,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
                     width={70}
                     height={50}
                 />
-                <WordBox>{data.prompt}</WordBox>
+                <WordBox>{data.question}</WordBox>
             </PersonSay>
 
 

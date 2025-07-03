@@ -3,6 +3,7 @@ import { GoalWrapper, GoalOption, OptionList, Image, ImageWrapper, SpeechBubble 
 import goal from "@/assets/goal.gif";
 import ButtonResult from '@/components/ButtonResult/ButtonResult';
 import { theme } from '@/themes';
+import { useNavigate } from 'react-router-dom';
 
 const options = [
     { days: 7, label: 'Tốt', note: 'Tăng 2 lần khả năng hoàn thành khoá học' },
@@ -13,6 +14,7 @@ const options = [
 
 
 const StreakGoal = () => {
+    const navigate = useNavigate();
     const [selected, setSelected] = useState(14);
 
     return (
@@ -49,7 +51,7 @@ const StreakGoal = () => {
                     hoverBackground: `${theme.color.primary}`,
                     hoverColor: '#fff',
                     hoverBorder: `${theme.color.primary}`,
-                    onClick: () => console.log('Tôi có thể!'),
+                    onClick: () => navigate("/"),
                 }}
             />
         </GoalWrapper>

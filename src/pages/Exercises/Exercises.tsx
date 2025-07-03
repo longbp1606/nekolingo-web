@@ -9,14 +9,19 @@ import Listening from "./Type/Listening/Listening";
 import CompleteSentences from "./Type/CompleteSentences/CompleteSentences";
 import { sampleData } from "../sampleData";
 import { useNavigate, useParams } from "react-router-dom";
+import { getLessonDetail } from "@/services/lessonAPI";
+import { useDocumentTitle } from "@/hooks";
 
 const Exercise = () => {
+  useDocumentTitle("Exercise");
+  
   const navigate = useNavigate();
   const { lessonId } = useParams();
   const [questions, setQuestions] = useState<any[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answeredCount, setAnsweredCount] = useState(0);
   const [shuffled, setShuffled] = useState(false);
+  const [metadata, setMetadata] = useState<any>({});
 
   const shuffleArray = (array: any) => {
     const arr = [...array];
@@ -29,26 +34,17 @@ const Exercise = () => {
 
   const fetchQuestions = useCallback(async () => {
     try {
-      // const res = await getSample();
-      // const data = await res.data;
-
-      const lessonObj = sampleData.lessons.find(
-        (lesson) => lesson.lesson_id === Number(lessonId)
-      );
-      if (!lessonObj) {
-        console.warn("Lesson không tồn tại!", lessonId);
-        return;
-      }
-
-      let data = lessonObj.questions;
+      const res = await getLessonDetail(lessonId ? lessonId : "");
+      console.log("✅ Metadata: ", res.data);
 
       // Shuffle chỉ lần đầu tiên khi load
-      if (!shuffled) {
-        data = shuffleArray(data);
-        setShuffled(true);
-      }
+      // if (!shuffled) {
+      //   res.data = shuffleArray(res.data);
+      //   setShuffled(true);
+      // }
 
-      setQuestions(data);
+      setMetadata(res.data);
+      setQuestions(res.data.exercises);
     } catch (error) {
       console.error("Lỗi khi fetch questions:", error);
     }
@@ -83,9 +79,9 @@ const Exercise = () => {
 
   // Hiển thị component phụ theo type
   const renderQuestionComponent = () => {
-    const { type } = currentQuestion;
+    const { question_format } = currentQuestion;
 
-    switch (type) {
+    switch (question_format) {
       case "select_image":
         return (
           <SelectImage
@@ -147,7 +143,7 @@ const Exercise = () => {
         );
 
       default:
-        return <div>Loại câu hỏi "{type}" chưa được hỗ trợ.</div>;
+        return <div>Loại câu hỏi "{question_format}" chưa được hỗ trợ.</div>;
     }
   };
 

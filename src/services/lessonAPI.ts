@@ -1,21 +1,21 @@
 import { get, post, put, remove } from "./apiCaller";
 
 export type CreateLesson = {
-    title: string;
-	order: number;
-	xp_reward: number;
-	topic: string;
-	type: "vocabulary" | "grammar" | "listening" | "reading" | "speaking";
-	description?: string;
+  title: string;
+  order: number;
+  xp_reward: number;
+  topic: string;
+  type: "vocabulary" | "grammar" | "listening" | "reading" | "speaking";
+  description?: string;
 };
 
 export type UpdateLesson = {
-    title?: string;
-	order?: number;
-	xp_reward?: number;
-	topic?: string;
-	type?: "vocabulary" | "grammar" | "listening" | "reading" | "speaking";
-	description?: string;
+  title?: string;
+  order?: number;
+  xp_reward?: number;
+  topic?: string;
+  type?: "vocabulary" | "grammar" | "listening" | "reading" | "speaking";
+  description?: string;
 };
 
 export const getListLessons = (
@@ -35,6 +35,10 @@ export const getListLessons = (
 export const getLessonDetail = (id: string) => {
   return get(`/api/lesson/${id}`);
 };
+
+export const getLessonByTopic = (topicId: string) => {
+  return get(`/api/lesson/topic/${topicId}`);
+}
 
 export const createLesson = (lesson: CreateLesson) => {
   return post(`/api/lesson`, lesson);

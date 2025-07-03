@@ -15,7 +15,8 @@ import cookieUtils from '@/services/cookieUtils';
 import { Navigate } from 'react-router-dom';
 
 const MainRouter = () => {
-    if(cookieUtils.getRole() === 1) return <Navigate to={config.routes.admin.dashboard} />;
+    const role = cookieUtils.getRole();
+    if(role === 1) return <Navigate to={config.routes.admin.dashboard} />;
     else return <MainLayout />;
 };
 
