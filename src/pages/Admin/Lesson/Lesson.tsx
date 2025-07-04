@@ -19,16 +19,25 @@ import CAddButton from "@/components/AddButton/AddButton";
 import ReactQuill from "react-quill";
 import { getTopicsAll } from "@/services/topicAPI";
 import { createLesson, deleteLesson, getLessonDetail, getListLessons, updateLesson } from "@/services/lessonAPI";
+type TableRecord = LessonItem & { key: string };
+
+export type LessonItem = {
+  _id: string;
+  title: string;
+  order: number;
+  description?: string;
+  course: string;
+};
 
 const Lesson = () => {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<LessonItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 5,
     total: 0,
   });
-  const [selectedRecord, setSelectedRecord] = useState<any | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<LessonItem | null>(null);
   const [panelVisible, setPanelVisible] = useState(false);
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
@@ -38,21 +47,23 @@ const Lesson = () => {
   const fetchOptions = useCallback(async () => {
     try {
       const res = await getTopicsAll();
-      setTopicOptions(res.data.languages.map((item: any) => // Dạng 2
-      ({
-        label: item.description,
-        value: item.code,
-      })));
+      setTopicOptions(
+        res.data.data.map((item: any) => ({
+          label: item.title,
+          value: item._id,
+        }))
+      );
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   }, []);
 
+
   const fetchAll = async () => {
     setLoading(true);
     try {
       const res = await getListLessons(pagination.current || 1, pagination.pageSize || 10);
-      const list: any[] = res.data || [];
+      const list: LessonItem[] = res.data.data || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
@@ -74,13 +85,14 @@ const Lesson = () => {
     fetchAll();
   }, [fetchOptions]);
 
-  const handleRowClick = async (record: any) => {
+  const handleRowClick = async (record: LessonItem) => {
     setLoading(true);
     try {
       // Optionally fetch detail if you need more fields:
-      const res = await getLessonDetail(record.id);
-      setSelectedRecord(res.data);
-      form.setFieldsValue(res.data);
+      const res = await getLessonDetail(record._id);
+      const detail: LessonItem = res.data.data;
+      setSelectedRecord(detail);
+      form.setFieldsValue(detail);
       setPanelVisible(true);
     } catch {
       message.error("Failed to load detail");
@@ -107,7 +119,7 @@ const Lesson = () => {
     setLoading(true);
     try {
       if (selectedRecord) {
-        await updateLesson(selectedRecord.id, values);
+        await updateLesson(selectedRecord._id, values);
         message.success("Updated successfully");
       } else {
         await createLesson(values);
@@ -156,6 +168,11 @@ const Lesson = () => {
     );
   }, [data, searchText]);
 
+  const tableData: TableRecord[] = filteredData.map(item => ({
+    ...item,          // _id, name, condition, description
+    key: item._id,    // AntD cần field `key`
+  }));
+
   return (
     <div style={{ display: "flex", gap: 16 }}>
       <ContentCard style={{ flex: 2 }}>
@@ -179,8 +196,8 @@ const Lesson = () => {
 
         <CTable
           columns={columns}
-          dataSource={filteredData.map((item) => ({ ...item, key: item.id }))}
-          rowKey="id"
+          dataSource={tableData}
+          rowKey="_id"
           loading={loading}
           pagination={pagination}
           onChange={(pag) => setPagination(pag)}
@@ -246,7 +263,7 @@ const Lesson = () => {
                 height: 32,
                 borderRadius: 12,
               }}
-              options={[topicOptions]}
+              options={topicOptions}
             />
           </Form.Item>
         </Form>

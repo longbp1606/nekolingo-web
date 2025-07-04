@@ -18,7 +18,7 @@ export const getListTopics = (page: number, take: number, courseId: string) => {
 }
 
 export const getTopicsAll = () => {
-    return get("/api/topic");
+    return get("/api/topic/listTopics");
 }
 
 export const getTopicDetail = (id: string) => {
