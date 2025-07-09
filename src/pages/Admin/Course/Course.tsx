@@ -19,27 +19,39 @@ import CAddButton from "@/components/AddButton/AddButton";
 import { getListLanguages } from "@/services/languageAPI";
 import ReactQuill from "react-quill";
 import { createCourse, deleteCourse, getCourseDetail, getListCourses, updateCourse } from "@/services/courseAPI";
+type TableRecord = CourseItem & { key: string };
+
+export type CourseItem = {
+  _id: string;
+title: string;
+description?: string;
+language_from: string;
+language_to: string;
+};
 
 const Course = () => {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<CourseItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 5,
     total: 0,
   });
-  const [selectedRecord, setSelectedRecord] = useState<any | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<CourseItem | null>(null);
   const [panelVisible, setPanelVisible] = useState(false);
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
   const hasErrorNotified = useRef(false);
-  const [languageOptions, setLanguageOptions] = useState<string[]>([]);
+  const [languageOptions, setLanguageOptions] = useState<{ label: string; value: string }[]>([]);
 
   const fetchOptions = useCallback(async () => {
     try {
       const res = await getListLanguages(1, 10);
-      const options = res.data.languages.map((item: any) => item.name);
-      setLanguageOptions([...options]);
+      setLanguageOptions(res.data.languages.map((item: any) => ({
+        label: item.name,
+        value: item._id,
+      }))
+    );
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -49,7 +61,7 @@ const Course = () => {
     setLoading(true);
     try {
       const res = await getListCourses(pagination.current || 1, pagination.pageSize || 10);
-      const list: any[] = res.data || [];
+      const list: CourseItem[] = res.data.data || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
@@ -75,9 +87,16 @@ const Course = () => {
     setLoading(true);
     try {
       // Optionally fetch detail if you need more fields:
-      const res = await getCourseDetail(record.id);
-      setSelectedRecord(res.data);
-      form.setFieldsValue(res.data);
+      const res = await getCourseDetail(record._id);
+            const detail: CourseItem = res.data.data;
+      
+      setSelectedRecord(detail);
+      form.setFieldsValue({
+        title: detail.title,
+        description: detail.description,
+        language_from: detail.language_from,
+        language_to: detail.language_to,
+      });
       setPanelVisible(true);
     } catch {
       message.error("Failed to load detail");
@@ -87,7 +106,7 @@ const Course = () => {
   };
 
   const handleDelete = async (id: string) => {
-    setLoading(true);
+    // setLoading(true);
     try {
       await deleteCourse(id);
       message.success("Deleted successfully");
@@ -104,7 +123,7 @@ const Course = () => {
     setLoading(true);
     try {
       if (selectedRecord) {
-        await updateCourse(selectedRecord.id, values);
+        await updateCourse(selectedRecord._id, values);
         message.success("Updated successfully");
       } else {
         await createCourse(values);
@@ -129,10 +148,10 @@ const Course = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (_: any, record: any) => (
+      render: (_: any, record: CourseItem) => (
         <Popconfirm
           title="Delete this grammar?"
-          onConfirm={() => handleDelete(record.id)}
+          onConfirm={() => handleDelete(record._id)}
         >
           <Button danger size="small">
             Delete
@@ -152,6 +171,11 @@ const Course = () => {
       )
     );
   }, [data, searchText]);
+
+  const tableData: TableRecord[] = filteredData.map(item => ({
+    ...item,         
+    key: item._id,  
+  }));
 
   return (
     <div style={{ display: "flex", gap: 16 }}>
@@ -176,8 +200,8 @@ const Course = () => {
 
         <CTable
           columns={columns}
-          dataSource={filteredData.map((item) => ({ ...item, key: item.id }))}
-          rowKey="id"
+          dataSource={tableData}
+          rowKey="_id"
           loading={loading}
           pagination={pagination}
           onChange={(pag) => setPagination(pag)}
@@ -223,7 +247,7 @@ const Course = () => {
                 height: 32,
                 borderRadius: 12,
               }}
-              options={[languageOptions]}
+              options={languageOptions}
             />
           </Form.Item>
           <Form.Item
@@ -238,7 +262,7 @@ const Course = () => {
                 height: 32,
                 borderRadius: 12,
               }}
-              options={[languageOptions]}
+              options={languageOptions}
             />
           </Form.Item>
           </LangFromTo>
