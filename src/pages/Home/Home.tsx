@@ -11,18 +11,21 @@ import {
     FloatingIcon,
     TopicTitle,
 } from './Home.styled'
-import { useDocumentTitle } from '@/hooks'
+import { useAuth, useDocumentTitle } from '@/hooks'
 import { FiBookOpen, FiStar, FiZap } from 'react-icons/fi'
 // import { useState } from 'react'
 import Sidebar from '@/components/Sidebar'
 import LessonRoad from '@/components/LessonRoad'
 import { Flex, message } from 'antd'
 import { sampleData } from '../sampleData'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import RightSidebar from '@/components/Rightbar/Rightbar'
 import { useEffect, useState } from 'react'
 import { getTopicCourse } from '@/services/topicAPI'
 import { getLessonByTopic } from '@/services/lessonAPI'
+import config from '@/config'
+import cookieUtils from '@/services/cookieUtils'
+import { getCourseMetaData } from '@/services/courseAPI'
 
 const Home = () => {
     useDocumentTitle('Nekolingo');
@@ -33,15 +36,17 @@ const Home = () => {
     const [topicList, setTopicList] = useState<any>([]); // Initialize topicLis
     const [lessonList, setLessonList] = useState<any>([]);
 
+    const token = cookieUtils.getAccessToken();
+    if(!token) return <Navigate to={config.routes.public.login} />;
+
     const courseId = "684f926a0fd356386a378630";
 
     const fetchData = async () => {
         try {
             setLoading(true);
-            const topicList = await getTopicCourse(courseId);
-            console.log("✅ Topic list: ", topicList.data.data);
-            setTopicList(topicList.data.data);
-            fetchLessonData(topicList.data.data[0]._id);
+            const response = await getCourseMetaData(courseId);
+            console.log("✅ Topic list: ", response.data);
+            setTopicList(response.data.topics);
         } catch (error: any) {
             messageApi.error(error.message);
         } finally {
@@ -100,7 +105,7 @@ const Home = () => {
                                         </SectionHeader>
                                         {/* Lesson Road */}
                                         <LessonRoad
-                                            modules={lessonList?.map((lesson: any, index: number) => ({
+                                            modules={topic.lessons?.map((lesson: any, index: number) => ({
                                                 index,
                                                 id: lesson._id,
                                                 title: lesson.title,

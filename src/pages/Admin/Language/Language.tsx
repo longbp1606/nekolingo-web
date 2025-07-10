@@ -9,6 +9,7 @@ import {
   message,
   Modal,
   notification,
+  Image,
 } from "antd";
 import type { TablePaginationConfig } from "antd";// hãy chắc path đúng
 import { ContentCard, FilterArea } from "./Language.styled";
@@ -42,7 +43,7 @@ const Language = () => {
     setLoading(true);
     try {
       const res = await getListLanguages(pagination.current || 1, pagination.pageSize || 10);
-      const list: LanguageItem[] = res.data || [];
+      const list: LanguageItem[] = res.data.languages || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
@@ -116,7 +117,14 @@ const Language = () => {
   const columns = [
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Code", dataIndex: "code", key: "code" },
-    { title: "Flag url", dataIndex: "flag_url", key: "flag_url" },
+    { 
+      title: "Flag url", 
+      dataIndex: "flag_url", 
+      key: "flag_url",
+      render: (url: string) => (
+        <Image width={50} src={url} preview={false} />
+      )
+    },
     {
       title: "Actions",
       key: "actions",
@@ -167,7 +175,7 @@ const Language = () => {
 
         <CTable
           columns={columns}
-          dataSource={filteredData.map((item) => ({ ...item, key: item.id }))}
+          dataSource={Array.isArray(filteredData) ? filteredData.map((item) => ({ ...item, key: item.id })) : []}
           rowKey="id"
           loading={loading}
           pagination={pagination}

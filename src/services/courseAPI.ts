@@ -43,3 +43,7 @@ export const updateCourse = (id: string, course: UpdateCourse) => {
 export const deleteCourse = (id: string) => {
   return remove(`/api/course/${id}`);
 };
+
+export const getCourseMetaData = (id: string) => {
+  return get(`/api/course/metadata/${id}`);
+}

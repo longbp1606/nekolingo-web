@@ -161,8 +161,8 @@ interface ModuleNumberProps extends ModuleCardProps {
 
 export const ModuleNumber = styled.div<ModuleNumberProps>`
   position: absolute;
-  top: -20px;
-  left: ${props => props.side === 'left' ? '40%' : '53%'};
+  top: -30px;
+  left: ${props => props.side === 'left' ? '50%' : '50%'};
   transform: translateX(-50%);
   width: 60px;
   height: 60px;

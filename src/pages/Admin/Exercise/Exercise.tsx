@@ -40,7 +40,7 @@ const Exercise = () => {
     setLoading(true);
     try {
       const res = await getListGrammars();
-      const list: any[] = res.data || [];
+      const list: any[] = res.data.data || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {

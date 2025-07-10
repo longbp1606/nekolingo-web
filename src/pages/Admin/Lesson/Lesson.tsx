@@ -52,7 +52,7 @@ const Lesson = () => {
     setLoading(true);
     try {
       const res = await getListLessons(pagination.current || 1, pagination.pageSize || 10);
-      const list: any[] = res.data || [];
+      const list: any[] = res.data.lessons || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {

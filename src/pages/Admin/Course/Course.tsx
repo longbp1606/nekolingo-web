@@ -49,7 +49,7 @@ const Course = () => {
     setLoading(true);
     try {
       const res = await getListCourses(pagination.current || 1, pagination.pageSize || 10);
-      const list: any[] = res.data || [];
+      const list: any[] = res.data.courses || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
@@ -124,8 +124,12 @@ const Course = () => {
   const columns = [
     { title: "Title", dataIndex: "title", key: "title" },
     { title: "Description", dataIndex: "description", key: "description" },
-    { title: "From language", dataIndex: "language_from", key: "language_from" },
-    { title: "To language", dataIndex: "language_to", key: "language_to" },
+    { title: "From language", dataIndex: "language_from", key: "language_from",
+      render: (language: any) => language.name || "",
+    },
+    { title: "To language", dataIndex: "language_to", key: "language_to",
+      render: (language: any) => language.name || "",
+     },
     {
       title: "Actions",
       key: "actions",

@@ -49,7 +49,7 @@ const Vocab = () => {
     setLoading(true);
     try {
       const res = await getListVocabs(pagination.current || 1, pagination.pageSize || 10);
-      const list: any[] = res.data || [];
+      const list: any[] = res.data.data || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
@@ -125,8 +125,14 @@ const Vocab = () => {
     { title: "Word", dataIndex: "word", key: "word" },
     { title: "Meaning", dataIndex: "meaning", key: "meaning" },
     { title: "Type", dataIndex: "type", key: "type" },
-    { title: "From language", dataIndex: "language_from", key: "language_from" },
-    { title: "To language", dataIndex: "language_to", key: "language_to" },
+    {
+      title: "From language", dataIndex: "language_from", key: "language_from",
+      render: (language: any) => language.name || ""
+    },
+    {
+      title: "To language", dataIndex: "language_to", key: "language_to",
+      render: (language: any) => language.name || ""
+    },
     {
       title: "Actions",
       key: "actions",
@@ -219,36 +225,36 @@ const Vocab = () => {
             <Input />
           </Form.Item>
           <LangFromTo>
-          <Form.Item
-            name="language_from"
-            label="From language"
-            rules={[{ required: true, message: "Please choose from language" }]}
-            style={{ width: "100%"}}
-          >
-            <Select
-              style={{
-                width: "100%",
-                height: 32,
-                borderRadius: 12,
-              }}
-              options={[languageOptions]}
-            />
-          </Form.Item>
-          <Form.Item
-            name="language_to"
-            label="To language"
-            rules={[{ required: true, message: "Please choose to language" }]}
-            style={{ width: "100%"}}
-          >
-            <Select
-              style={{
-                width: "100%",
-                height: 32,
-                borderRadius: 12,
-              }}
-              options={[languageOptions]}
-            />
-          </Form.Item>
+            <Form.Item
+              name="language_from"
+              label="From language"
+              rules={[{ required: true, message: "Please choose from language" }]}
+              style={{ width: "100%" }}
+            >
+              <Select
+                style={{
+                  width: "100%",
+                  height: 32,
+                  borderRadius: 12,
+                }}
+                options={[languageOptions]}
+              />
+            </Form.Item>
+            <Form.Item
+              name="language_to"
+              label="To language"
+              rules={[{ required: true, message: "Please choose to language" }]}
+              style={{ width: "100%" }}
+            >
+              <Select
+                style={{
+                  width: "100%",
+                  height: 32,
+                  borderRadius: 12,
+                }}
+                options={[languageOptions]}
+              />
+            </Form.Item>
           </LangFromTo>
         </Form>
       </Modal>
