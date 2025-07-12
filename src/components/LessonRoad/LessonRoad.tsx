@@ -13,10 +13,11 @@ import {
     ModuleStatus,
     FloatingIcon,
 } from './LessonRoad.styled';
+import { useAuth } from '@/hooks';
 
 interface LessonModule {
     index: number;
-    id: number;
+    id: string;
     title: string;
     description: string;
     status: 'completed' | 'current' | 'locked';
@@ -24,10 +25,10 @@ interface LessonModule {
 
 interface LessonRoadProps {
     modules: LessonModule[];
-    onModuleClick?: (moduleId: number) => void;
+    onModuleClick?: (moduleId: string) => void;
 }
 
-const LessonRoad: React.FC<LessonRoadProps> = ({ modules, onModuleClick }) => {
+const LessonRoad: React.FC<LessonRoadProps> = ({ modules, onModuleClick }) => {    
     const handleModuleClick = (module: LessonModule) => {
         if (module.status !== 'locked' && onModuleClick) {
             onModuleClick(module.id);

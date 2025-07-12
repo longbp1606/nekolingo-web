@@ -4,16 +4,22 @@ import fire from "@/assets/fire.gif";
 import ButtonResult from '@/components/ButtonResult/ButtonResult';
 import { theme } from '@/themes';
 import ReviewPopup from '@/components/ReviewPopup/ReviewPopup';
+import { useAuth } from '@/hooks';
 interface Props {
     onContinue: () => void;
 }
 
 const StreakDay: React.FC<Props> = ({ onContinue }) => {
+    const { profile } = useAuth();
     const [showReviewPopup, setShowReviewPopup] = useState(false);
     const handleShowReview = () => {
         setShowReviewPopup(true);
         console.log('Xem lại bài học');
     };
+
+    const day = new Date().getDay();
+    const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+    const dayOfWeek = days[day];
 
     const handleCloseReview = () => {
         setShowReviewPopup(false);
@@ -21,13 +27,13 @@ const StreakDay: React.FC<Props> = ({ onContinue }) => {
     return (
         <>
             <StreakWrapper>
-                <h1 style={{ color: 'orange', fontSize: '48px' }}>1</h1>
+                <h1 style={{ color: 'orange', fontSize: '48px' }}>{profile?.streakDays}</h1>
                 <StreakText>ngày streak!</StreakText>
                 <Image src={fire} alt="fire" />
                 <StreakBox>
                     <DayList>
-                        {['T2', 'T3', 'T4', 'T5', 'T6'].map((day, index) => (
-                            <DayItem key={day} active={index === 0}>{day}</DayItem>
+                        {days.map((item, index) => (
+                            <DayItem key={item} active={index === day}>{index === day ? "" : item}</DayItem>
                         ))}
                     </DayList>
 
@@ -35,18 +41,6 @@ const StreakDay: React.FC<Props> = ({ onContinue }) => {
                 </StreakBox>
 
                 <ButtonResult
-                    leftButton={{
-                        show: true,
-                        title: 'Xem lại bài học',
-                        color: `${theme.color.title}`,
-                        background: 'white',
-                        border: '2px solid #e5e5e5',
-                        borderBottom: '5px solid #e5e5e5',
-                        hoverBackground: `${theme.color.bgBlue}`,
-                        hoverColor: `${theme.color.primary}`,
-                        hoverBorder: `${theme.color.primary}`,
-                        onClick: handleShowReview,
-                    }}
                     rightButton={{
                         show: true,
                         title: 'Tiếp tục',

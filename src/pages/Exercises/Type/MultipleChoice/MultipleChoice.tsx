@@ -9,13 +9,12 @@ import {
 import BottomBar from "@/components/BottomBar/BottomBar";
 import ProgressBar from "@/components/ProgressBar";
 import GameOver from "@/components/ProgressBar/GameOver/GameOver";
+import { useDispatch, useSelector } from "react-redux";
+import { CompleteFullLessonState, ExerciseProgressState, setExercisesProgress, setUserProgress } from "@/store/userProgress.slice";
+import { RootState } from "@/store";
 
 interface MultipleChoiceProps {
-    data: {
-        question: string;
-        options: string[];
-        correct_answer: string;
-    };
+    data: any;
     totalQuestions: number;
     answeredQuestions: number;
     onAnswered: (correct: boolean) => void;
@@ -27,6 +26,8 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
     answeredQuestions,
     onAnswered,
 }) => {
+    const exercises = useSelector((state: RootState) => state.userProgress.exercises);
+    const dispatch = useDispatch();
     const [selectedValue, setSelectedValue] = useState<string | null>(null);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const [lives, setLives] = useState(3);
@@ -48,6 +49,30 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
         const selectedOpt = options[selectedIndex];
 
         const correct = selectedOpt.toLowerCase() === correctAnswer?.toLowerCase();
+
+        if (correct) {
+            const exercisesResult: ExerciseProgressState = {
+                exercise_id: data._id ? data._id : "",
+                user_answer: selectedOpt,
+                answer_time: new Date().getTime(),
+                is_correct: true,
+                question: data.question,
+            }
+            const updatedExercises = [...exercises, exercisesResult];
+            dispatch(setExercisesProgress(updatedExercises));
+        } else {
+            const exercisesResult: ExerciseProgressState = {
+                exercise_id: data._id? data._id : "",
+                user_answer: selectedOpt,
+                answer_time: new Date().getTime(),
+                is_correct: false, 
+                correct_answer: data.correct_answer,
+                question: data.question,
+            }
+            const updatedExercises = [...exercises, exercisesResult];
+            dispatch(setExercisesProgress(updatedExercises));
+        }
+
         setIsCorrect(correct);
         setIsChecked(true);
 
@@ -102,7 +127,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
 
 
             <Space direction="vertical" style={{ width: "100%" }} size="middle">
-                {options.map((choice, index) => {
+                {options.map((choice: any, index: number) => {
                     const isSelected = selectedValue === choice;
                     const isCorrectChoice = choice === correctAnswer;
 

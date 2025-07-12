@@ -181,9 +181,9 @@ export const ModuleNumber = styled.div<ModuleNumberProps>`
   border: 4px solid white;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 
-  ${props => props.current && css`
-    animation: ${bounce} 2s ease-in-out infinite;
-  `}
+  // ${props => props.current && css`
+  //   animation: ${bounce} 2s ease-in-out infinite;
+  // `}
 
   ${props => props.completed && css`
     &::after {
