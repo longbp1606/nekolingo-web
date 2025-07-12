@@ -143,8 +143,14 @@ const Vocab = () => {
     { title: "Word", dataIndex: "word", key: "word" },
     { title: "Meaning", dataIndex: "meaning", key: "meaning" },
     { title: "Type", dataIndex: "type", key: "type" },
-    { title: "From language", dataIndex: "language_from", key: "language_from" },
-    { title: "To language", dataIndex: "language_to", key: "language_to" },
+    {
+      title: "From language", dataIndex: "language_from", key: "language_from",
+      render: (language: any) => language.name || ""
+    },
+    {
+      title: "To language", dataIndex: "language_to", key: "language_to",
+      render: (language: any) => language.name || ""
+    },
     {
       title: "Actions",
       key: "actions",

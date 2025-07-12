@@ -143,8 +143,12 @@ const Course = () => {
   const columns = [
     { title: "Title", dataIndex: "title", key: "title" },
     { title: "Description", dataIndex: "description", key: "description" },
-    { title: "From language", dataIndex: "language_from", key: "language_from" },
-    { title: "To language", dataIndex: "language_to", key: "language_to" },
+    { title: "From language", dataIndex: "language_from", key: "language_from",
+      render: (language: any) => language.name || "",
+    },
+    { title: "To language", dataIndex: "language_to", key: "language_to",
+      render: (language: any) => language.name || "",
+     },
     {
       title: "Actions",
       key: "actions",

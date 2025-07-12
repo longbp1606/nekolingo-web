@@ -25,8 +25,10 @@ import {
 import { theme } from '@/themes';
 import { FiAward, FiTarget, FiZap, FiCheck } from 'react-icons/fi';
 import StatsBar from '../StatsBar/StatsBar';
+import { useAuth } from '@/hooks';
 
 const RightSidebar = () => {
+    const { profile } = useAuth();
     return (
         <RightSection>
             <StatsBar />
@@ -102,27 +104,6 @@ const RightSidebar = () => {
                         <ProgressText>1 / 3</ProgressText>
                     </ProgressBar>
                 </QuestItem>
-            </Card>
-
-            {/* Stats Card */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Your Stats</CardTitle>
-                </CardHeader>
-                <StatsRow>
-                    <StatItem>
-                        <StatValue>73</StatValue>
-                        <StatLabel>Day Streak</StatLabel>
-                    </StatItem>
-                    <StatItem>
-                        <StatValue>2510</StatValue>
-                        <StatLabel>Total XP</StatLabel>
-                    </StatItem>
-                    <StatItem>
-                        <StatValue>12</StatValue>
-                        <StatLabel>Perfect Lessons</StatLabel>
-                    </StatItem>
-                </StatsRow>
             </Card>
         </RightSection>
     )

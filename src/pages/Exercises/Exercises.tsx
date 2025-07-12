@@ -7,48 +7,45 @@ import MatchPairs from "./Type/MatchPairs/MatchPairs";
 import SortSentence from "./Type/SortSentence/SortSentence";
 import Listening from "./Type/Listening/Listening";
 import CompleteSentences from "./Type/CompleteSentences/CompleteSentences";
-import { sampleData } from "../sampleData";
 import { useNavigate, useParams } from "react-router-dom";
 import { getLessonDetail } from "@/services/lessonAPI";
-import { useDocumentTitle } from "@/hooks";
+import { useAuth, useDocumentTitle } from "@/hooks";
+import { useDispatch, useSelector } from "react-redux";
+import { setLessonMetadata } from "@/store/metadata.slice";
+import { ExerciseProgressState, setUserProgress } from "@/store/userProgress.slice";
+import { completeFullLesson } from "@/services/userProgressAPI";
+import { message } from "antd";
+import { RootState } from "@/store";
 
 const Exercise = () => {
   useDocumentTitle("Exercise");
-  
+
+  const { profile } = useAuth();
+  const exercises = useSelector((state: RootState) => state.userProgress.exercises);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { lessonId } = useParams();
   const [questions, setQuestions] = useState<any[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answeredCount, setAnsweredCount] = useState(0);
-  const [shuffled, setShuffled] = useState(false);
   const [metadata, setMetadata] = useState<any>({});
-
-  const shuffleArray = (array: any) => {
-    const arr = [...array];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  };
+  const [messageApi, contextHolder] = message.useMessage();
+  const [apiLoading, setApiLoading] = useState(false);
 
   const fetchQuestions = useCallback(async () => {
+    setApiLoading(true);
     try {
       const res = await getLessonDetail(lessonId ? lessonId : "");
-      console.log("✅ Metadata: ", res.data);
 
-      // Shuffle chỉ lần đầu tiên khi load
-      // if (!shuffled) {
-      //   res.data = shuffleArray(res.data);
-      //   setShuffled(true);
-      // }
-
+      dispatch(setLessonMetadata(res.data));
       setMetadata(res.data);
       setQuestions(res.data.exercises);
     } catch (error) {
       console.error("Lỗi khi fetch questions:", error);
+    } finally {
+      setApiLoading(false);
     }
-  }, [lessonId, shuffled]);
+  }, [lessonId]);
 
   // Khi mount hoặc lessonId thay đổi
   useEffect(() => {
@@ -60,17 +57,38 @@ const Exercise = () => {
     setAnsweredCount((prev) => prev + 1);
 
     // 1s sau (hoặc bạn có thể gọi ngay), chuyển sang câu tiếp theo
-    setTimeout(() => {
+    setTimeout(async () => {
       if (currentIdx + 1 < questions.length) {
         setCurrentIdx((prev) => prev + 1);
       } else {
-        navigate('/exercise/result');
+        dispatch(setUserProgress({
+          lesson_id: metadata._id,
+          user_id: profile ? profile.id : "",
+          exercises
+        }))
+        const res = await completeFullLesson({
+          lesson_id: metadata._id,
+          user_id: profile ? profile.id : "",
+          exercises: exercises.map((exercise: ExerciseProgressState) => {
+            return {
+              exercise_id: exercise.exercise_id,
+              user_answer: exercise.user_answer,
+              answer_time: exercise.answer_time,
+            };
+          }),
+        })
+
+        if (res.status !== 201) {
+          messageApi.error(res.data.message);
+        } else {
+          navigate('/exercise/result');
+        }
       }
     }, 500);
   };
 
   // Nếu chưa load xong
-  if (!questions || questions.length === 0) {
+  if (!questions || questions.length === 0 || apiLoading) {
     return <div>Đang tải bài tập...</div>;
   }
 
@@ -148,9 +166,12 @@ const Exercise = () => {
   };
 
   return (
-    <div className="exercise-container">
-      {renderQuestionComponent()}
-    </div>
+    <>
+      {contextHolder}
+      <div className="exercise-container">
+        {renderQuestionComponent()}
+      </div>
+    </>
   );
 };
 
