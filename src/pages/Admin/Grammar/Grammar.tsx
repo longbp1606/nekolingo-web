@@ -24,9 +24,10 @@ import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+type TableRecord = GrammarItem & { key: string };
 
 export type GrammarItem = {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   condition: string;
@@ -75,10 +76,16 @@ const Grammar = () => {
     setLoading(true);
     try {
       // Optionally fetch detail if you need more fields:
-      const res = await getGrammarDetail(record.id);
-      setSelectedRecord(res.data);
-      form.setFieldsValue(res.data);
+      const res = await getGrammarDetail(record._id);
+      const detail: GrammarItem = res.data.data;
+      setSelectedRecord(detail);
+      form.setFieldsValue({
+        name: detail.name,
+        condition: detail.condition,
+        description: detail.description,
+      });
       setPanelVisible(true);
+
     } catch {
       message.error("Failed to load detail");
     } finally {
@@ -87,7 +94,7 @@ const Grammar = () => {
   };
 
   const handleDelete = async (id: string) => {
-    setLoading(true);
+    // setLoading(true);
     try {
       await deleteGrammar(id);
       message.success("Deleted successfully");
@@ -104,7 +111,7 @@ const Grammar = () => {
     setLoading(true);
     try {
       if (selectedRecord) {
-        await updateGrammar(selectedRecord.id, values);
+        await updateGrammar(selectedRecord._id, values);
         message.success("Updated successfully");
       } else {
         await createGrammar(values);
@@ -131,7 +138,7 @@ const Grammar = () => {
       render: (_: any, record: GrammarItem) => (
         <Popconfirm
           title="Delete this grammar?"
-          onConfirm={() => handleDelete(record.id)}
+          onConfirm={() => handleDelete(record._id)}
         >
           <Button danger size="small">
             Delete
@@ -151,6 +158,11 @@ const Grammar = () => {
       )
     );
   }, [data, searchText]);
+
+  const tableData: TableRecord[] = filteredData.map(item => ({
+    ...item,          // _id, name, condition, description
+    key: item._id,    // AntD cần field `key`
+  }));
 
   return (
     <div style={{ display: "flex", gap: 16 }}>
@@ -175,8 +187,8 @@ const Grammar = () => {
 
         <CTable
           columns={columns}
-          dataSource={filteredData.map((item) => ({ ...item, key: item.id }))}
-          rowKey="id"
+          dataSource={tableData}
+          rowKey="_id"
           loading={loading}
           pagination={pagination}
           onChange={(pag) => setPagination(pag)}

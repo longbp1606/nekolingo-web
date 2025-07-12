@@ -19,6 +19,16 @@ import CAddButton from "@/components/AddButton/AddButton";
 import { getListLanguages } from "@/services/languageAPI";
 import ReactQuill from "react-quill";
 import { createVocab, deleteVocab, getListVocabs, getVocabDetail, updateVocab } from "@/services/vocabularyAPI";
+type TableRecord = LessonItem & { key: string };
+
+export type LessonItem = {
+  _id: string;
+  word: string;
+	meaning: string;
+	language_from: string;
+	language_to: string;
+	type?: string;
+};
 
 const Vocab = () => {
   const [data, setData] = useState<any[]>([]);
@@ -33,13 +43,16 @@ const Vocab = () => {
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
   const hasErrorNotified = useRef(false);
-  const [languageOptions, setLanguageOptions] = useState<string[]>([]);
+  const [languageOptions, setLanguageOptions] = useState<{ label: string; value: string }[]>([]);
 
   const fetchOptions = useCallback(async () => {
     try {
       const res = await getListLanguages(1, 10);
-      const options = res.data.languages.map((item: any) => item.name);
-      setLanguageOptions([...options]);
+      setLanguageOptions(res.data.languages.map((item: any) => ({
+        label: item.name,
+        value: item._id,
+      }))
+    );
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -49,7 +62,10 @@ const Vocab = () => {
     setLoading(true);
     try {
       const res = await getListVocabs(pagination.current || 1, pagination.pageSize || 10);
-      const list: any[] = res.data.data || [];
+      const list: any[] = res.data.data.map((item: any) => ({
+        ...item,
+        id: item._id, // chuẩn hóa để dùng thống nhất
+      }));      
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
@@ -71,20 +87,22 @@ const Vocab = () => {
     fetchAll();
   }, [fetchOptions]);
 
-  const handleRowClick = async (record: any) => {
-    setLoading(true);
-    try {
-      // Optionally fetch detail if you need more fields:
-      const res = await getVocabDetail(record.id);
-      setSelectedRecord(res.data);
-      form.setFieldsValue(res.data);
-      setPanelVisible(true);
-    } catch {
-      message.error("Failed to load detail");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleRowClick = async (record: LessonItem) => {
+      setLoading(true);
+      try {
+        // Optionally fetch detail if you need more fields:
+        const res = await getVocabDetail(record._id);
+        const detail: LessonItem = res.data.data;
+        setSelectedRecord(detail);
+        form.setFieldsValue(detail);
+        setPanelVisible(true);
+      } catch {
+        message.error("Failed to load detail");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
 
   const handleDelete = async (id: string) => {
     setLoading(true);
@@ -104,7 +122,7 @@ const Vocab = () => {
     setLoading(true);
     try {
       if (selectedRecord) {
-        await updateVocab(selectedRecord.id, values);
+        await updateVocab(selectedRecord._id, values);
         message.success("Updated successfully");
       } else {
         await createVocab(values);
@@ -139,7 +157,7 @@ const Vocab = () => {
       render: (_: any, record: any) => (
         <Popconfirm
           title="Delete this grammar?"
-          onConfirm={() => handleDelete(record.id)}
+          onConfirm={() => handleDelete(record._id)}
         >
           <Button danger size="small">
             Delete
@@ -159,6 +177,12 @@ const Vocab = () => {
       )
     );
   }, [data, searchText]);
+
+  
+  const tableData: TableRecord[] = filteredData.map(item => ({
+    ...item,          // _id, name, condition, description
+    key: item._id,    // AntD cần field `key`
+  }));
 
   return (
     <div style={{ display: "flex", gap: 16 }}>
@@ -183,8 +207,8 @@ const Vocab = () => {
 
         <CTable
           columns={columns}
-          dataSource={filteredData.map((item) => ({ ...item, key: item.id }))}
-          rowKey="id"
+          dataSource={tableData}
+          rowKey="_id"
           loading={loading}
           pagination={pagination}
           onChange={(pag) => setPagination(pag)}
@@ -225,36 +249,36 @@ const Vocab = () => {
             <Input />
           </Form.Item>
           <LangFromTo>
-            <Form.Item
-              name="language_from"
-              label="From language"
-              rules={[{ required: true, message: "Please choose from language" }]}
-              style={{ width: "100%" }}
-            >
-              <Select
-                style={{
-                  width: "100%",
-                  height: 32,
-                  borderRadius: 12,
-                }}
-                options={[languageOptions]}
-              />
-            </Form.Item>
-            <Form.Item
-              name="language_to"
-              label="To language"
-              rules={[{ required: true, message: "Please choose to language" }]}
-              style={{ width: "100%" }}
-            >
-              <Select
-                style={{
-                  width: "100%",
-                  height: 32,
-                  borderRadius: 12,
-                }}
-                options={[languageOptions]}
-              />
-            </Form.Item>
+          <Form.Item
+            name="language_from"
+            label="From language"
+            rules={[{ required: true, message: "Please choose from language" }]}
+            style={{ width: "100%"}}
+          >
+            <Select
+              style={{
+                width: "100%",
+                height: 32,
+                borderRadius: 12,
+              }}
+              options={languageOptions}
+            />
+          </Form.Item>
+          <Form.Item
+            name="language_to"
+            label="To language"
+            rules={[{ required: true, message: "Please choose to language" }]}
+            style={{ width: "100%"}}
+          >
+            <Select
+              style={{
+                width: "100%",
+                height: 32,
+                borderRadius: 12,
+              }}
+              options={languageOptions}
+            />
+          </Form.Item>
           </LangFromTo>
         </Form>
       </Modal>

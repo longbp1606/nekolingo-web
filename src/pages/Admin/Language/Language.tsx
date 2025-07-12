@@ -17,12 +17,13 @@ import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
 import { createLanguage, deleteLanguage, getLanguageDetail, getListLanguages, updateLanguage } from "@/services/languageAPI";
+type TableRecord = LanguageItem & { key: string };
 
 export type LanguageItem = {
-  id: string;
+  _id: string;
   name: string;
-	code: string;
-	flag_url?: string;
+  code: string;
+  flag_url?: string;
 };
 
 const Language = () => {
@@ -43,7 +44,7 @@ const Language = () => {
     setLoading(true);
     try {
       const res = await getListLanguages(pagination.current || 1, pagination.pageSize || 10);
-      const list: LanguageItem[] = res.data.languages || [];
+      const list: LanguageItem[] = res.data.data || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
@@ -68,9 +69,15 @@ const Language = () => {
     setLoading(true);
     try {
       // Optionally fetch detail if you need more fields:
-      const res = await getLanguageDetail(record.id);
-      setSelectedRecord(res.data);
-      form.setFieldsValue(res.data);
+      const res = await getLanguageDetail(record._id);
+      const detail: LanguageItem = res.data.data;
+
+      setSelectedRecord(detail);
+      form.setFieldsValue({
+        name: detail.name,
+        code: detail.code,
+        flag_url: detail.flag_url,
+      });
       setPanelVisible(true);
     } catch {
       message.error("Failed to load detail");
@@ -80,7 +87,7 @@ const Language = () => {
   };
 
   const handleDelete = async (id: string) => {
-    setLoading(true);
+    // setLoading(true);
     try {
       await deleteLanguage(id);
       message.success("Deleted successfully");
@@ -97,7 +104,7 @@ const Language = () => {
     setLoading(true);
     try {
       if (selectedRecord) {
-        await updateLanguage(selectedRecord.id, values);
+        await updateLanguage(selectedRecord._id, values);
         message.success("Updated successfully");
       } else {
         await createLanguage(values);
@@ -131,7 +138,7 @@ const Language = () => {
       render: (_: any, record: LanguageItem) => (
         <Popconfirm
           title="Delete this language?"
-          onConfirm={() => handleDelete(record.id)}
+          onConfirm={() => handleDelete(record._id)}
         >
           <Button danger size="small">
             Delete
@@ -151,6 +158,11 @@ const Language = () => {
       )
     );
   }, [data, searchText]);
+
+  const tableData: TableRecord[] = filteredData.map(item => ({
+    ...item,
+    key: item._id,
+  }));
 
   return (
     <div style={{ display: "flex", gap: 16 }}>
@@ -175,8 +187,8 @@ const Language = () => {
 
         <CTable
           columns={columns}
-          dataSource={Array.isArray(filteredData) ? filteredData.map((item) => ({ ...item, key: item.id })) : []}
-          rowKey="id"
+          dataSource={tableData}
+          rowKey="_id"
           loading={loading}
           pagination={pagination}
           onChange={(pag) => setPagination(pag)}

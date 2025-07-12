@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from "react";
 import { Button, Form, Input, InputNumber, Popconfirm, message, notification, Modal } from "antd";
-import { createTopic, deleteTopic, getListTopics, updateTopic } from "@/services/topicAPI";
+import { createTopic, deleteTopic, getListTopics, getTopicDetail, updateTopic } from "@/services/topicAPI";
 import { ContentCard, FilterArea } from "./Topic.styled";
 import InputCourse from "@/components/InputCourse/InputCourse";
 import CTable from "@/components/CustomedTable/CTable";
@@ -10,12 +10,19 @@ import CAddButton from "@/components/AddButton/AddButton";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
+export type TopicItem = {
+  _id: string;
+  title: string;
+  order: number;
+  description?: string;
+  course: string;
+};
+
 const Topic = () => {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
-  // const [panelVisible, setPanelVisible] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<string | undefined>();
   const [form] = Form.useForm();
   const [modalVisible, setModalVisible] = useState(false);
@@ -57,27 +64,40 @@ const Topic = () => {
     fetchData(pagination.current, pagination.pageSize, selectedCourse);
   }, [pagination.current, pagination.pageSize, selectedCourse]);
 
-  const handleRowClick = (record: any) => {
-    setSelectedRecord(record);
-    form.setFieldsValue(record);
-    setModalVisible(true);
+  const handleRowClick = async (record: TopicItem) => {
+    try {
+      // Optionally fetch detail if you need more fields:
+      const res = await getTopicDetail(record._id);
+      const detail: TopicItem = res.data.data;
+      setSelectedRecord(detail);
+      form.setFieldsValue({
+        title: detail.title,
+        order: detail.order,
+        description: detail.description,
+      });
+
+    } catch {
+      message.error("Failed to load detail");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async (id: string) => {
     try {
       await deleteTopic(id); /* <-- gọi API xóa tương ứng */
       message.success("Deleted successfully");
-      fetchData(pagination.current, pagination.pageSize, selectedCourse);
+      await (pagination.current, pagination.pageSize, selectedCourse);
     } catch {
       message.error("Delete failed");
     }
   };
 
-  const handleModalOk = async () => {
+  const handleFormSubmit = async () => {
     try {
       const values = await form.validateFields();
       if (selectedRecord) {
-        await updateTopic(selectedRecord.id, values);
+        await updateTopic(selectedRecord._id, values);
         message.success("Updated successfully");
       } else {
         await createTopic({ ...values, course: selectedCourse });
@@ -100,7 +120,7 @@ const Topic = () => {
       title: "Actions",
       key: "actions",
       render: (_: any, record: any) => (
-        <Popconfirm title="Delete this topic?" onConfirm={() => handleDelete(record.id)}>
+        <Popconfirm title="Delete this topic?" onConfirm={() => handleDelete(record._id)}>
           <Button danger size="small">Delete</Button>
         </Popconfirm>
       ),
@@ -149,25 +169,10 @@ const Topic = () => {
         />
       </ContentCard>
 
-      {/* {panelVisible && (
-        <div style={{ flex: 1, padding: 16, border: '1px solid #f0f0f0', borderRadius: 4 }}>
-          <h3>{selectedRecord ? 'Edit Topic' : 'Add Topic'}</h3>
-          <Button type="text" onClick={() => setPanelVisible(false)} style={{ position: 'absolute', right: 16, top: 16 }}>Close</Button>
-          <Form layout="vertical" form={form} onFinish={handleFormSubmit} style={{ marginTop: 32 }}>
-            <Form.Item name="title" label="Title" rules={[{ required: true }]}><Input /></Form.Item>
-            <Form.Item name="order" label="Order" rules={[{ required: true }]}><InputNumber style={{ width: "100%" }} /></Form.Item>
-            <Form.Item name="description" label="Description" rules={[{ required: true }]}><Input.TextArea rows={4} /></Form.Item>
-            <Space style={{ marginTop: 24 }}>
-              <Button onClick={() => setPanelVisible(false)}>Cancel</Button>
-              <Button type="primary" htmlType="submit">Save</Button>
-            </Space>
-          </Form>
-        </div>
-      )} */}
       <Modal
         title={selectedRecord ? "Edit Topic" : "Add Topic"}
         open={modalVisible}
-        onOk={handleModalOk}
+        onOk={handleFormSubmit}
         onCancel={handleModalCancel}
         okText="Save"
         cancelText="Cancel"
