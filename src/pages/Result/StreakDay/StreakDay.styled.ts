@@ -10,24 +10,6 @@ export const StreakWrapper = styled.div`
   background: #fcfeff;
   position: relative;
 
-  /* Decorative dots in background */
-  &::before {
-    content: '';
-    position: absolute;
-    top: 20px;
-    right: 20%;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: ${theme.color.orange};
-    box-shadow: 
-      -50px 30px 0 #e0e0e0,
-      -100px 60px 0 #e0e0e0,
-      -150px 90px 0 #e0e0e0,
-      50px 50px 0 #e0e0e0,
-      100px 80px 0 #e0e0e0;
-  }
-
   h1 {
     color: ${theme.color.orange} !important;
     font-size: 72px !important;
@@ -40,7 +22,7 @@ export const StreakWrapper = styled.div`
     color: #8e8e93;
     font-size: 14px;
     text-align: center;
-    max-width: 300px;
+    max-width: 280px;
     line-height: 1.5;
     margin: 20px 0 0 0;
   }
@@ -51,7 +33,6 @@ export const StreakBox = styled.div`
   border-radius: 12px;
   padding: 16px;
   margin: 16px auto;
-  max-width: 320px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   text-align: center;
 

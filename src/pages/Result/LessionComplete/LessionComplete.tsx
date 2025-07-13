@@ -5,6 +5,8 @@ import complete from "@/assets/complete.gif";
 import ButtonResult from '@/components/ButtonResult/ButtonResult';
 import ReviewPopup from '@/components/ReviewPopup/ReviewPopup';
 import { theme } from '@/themes';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 interface Props {
     onContinue: () => void;
@@ -12,6 +14,7 @@ interface Props {
 
 const LessionComplete: React.FC<Props> = ({ onContinue }) => {
     const [showReviewPopup, setShowReviewPopup] = useState(false);
+    const lessonMetadata = useSelector((state: RootState) => state.metadata.lessonMetadata);
 
     const handleShowReview = () => {
         setShowReviewPopup(true);
@@ -30,7 +33,7 @@ const LessionComplete: React.FC<Props> = ({ onContinue }) => {
                 <div style={{ display: 'flex', gap: '20px' }}>
                     <XPBox color="yellow">
                         <div>TỔNG ĐIỂM KN</div>
-                        <Tag>⚡ 8</Tag>
+                        <Tag>⚡ {lessonMetadata.xp_reward}</Tag>
                     </XPBox>
                     <XPBox color="green">
                         <div>AMAZING</div>

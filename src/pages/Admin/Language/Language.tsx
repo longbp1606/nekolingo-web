@@ -9,6 +9,7 @@ import {
   message,
   Modal,
   notification,
+  Image,
 } from "antd";
 import type { TablePaginationConfig } from "antd";// hãy chắc path đúng
 import { ContentCard, FilterArea } from "./Language.styled";
@@ -123,7 +124,14 @@ const Language = () => {
   const columns = [
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Code", dataIndex: "code", key: "code" },
-    { title: "Flag url", dataIndex: "flag_url", key: "flag_url" },
+    { 
+      title: "Flag url", 
+      dataIndex: "flag_url", 
+      key: "flag_url",
+      render: (url: string) => (
+        <Image width={50} src={url} preview={false} />
+      )
+    },
     {
       title: "Actions",
       key: "actions",

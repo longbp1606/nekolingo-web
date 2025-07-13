@@ -14,8 +14,18 @@ export type UserType = {
     role: number;
     currentLevel: number;
     xp: number;
+    weeklyXp: number;
+    hearts: number;
     streakDays: number;
-    is_primiere: boolean;
+    freezeCount: number;
+    isFreeze: boolean;
+    lastActiveDate: Date;
+    isPremiere: boolean;
+    balance: number;
+    isActive: true;
+    currentCourse: string;
+    currentTopic: string;
+    currentLesson: string;
 }
 
 const getUserID = () => {
@@ -46,7 +56,7 @@ const useAuth = () => {
     const fetchProfile = async () => {
         try {
             const res = await getProfile();
-            setProfile(res.data.data);
+            setProfile(res.data.data as UserType);
         } catch (error) {
             console.log(error); 
         }

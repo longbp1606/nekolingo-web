@@ -28,6 +28,7 @@ import {
     HeartIconArray,
 } from './StatsBar.styled';
 import { theme } from '@/themes';
+import { useAuth } from '@/hooks';
 
 interface Course {
     id: string;
@@ -65,6 +66,7 @@ interface StatItemData {
 }
 
 const StatsBar: React.FC = () => {
+    const { profile } = useAuth();
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     const [selectedCourse, setSelectedCourse] = useState<Course>({
         id: 'en',
@@ -119,7 +121,7 @@ const StatsBar: React.FC = () => {
         {
             id: 'streak',
             icon: <StreakIcon>🔥</StreakIcon>,
-            value: 3,
+            value: profile?.streakDays || 0,
             color: '#ff9500',
             bgColor: '#fff8f0',
             borderColor: '#ff9500',
@@ -143,7 +145,7 @@ const StatsBar: React.FC = () => {
                 content: 'Bạn có đầy đủ trái tim',
                 description: 'Tiếp tục học',
                 type: 'hearts',
-                hearts: 5,
+                hearts: profile?.hearts || 0,
                 maxHearts: 5
             }
         }
