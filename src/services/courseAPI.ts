@@ -1,4 +1,4 @@
-import { get, post, put, remove } from "./apiCaller";
+import { get, post, patch, remove } from "./apiCaller";
 
 export type CreateCourse = {
   title: string;
@@ -37,7 +37,7 @@ export const createCourse = (course: CreateCourse) => {
 };
 
 export const updateCourse = (id: string, course: UpdateCourse) => {
-  return put(`/api/course/${id}`, course);
+  return patch(`/api/course/${id}`, course);
 };
 
 export const deleteCourse = (id: string) => {

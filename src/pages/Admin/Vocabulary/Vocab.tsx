@@ -17,17 +17,24 @@ import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
 import { getListLanguages } from "@/services/languageAPI";
-import ReactQuill from "react-quill";
 import { createVocab, deleteVocab, getListVocabs, getVocabDetail, updateVocab } from "@/services/vocabularyAPI";
 type TableRecord = LessonItem & { key: string };
 
 export type LessonItem = {
   _id: string;
   word: string;
-	meaning: string;
-	language_from: string;
-	language_to: string;
-	type?: string;
+  meaning: string;
+  language_from: {
+    _id: string;
+    name: string;
+    code: string;
+  };
+  language_to: {
+    _id: string;
+    name: string;
+    code: string;
+  };
+  type?: string;
 };
 
 const Vocab = () => {
@@ -52,7 +59,7 @@ const Vocab = () => {
         label: item.name,
         value: item._id,
       }))
-    );
+      );
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -65,7 +72,7 @@ const Vocab = () => {
       const list: any[] = res.data.data.map((item: any) => ({
         ...item,
         id: item._id, // chuẩn hóa để dùng thống nhất
-      }));      
+      }));
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
@@ -88,21 +95,27 @@ const Vocab = () => {
   }, [fetchOptions]);
 
   const handleRowClick = async (record: LessonItem) => {
-      setLoading(true);
-      try {
-        // Optionally fetch detail if you need more fields:
-        const res = await getVocabDetail(record._id);
-        const detail: LessonItem = res.data.data;
-        setSelectedRecord(detail);
-        form.setFieldsValue(detail);
-        setPanelVisible(true);
-      } catch {
-        message.error("Failed to load detail");
-      } finally {
-        setLoading(false);
-      }
-    };
-  
+    setLoading(true);
+    try {
+      // Optionally fetch detail if you need more fields:
+      const res = await getVocabDetail(record._id);
+      const detail: LessonItem = res.data.data;
+      setSelectedRecord(detail);
+      form.setFieldsValue({
+        word: detail.word,
+        meaning: detail.meaning,
+        language_from: detail.language_from._id,
+        language_to: detail.language_to._id,
+        type: detail.type,
+      });
+      setPanelVisible(true);
+    } catch {
+      message.error("Failed to load detail");
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const handleDelete = async (id: string) => {
     setLoading(true);
@@ -143,8 +156,16 @@ const Vocab = () => {
     { title: "Word", dataIndex: "word", key: "word" },
     { title: "Meaning", dataIndex: "meaning", key: "meaning" },
     { title: "Type", dataIndex: "type", key: "type" },
-    { title: "From language", dataIndex: "language_from", key: "language_from" },
-    { title: "To language", dataIndex: "language_to", key: "language_to" },
+    {
+      title: "From language", dataIndex: "language_from.name", key: "language_from.name",
+      render: (_: any, record: LessonItem) => record.language_from?.name,
+
+    },
+    {
+      title: "To language", dataIndex: "language_to.name", key: "language_to.name",
+      render: (_: any, record: LessonItem) => record.language_to?.name,
+
+    },
     {
       title: "Actions",
       key: "actions",
@@ -153,7 +174,9 @@ const Vocab = () => {
           title="Delete this grammar?"
           onConfirm={() => handleDelete(record._id)}
         >
-          <Button danger size="small">
+          <Button danger size="small"
+            onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
+          >
             Delete
           </Button>
         </Popconfirm>
@@ -172,7 +195,7 @@ const Vocab = () => {
     );
   }, [data, searchText]);
 
-  
+
   const tableData: TableRecord[] = filteredData.map(item => ({
     ...item,          // _id, name, condition, description
     key: item._id,    // AntD cần field `key`
@@ -222,57 +245,56 @@ const Vocab = () => {
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            name="title"
-            label="Title"
-            rules={[{ required: true, message: "Please enter title" }]}
+            name="word"
+            label="Word"
+            rules={[{ required: true, message: "Please enter word" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            name="description"
-            label="Description"
-            rules={[{ required: true, message: "Please enter description" }]}
+            name="meaning"
+            label="Meaning"
+            rules={[{ required: true, message: "Please enter meaning" }]}
           >
-            <ReactQuill theme="snow" style={{ height: '100%' }} />
+            <Input />
           </Form.Item>
           <Form.Item
             name="type"
             label="Type"
-            rules={[{ required: true, message: "Please enter type" }]}
           >
             <Input />
           </Form.Item>
           <LangFromTo>
-          <Form.Item
-            name="language_from"
-            label="From language"
-            rules={[{ required: true, message: "Please choose from language" }]}
-            style={{ width: "100%"}}
-          >
-            <Select
-              style={{
-                width: "100%",
-                height: 32,
-                borderRadius: 12,
-              }}
-              options={languageOptions}
-            />
-          </Form.Item>
-          <Form.Item
-            name="language_to"
-            label="To language"
-            rules={[{ required: true, message: "Please choose to language" }]}
-            style={{ width: "100%"}}
-          >
-            <Select
-              style={{
-                width: "100%",
-                height: 32,
-                borderRadius: 12,
-              }}
-              options={languageOptions}
-            />
-          </Form.Item>
+            <Form.Item
+              name="language_from"
+              label="From language"
+              rules={[{ required: true, message: "Please choose from language" }]}
+              style={{ width: "100%" }}
+            >
+              <Select
+                style={{
+                  width: "100%",
+                  height: 32,
+                  borderRadius: 12,
+                }}
+                options={languageOptions}
+              />
+            </Form.Item>
+            <Form.Item
+              name="language_to"
+              label="To language"
+              rules={[{ required: true, message: "Please choose to language" }]}
+              style={{ width: "100%" }}
+            >
+              <Select
+                style={{
+                  width: "100%",
+                  height: 32,
+                  borderRadius: 12,
+                }}
+                options={languageOptions}
+              />
+            </Form.Item>
           </LangFromTo>
         </Form>
       </Modal>

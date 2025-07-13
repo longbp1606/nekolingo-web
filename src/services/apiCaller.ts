@@ -46,6 +46,15 @@ export const put = (
     return request(endpoint, 'PUT', headers, params, body);
 }
 
+export const patch = (
+    endpoint: string,
+    body: object = {},
+    params: object = {},
+    headers: object = {},
+): Promise<AxiosResponse> => {
+    return request(endpoint, 'PATCH', headers, params, body);
+}
+
 export const remove = (
     endpoint: string, 
     body: object = {},

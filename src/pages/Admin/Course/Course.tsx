@@ -23,10 +23,18 @@ type TableRecord = CourseItem & { key: string };
 
 export type CourseItem = {
   _id: string;
-title: string;
-description?: string;
-language_from: string;
-language_to: string;
+  title: string;
+  description?: string;
+  language_from: {
+    _id: string;
+    name: string;
+    code: string;
+  };
+  language_to: {
+    _id: string;
+    name: string;
+    code: string;
+  };
 };
 
 const Course = () => {
@@ -51,7 +59,7 @@ const Course = () => {
         label: item.name,
         value: item._id,
       }))
-    );
+      );
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -61,7 +69,7 @@ const Course = () => {
     setLoading(true);
     try {
       const res = await getListCourses(pagination.current || 1, pagination.pageSize || 10);
-      const list: CourseItem[] = res.data.data || [];
+      const list: CourseItem[] = res.data.courses || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
@@ -88,14 +96,14 @@ const Course = () => {
     try {
       // Optionally fetch detail if you need more fields:
       const res = await getCourseDetail(record._id);
-            const detail: CourseItem = res.data.data;
-      
+      const detail: CourseItem = res.data;
+
       setSelectedRecord(detail);
       form.setFieldsValue({
         title: detail.title,
         description: detail.description,
-        language_from: detail.language_from,
-        language_to: detail.language_to,
+        language_from: detail.language_from._id,
+        language_to: detail.language_to._id,
       });
       setPanelVisible(true);
     } catch {
@@ -143,20 +151,30 @@ const Course = () => {
   const columns = [
     { title: "Title", dataIndex: "title", key: "title" },
     { title: "Description", dataIndex: "description", key: "description" },
-    { title: "From language", dataIndex: "language_from", key: "language_from" },
-    { title: "To language", dataIndex: "language_to", key: "language_to" },
+    {
+      title: "From language", dataIndex: "language_from.name", key: "language_from.name",
+      render: (_: any, record: CourseItem) => record.language_from?.name,
+    },
+    {
+      title: "To language", dataIndex: "language_to", key: "language_to",
+      render: (_: any, record: CourseItem) => record.language_to?.name,
+    },
     {
       title: "Actions",
       key: "actions",
       render: (_: any, record: CourseItem) => (
-        <Popconfirm
-          title="Delete this grammar?"
-          onConfirm={() => handleDelete(record._id)}
-        >
-          <Button danger size="small">
-            Delete
-          </Button>
-        </Popconfirm>
+        <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
+          <Popconfirm
+            title="Delete this course?"
+            onConfirm={() => handleDelete(record._id)}
+          >
+            <Button danger size="small"
+              onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
+            >
+              Delete
+            </Button>
+          </Popconfirm>
+        </div>
       ),
     },
   ];
@@ -173,8 +191,8 @@ const Course = () => {
   }, [data, searchText]);
 
   const tableData: TableRecord[] = filteredData.map(item => ({
-    ...item,         
-    key: item._id,  
+    ...item,
+    key: item._id,
   }));
 
   return (
@@ -235,36 +253,36 @@ const Course = () => {
             <ReactQuill theme="snow" style={{ height: '100%' }} />
           </Form.Item>
           <LangFromTo>
-          <Form.Item
-            name="language_from"
-            label="From language"
-            rules={[{ required: true, message: "Please choose from language" }]}
-            style={{ width: "100%"}}
-          >
-            <Select
-              style={{
-                width: "100%",
-                height: 32,
-                borderRadius: 12,
-              }}
-              options={languageOptions}
-            />
-          </Form.Item>
-          <Form.Item
-            name="language_to"
-            label="To language"
-            rules={[{ required: true, message: "Please choose to language" }]}
-            style={{ width: "100%"}}
-          >
-            <Select
-              style={{
-                width: "100%",
-                height: 32,
-                borderRadius: 12,
-              }}
-              options={languageOptions}
-            />
-          </Form.Item>
+            <Form.Item
+              name="language_from"
+              label="From language"
+              rules={[{ required: true, message: "Please choose from language" }]}
+              style={{ width: "100%" }}
+            >
+              <Select
+                style={{
+                  width: "100%",
+                  height: 32,
+                  borderRadius: 12,
+                }}
+                options={languageOptions}
+              />
+            </Form.Item>
+            <Form.Item
+              name="language_to"
+              label="To language"
+              rules={[{ required: true, message: "Please choose to language" }]}
+              style={{ width: "100%" }}
+            >
+              <Select
+                style={{
+                  width: "100%",
+                  height: 32,
+                  borderRadius: 12,
+                }}
+                options={languageOptions}
+              />
+            </Form.Item>
           </LangFromTo>
         </Form>
       </Modal>
