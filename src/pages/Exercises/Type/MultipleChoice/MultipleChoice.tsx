@@ -12,6 +12,7 @@ import GameOver from "@/components/ProgressBar/GameOver/GameOver";
 import { useDispatch, useSelector } from "react-redux";
 import { CompleteFullLessonState, ExerciseProgressState, setExercisesProgress, setUserProgress } from "@/store/userProgress.slice";
 import { RootState } from "@/store";
+import { addHeart, removeHeart } from "@/store/user.slice";
 
 interface MultipleChoiceProps {
     data: any;
@@ -27,6 +28,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
     onAnswered,
 }) => {
     const exercises = useSelector((state: RootState) => state.userProgress.exercises);
+    const hearts = useSelector((state: RootState) => state.user.hearts);
     const dispatch = useDispatch();
     const [selectedValue, setSelectedValue] = useState<string | null>(null);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -38,10 +40,10 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
     const options = data.options;
 
     useEffect(() => {
-        if (lives === 0) {
+        if (hearts === 0) {
             setShowGameOver(true);
         }
-    }, [lives]);
+    }, [hearts]);
 
     // Handle selection and checking
     const handleCheck = () => {
@@ -71,6 +73,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
             }
             const updatedExercises = [...exercises, exercisesResult];
             dispatch(setExercisesProgress(updatedExercises));
+            dispatch(removeHeart())
         }
 
         setIsCorrect(correct);
@@ -112,7 +115,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
             <ProgressBar
                 totalQuestions={totalQuestions}
                 answeredQuestions={answeredQuestions}
-                lives={lives}
+                lives={hearts}
                 onClose
             />
             <PersonSay>

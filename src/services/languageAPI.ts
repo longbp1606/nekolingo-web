@@ -41,3 +41,10 @@ export const updateLanguage = (id: string, language: UpdateLanguage) => {
 export const deleteLanguage = (id: string) => {
     return remove(`/api/language/${id}`);
 }
+
+export interface LanguageItem {
+  _id: string;
+  name: string;
+  code: string;
+  flag_url?: string;
+}

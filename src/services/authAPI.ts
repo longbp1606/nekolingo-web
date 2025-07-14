@@ -5,7 +5,7 @@ export const login = (user: object) => {
 }
 
 export const register = (user: object) => {
-    return post('/api/auth/register', user)
+    return post('/api/auth/setup-register', user)
 }
 
 export const getProfile = () => {

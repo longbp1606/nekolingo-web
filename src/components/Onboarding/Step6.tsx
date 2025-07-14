@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { OptionGrid, OptionCard, Step2Container, Step2ContentWrapper, CatAsk, CatImage, Footer, FlagImage } from './Onboarding.styled';
 import NextButton from './NextButton/NextButton';
+import { useDispatch } from 'react-redux';
+import { setLevel } from '@/store/register.slice';
 
 interface Step6Props {
   onNext: (lvl: string) => void;
@@ -23,9 +25,10 @@ const imageMap: { [key: string]: string } = {
 };
 
 const Step6: React.FC<Step6Props> = ({ onNext }) => {
-  const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
+  const dispatch = useDispatch();
+  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
 
-  const handleSelect = (lvl: string) => {
+  const handleSelect = (lvl: number) => {
     setSelectedLevel(lvl);
   };
 
@@ -37,13 +40,13 @@ const Step6: React.FC<Step6Props> = ({ onNext }) => {
           <h2>Trình độ tiếng Anh của bạn ở mức nào?</h2>
         </CatAsk>
         <OptionGrid>
-          {levels.map((lvl) => {
-            const key = lvl.toLowerCase().replace(/[^a-z]/g, ''); 
+          {levels.map((lvl, index) => {
+            // const key = lvl.toLowerCase().replace(/[^a-z]/g, ''); 
             return (
               <OptionCard
                 key={lvl}
-                onClick={() => handleSelect(key)}
-                style={{ borderColor: selectedLevel === key ? '#00C2D1' : '#ddd' }}
+                onClick={() => handleSelect(index)}
+                style={{ borderColor: selectedLevel === index ? '#00C2D1' : '#ddd' }}
               >
                 <FlagImage src={imageMap[lvl]} alt={lvl} />
                 {lvl}
@@ -53,7 +56,10 @@ const Step6: React.FC<Step6Props> = ({ onNext }) => {
         </OptionGrid>
       </Step2ContentWrapper>
       <Footer>
-        <NextButton onClick={() => selectedLevel && onNext(selectedLevel)} />
+        <NextButton onClick={() => {
+          dispatch(setLevel(selectedLevel));
+          onNext('');
+        }} />
       </Footer>
     </Step2Container>
   );

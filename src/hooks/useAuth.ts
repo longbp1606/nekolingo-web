@@ -1,6 +1,8 @@
 import { getProfile } from "@/services/authAPI";
 import cookieUtils from "@/services/cookieUtils";
+import { setHearts } from "@/store/user.slice";
 import { useCallback, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 type JwtType = {
     exp: number;
@@ -11,6 +13,7 @@ type JwtType = {
 export type UserType = {
     id: string;
     email: string;
+    username: string;
     role: number;
     currentLevel: number;
     xp: number;
@@ -26,6 +29,7 @@ export type UserType = {
     currentCourse: string;
     currentTopic: string;
     currentLesson: string;
+    createdAt: Date;
 }
 
 const getUserID = () => {
@@ -36,6 +40,7 @@ const getUserID = () => {
 }
 
 const useAuth = () => {
+    const dispatch = useDispatch();
     const [profile, setProfile] = useState<UserType | null>(null);
     const [userID, setUserID] = useState<string | null>(getUserID());
     const [loading, setLoading] = useState(true);
@@ -57,6 +62,7 @@ const useAuth = () => {
         try {
             const res = await getProfile();
             setProfile(res.data.data as UserType);
+            dispatch(setHearts(res.data.data.hearts));
         } catch (error) {
             console.log(error); 
         }

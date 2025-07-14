@@ -41,8 +41,8 @@ const Login = () => {
     }
 
     const registerRedirect: RedirectType = {
-        description: 'Don\'t have an account?',
-        title: 'Register',
+        description: 'Chưa có tài khoản?',
+        title: 'Đăng ký ngay',
         url: '/register'
     }
 
@@ -50,8 +50,8 @@ const Login = () => {
         <>
             {contextHolder}
             <AuthForm
-                formTitle="Login"
-                buttonTitle="Login"
+                formTitle="Nekolingo"
+                buttonTitle="Đăng nhập"
                 fields={loginFields}
                 redirect={registerRedirect}
                 onFinish={onFinish}

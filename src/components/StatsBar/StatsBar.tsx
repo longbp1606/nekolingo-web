@@ -136,7 +136,7 @@ const StatsBar: React.FC = () => {
         {
             id: 'hearts',
             icon: <HeartIcon>❤️</HeartIcon>,
-            value: 5,
+            value: profile ? profile.hearts : 0,
             color: `${theme.color.red}`,
             bgColor: `${theme.color.bgRed}`,
             borderColor: `${theme.color.darkRed}`,
@@ -217,17 +217,18 @@ const StatsBar: React.FC = () => {
                                     filled={index < (dropdown.hearts || 0)}
                                     color={item.color}
                                 >
-                                    ❤️
+                                    { index < (dropdown.hearts || 0) ? '❤️' : '♡'}
                                 </HeartIconArray>
                             ))}
                         </HeartContainer>
 
                         <DropdownDescription>
-                            Ban có đầy đủ trái tim
+                            {dropdown.hearts && dropdown.maxHearts && dropdown.hearts === dropdown.maxHearts ? 
+                            "Bạn có đầy đủ trái tim" : "Bổ sung trái tim để tiếp tục luyện tập nhé"}
                         </DropdownDescription>
-                        <DropdownDescription style={{ fontSize: '12px', color: '#666', marginTop: '4px', cursor: 'pointer' }}>
+                        {/* <DropdownDescription style={{ fontSize: '12px', color: '#666', marginTop: '4px', cursor: 'pointer' }}>
                             Tiếp tục học
-                        </DropdownDescription>
+                        </DropdownDescription> */}
 
                         <HeartShopContainer>
                             {heartShopItems.map((shopItem) => (

@@ -3,15 +3,19 @@ import { Step2Container, Step2ContentWrapper, CatAsk, CatImage, Footer, OptionGr
 import { useNavigate } from 'react-router-dom';
 import NextButton from './NextButton/NextButton';
 
-const Step10: React.FC = () => {
+interface Step9Props {
+  onNext: () => void;
+}
+
+const Step10: React.FC<Step9Props> = ({ onNext }) => {
   const navigate = useNavigate();
   const [selectedLink, setSelectedLink] = useState<string | null>(null);
 
   const handleSelect = (src: string) => {
     if (src === 'home') {
-      navigate('/');
+      // navigate('/');
     } else if (src === 'test') {
-      navigate('/test');
+      // navigate('/test');
     }
   };
 
@@ -57,7 +61,7 @@ const Step10: React.FC = () => {
         </OptionGrid>
       </Step2ContentWrapper>
       <Footer>
-        <NextButton onClick={() => selectedLink && handleSelect(selectedLink)} />
+        <NextButton onClick={() => onNext()} />
       </Footer>
     </Step2Container>
   );

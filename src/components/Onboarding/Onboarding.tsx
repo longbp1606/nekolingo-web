@@ -17,8 +17,9 @@ import Step8 from './Step8';
 import Step10 from './Step10';
 import ProgressBar from './ProgressBar/ProgressBar';
 import { FaChevronLeft } from 'react-icons/fa6';
+import Step9 from './Step9';
 
-const TOTAL_STEPS = 10;
+const TOTAL_STEPS = 9;
 
 const Onboarding: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -58,9 +59,9 @@ const Onboarding: React.FC = () => {
       case 8:
         return <Step8 onNext={goNext} />; // Học bao lâu mỗi ngày
       // case 9:
-      //   return <Step9 onNext={goNext} />; // Cho phép bật thông báo
+      //   return <Step10 onNext={goNext} />; // chọn Home hoặc Test
       case 9:
-        return <Step10 />; // chọn Home hoặc Test
+        return <Step9 onNext={goNext} />; // Cho phép bật thông báo
       default:
         return null;
     }
