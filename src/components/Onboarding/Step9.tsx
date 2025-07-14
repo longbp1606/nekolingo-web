@@ -1,9 +1,14 @@
 import React from 'react';
-import { StepContainer, OptionCard } from './Onboarding.styled';
+import { StepContainer } from './Onboarding.styled';
+import { Divider, Flex, Image, Typography } from 'antd';
+import RegisterImage from '@/assets/following.gif';
+import Register from '@/pages/Auth/Register';
 
 interface Step9Props {
   onNext: () => void;
 }
+
+const { Title } = Typography;
 
 const Step9: React.FC<Step9Props> = ({ onNext }) => {
   const handleAllow = () => {
@@ -13,8 +18,7 @@ const Step9: React.FC<Step9Props> = ({ onNext }) => {
 
   return (
     <StepContainer>
-      <h2>Tớ sẽ nhắc bạn để việc học trở thành thói quen!</h2>
-      <OptionCard onClick={handleAllow}>Cho phép nhận thông báo</OptionCard>
+      <Register />
     </StepContainer>
   );
 };

@@ -168,7 +168,7 @@ align-items: center;
   border-right: 1px solid #eee;
   border-bottom: 4px solid #eee;
   border-radius: 20px;
-  padding: 10px 20px;
+  padding: 20px 20px;
   cursor: pointer;
   transition: border 0.2s, background 0.2s;
   &:hover {
@@ -392,6 +392,8 @@ export const FlagImage = styled.img`
   max-width: 45px;
   height: auto;
   object-fit: contain;
+  border-radius: 5px;
+  border: 2px solid #eee;
 `;
 
 export const OptionGridSrc = styled.div`

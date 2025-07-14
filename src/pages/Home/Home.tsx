@@ -37,9 +37,15 @@ const Home = () => {
     const [topicList, setTopicList] = useState<any>([]); // Initialize topicLis
 
     const token = cookieUtils.getAccessToken();
+    const isFirstStep = localStorage.getItem('FIRST_STEP');
+    if (isFirstStep === 'false') return <Navigate to={config.routes.public.welcome} />;
     if (!token) return <Navigate to={config.routes.public.login} />;
 
-    const courseId = "684f926a0fd356386a378630";
+    const courseId = profile ? profile.currentCourse : '';
+
+    useEffect(() => {
+        fetchData();
+    }, [profile]);
 
     const fetchData = async () => {
         try {
@@ -48,15 +54,11 @@ const Home = () => {
             dispatch(setCourseMetadata(response.data));
             setTopicList(response.data.topics);
         } catch (error: any) {
-            messageApi.error(error.message);
+            // messageApi.error(error.message);
         } finally {
             setLoading(false);
         }
     }
-
-    useEffect(() => {
-        fetchData();
-    }, []);
 
     const onModuleClick = (moduleId: any) => {
         console.log(`Module ${moduleId} clicked`);
@@ -93,12 +95,13 @@ const Home = () => {
                                         {/* Lesson Road */}
                                         <LessonRoad
                                             modules={topic.lessons?.map((lesson: any, index: number) => {
-                                                const currentLesson = profile?.currentLesson ? profile.currentLesson : '';
+                                                const currentLessonId = profile?.currentLesson ? profile.currentLesson : '';
+                                                const currentLesson = topic.lessons.find((lesson: any) => lesson._id === currentLessonId);
                                                 const currentTopic = profile?.currentTopic ? profile.currentTopic : '';
                                                 let currentStatus;
-                                                if (currentLesson === lesson._id && currentTopic === topic._id) currentStatus = 'current';
-                                                else if (currentLesson === lesson._id && currentTopic !== topic._id) currentStatus = 'locked';
-                                                else if (currentLesson!== lesson._id && currentTopic === topic._id && index + 1 > lesson.order) currentStatus = 'completed';
+                                                if (currentLessonId === lesson._id && currentTopic === topic._id) currentStatus = 'current';
+                                                else if (currentLessonId === lesson._id && currentTopic !== topic._id) currentStatus = 'locked';
+                                                else if (currentLessonId !== lesson._id && currentTopic === topic._id && currentLesson.order > lesson.order) currentStatus = 'completed';
 
                                                 return {
                                                     index,

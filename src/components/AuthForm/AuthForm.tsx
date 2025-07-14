@@ -63,7 +63,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
                             <Form.Item>
                                 <Button
-                                    title={isSubmitting ? <Loading3QuartersOutlined /> : buttonTitle}
+                                    title={isSubmitting ? <Loading3QuartersOutlined spin/> : buttonTitle}
                                     className='w-full'
                                     size='medium'
                                     disabled={isSubmitting}

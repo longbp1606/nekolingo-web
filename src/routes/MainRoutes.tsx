@@ -14,7 +14,13 @@ import FriendSearch from '@/pages/FriendSearch/FriendSearch';
 import cookieUtils from '@/services/cookieUtils';
 import { Navigate } from 'react-router-dom';
 
+
 const MainRouter = () => {
+    const isFinishFirstStep = localStorage.getItem('FIRST_STEP');
+    if(!isFinishFirstStep) {
+        localStorage.setItem('FIRST_STEP', 'false');
+    };
+
     const role = cookieUtils.getRole();
     if(role === 1) return <Navigate to={config.routes.admin.dashboard} />;
     

@@ -45,22 +45,59 @@ import following from "@/assets/following.gif";
 import addFriend from "@/assets/addfriend.gif";
 import add from "@/assets/add.png";
 import glass from "@/assets/glass.png";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import config from '@/config';
+import firefire from "@/assets/firefire.png";
+import thunder from "@/assets/thunder.png";
+import prize from "@/assets/prize.png";
+import cup from "@/assets/cup.png";
 
 
-import {
-    profile,
-    stats,
-} from './data';
 import AchievementList from '@/components/AchievementList/AchievementList';
 import PopupInvite from '@/components/PopupInvite/PopupInvite';
+import { useAuth } from '@/hooks';
+import Button from '@/components/Button';
+import cookieUtils from '@/services/cookieUtils';
 
 
 
 const Profile = () => {
+    const { profile } = useAuth();
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<'following' | 'followers'>('following');
     const [showPopup, setShowPopup] = useState(false);
+
+    const logout = () => {
+        cookieUtils.clear();
+        navigate(config.routes.public.login);
+    }
+
+    const stats = [
+        {
+            icon: firefire,
+            label: "Ngày streak",
+            value: profile ? profile.streakDays : 0,
+            className: "streak",
+        },
+        {
+            icon: thunder,
+            label: "Tổng điểm XP",
+            value: profile ? profile.xp : 0,
+            className: "lightning",
+        },
+        {
+            icon: prize,
+            label: "Giải đấu hiện tại",
+            value: "Đồng",
+            className: "bronze",
+        },
+        {
+            icon: cup,
+            label: "Số dấu đạt top 3",
+            value: "0",
+            className: "trophy",
+        },
+    ];
 
     return (
         <>
@@ -79,16 +116,17 @@ const Profile = () => {
                                     <EditFilled />
                                 </EditButton>
                                 <ProfileInfo>
-                                    <ProfileName>{profile.name}</ProfileName>
-                                    <ProfileHandle>{profile.handle}</ProfileHandle>
-                                    <ProfileJoinDate>{profile.joinDate}</ProfileJoinDate>
+                                    <ProfileName>{profile?.username || "User"}</ProfileName>
+                                    <ProfileHandle>{profile?.username || "User"}</ProfileHandle>
+                                    <ProfileJoinDate>{profile ? profile.createdAt.toString() : ""}</ProfileJoinDate>
                                     <FollowSection>
-                                        <FollowStats>Đang theo dõi {profile.following}</FollowStats>
+                                        <FollowStats>Đang theo dõi {0}</FollowStats>
                                         <FollowStats>
-                                            <span>{profile.followers} Người theo dõi</span>
+                                            <span>{0} Người theo dõi</span>
                                         </FollowStats>
                                     </FollowSection>
                                 </ProfileInfo>
+
                             </ProfileHeader>
 
                             <MainCard>
@@ -143,7 +181,7 @@ const Profile = () => {
                                     )}
                                 </TabContent>
                             </Card>
-                            <Card style={{padding: '16px'}}>
+                            <Card style={{ padding: '16px' }}>
                                 <AddFriendsSection>
                                     <AddFriendsTitle>Thêm bạn bè</AddFriendsTitle>
                                     <FriendOption>
@@ -176,6 +214,12 @@ const Profile = () => {
                                     <FooterLink>QUYỀN RIÊNG TƯ</FooterLink>
                                 </FooterRow>
                             </FooterWrapper>
+                            <Button
+                                onClick={logout}
+                                color='danger'
+                                title={"Đăng xuất"}
+                                size='medium'
+                            />
                         </StyledSidebar>
                     </HomeContent>
                 </HomeWrapper>
