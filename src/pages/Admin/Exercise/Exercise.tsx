@@ -93,14 +93,19 @@ const Exercise = () => {
       title: "Actions",
       key: "actions",
       render: (_: any, record: any) => (
-        <Popconfirm
-          title="Delete this grammar?"
-          onConfirm={() => handleDelete(record._id)}
-        >
-          <Button danger size="small">
-            Delete
-          </Button>
-        </Popconfirm>
+        <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
+
+          <Popconfirm
+            title="Delete this exercise?"
+            onConfirm={() => handleDelete(record._id)}
+          >
+            <Button danger size="small"
+              onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
+            >
+              Delete
+            </Button>
+          </Popconfirm>
+        </div>
       ),
     },
   ];

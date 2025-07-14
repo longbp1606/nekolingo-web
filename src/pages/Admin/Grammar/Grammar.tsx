@@ -136,14 +136,18 @@ const Grammar = () => {
       title: "Actions",
       key: "actions",
       render: (_: any, record: GrammarItem) => (
+        <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
         <Popconfirm
           title="Delete this grammar?"
           onConfirm={() => handleDelete(record._id)}
         >
-          <Button danger size="small">
+          <Button danger size="small"
+                        onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
+          >
             Delete
           </Button>
         </Popconfirm>
+        </div>
       ),
     },
   ];

@@ -58,21 +58,35 @@ export const SidebarHeader = styled.div`
 `;
 
 export const StyledSider = styled(Sider)`
-  background: none !important;
-  height: 100vh;
+  // background: none !important;
+  background: #005960;
+  height: calc(100vh - 32px);
   position: fixed;
   left: 0;
   top: 0;
   z-index: 100;
   overflow: auto;
+  border-radius: 20px;
+  margin: 16px;
+  color: #fff !important;
 
   .ant-menu-light {
-    background: none !important;
+    // background: none !important;
+    background: #005960;
     border-right: none !important;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
   .ant-menu-light .ant-menu-item-selected {
-  background: ${theme.color.primary}30;
-  border: 1px solid ${theme.color.primary};
+  // background: ${theme.color.primary}30;
+  // border: 1px solid ${theme.color.primary};
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid #fff;
   }
+
+  .ant-menu .ant-menu-item .anticon {
+  font-size: 18px;}
 `;

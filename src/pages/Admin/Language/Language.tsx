@@ -93,7 +93,7 @@ const Language = () => {
       message.success("Deleted successfully");
       await fetchAll();
     } catch {
-      message.error("Delete failed");
+      message.error("Cannot delete this language because it is already in use.");
     } finally {
       setLoading(false);
     }
@@ -136,14 +136,18 @@ const Language = () => {
       title: "Actions",
       key: "actions",
       render: (_: any, record: LanguageItem) => (
+        <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
         <Popconfirm
           title="Delete this language?"
           onConfirm={() => handleDelete(record._id)}
         >
-          <Button danger size="small">
+          <Button danger size="small"
+                        onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
+          >
             Delete
           </Button>
         </Popconfirm>
+        </div>
       ),
     },
   ];

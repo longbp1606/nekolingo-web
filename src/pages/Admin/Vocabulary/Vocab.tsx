@@ -168,6 +168,7 @@ const Vocab = () => {
       title: "Actions",
       key: "actions",
       render: (_: any, record: any) => (
+        <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
         <Popconfirm
           title="Delete this grammar?"
           onConfirm={() => handleDelete(record._id)}
@@ -178,6 +179,7 @@ const Vocab = () => {
             Delete
           </Button>
         </Popconfirm>
+        </div>
       ),
     },
   ];
