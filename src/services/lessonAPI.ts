@@ -1,4 +1,4 @@
-import { get, post, put, remove } from "./apiCaller";
+import { get, post, patch, remove } from "./apiCaller";
 
 export type CreateLesson = {
   title: string;
@@ -45,7 +45,7 @@ export const createLesson = (lesson: CreateLesson) => {
 };
 
 export const updateLesson = (id: string, lesson: UpdateLesson) => {
-  return put(`/api/lesson/${id}`, lesson);
+  return patch(`/api/lesson/${id}`, lesson);
 };
 
 export const deleteLesson = (id: string) => {

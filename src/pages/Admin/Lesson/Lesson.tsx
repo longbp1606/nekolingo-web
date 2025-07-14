@@ -26,7 +26,11 @@ export type LessonItem = {
   title: string;
   order: number;
   description?: string;
-  course: string;
+  type: "vocabulary" | "grammar" | "listening" | "reading" | "speaking";  
+  topic: {
+    _id: string;
+    title: string;
+  };
 };
 
 const Lesson = () => {
@@ -63,7 +67,7 @@ const Lesson = () => {
     setLoading(true);
     try {
       const res = await getListLessons(pagination.current || 1, pagination.pageSize || 10);
-      const list: LessonItem[] = res.data.data || [];
+      const list: LessonItem[] = res.data.lessons || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
@@ -90,9 +94,13 @@ const Lesson = () => {
     try {
       // Optionally fetch detail if you need more fields:
       const res = await getLessonDetail(record._id);
-      const detail: LessonItem = res.data.data;
+      const detail: LessonItem = res.data;
       setSelectedRecord(detail);
-      form.setFieldsValue(detail);
+      form.setFieldsValue({
+        title: detail.title,
+        description: detail.description,
+        topic: detail.topic._id,
+      });
       setPanelVisible(true);
     } catch {
       message.error("Failed to load detail");

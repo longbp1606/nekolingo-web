@@ -6,7 +6,7 @@ export const StyledButton = styled(Button)`
   background: ${theme.color.primary};
   border-bottom: 5px solid ${theme.color.borderNextButton};
   color: white;
-  border-radius: 20px;
+  border-radius: 10px;
   padding: 6px 24px; /* giảm chiều cao */
   font-size: 14px;
   cursor: pointer;

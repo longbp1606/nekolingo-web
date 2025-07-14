@@ -9,17 +9,13 @@ import {
   notification,
 } from "antd";
 import type { TablePaginationConfig } from "antd";
-import {
-  getListGrammars,
-  getGrammarDetail,
-  deleteGrammar,
-} from "@/services/grammarAPI";  // hãy chắc path đúng
 import { ContentCard, FilterArea } from "./Exercise.styled";
 import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
 import "react-quill/dist/quill.snow.css";
 import AddExercise from "./AddExercise";
+import { deleteExercise, getExerciseDetail, getListExercises } from "@/services/exerciseAPI";
 
 const Exercise = () => {
   const [data, setData] = useState<any[]>([]);
@@ -38,8 +34,8 @@ const Exercise = () => {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const res = await getListGrammars();
-      const list: any[] = res.data.data || [];
+      const res = await getListExercises(pagination.current || 1, pagination.pageSize || 10);
+      const list: any[] = res.data.exercises || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
@@ -64,7 +60,7 @@ const Exercise = () => {
     setLoading(true);
     try {
       // Optionally fetch detail if you need more fields:
-      const res = await getGrammarDetail(record._id);
+      const res = await getExerciseDetail(record._id);
       // setSelectedRecord(res.data);
       form.setFieldsValue(res.data);
       setCreating(true);
@@ -78,7 +74,7 @@ const Exercise = () => {
   const handleDelete = async (id: string) => {
     setLoading(true);
     try {
-      await deleteGrammar(id);
+      await deleteExercise(id);
       message.success("Deleted successfully");
       await fetchAll();
     } catch {
@@ -141,7 +137,7 @@ const Exercise = () => {
                 setCreating(true); // thay vì mở modal
               }}
             >
-              Add Grammar
+              Add Exercise
             </CAddButton>
           </FilterArea>
 

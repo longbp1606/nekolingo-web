@@ -7,6 +7,7 @@ import Grammar from "@/pages/Admin/Grammar/Grammar";
 import Language from "@/pages/Admin/Language/Language";
 import Lesson from "@/pages/Admin/Lesson/Lesson";
 import Topic from "@/pages/Admin/Topic/Topic";
+import Users from "@/pages/Admin/Users/Users";
 import Vocab from "@/pages/Admin/Vocabulary/Vocab";
 import cookieUtils from "@/services/cookieUtils";
 import { Navigate } from "react-router-dom";
@@ -26,7 +27,7 @@ const adminRoutes = {
         { path: config.routes.admin.course, element: <Course /> },
         { path: config.routes.admin.lesson, element: <Lesson /> },
         { path: config.routes.admin.exercise, element: <ExerciseManager /> },
-        { path: config.routes.admin.user, element: <Topic /> },
+        { path: config.routes.admin.user, element: <Users /> },
     ]
 }
 

@@ -9,24 +9,34 @@ import {
   message,
   Modal,
   notification,
-  Image,
 } from "antd";
 import type { TablePaginationConfig } from "antd";// hãy chắc path đúng
-import { ContentCard, FilterArea } from "./Language.styled";
+import { ContentCard, FilterArea } from "./Users.styled";
 import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
-import { createLanguage, deleteLanguage, getLanguageDetail, getListLanguages, updateLanguage } from "@/services/languageAPI";
+import { createUser, deleteUser, getListUsers, getUserDetail, updateUser } from "@/services/usersAPI";
 type TableRecord = LanguageItem & { key: string };
 
 export type LanguageItem = {
-  _id: string;
-  name: string;
-  code: string;
-  flag_url?: string;
+  _id: string,
+  email: string,
+  role: string,
+  avatarUrl: string,
+  currentLevel: number,
+  xp: number,
+  weeklyXp: number,
+  streakDays: number,
+  freezeCount: number,
+  isFreeze: boolean,
+  lastActiveDate: Date,
+  languageFrom: string,
+  languageTo: string,
+  is_premiere: boolean,
+  // }
 };
 
-const Language = () => {
+const Users = () => {
   const [data, setData] = useState<LanguageItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
@@ -43,8 +53,8 @@ const Language = () => {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const res = await getListLanguages(pagination.current || 1, pagination.pageSize || 10);
-      const list: LanguageItem[] = res.data.languages || [];
+      const res = await getListUsers();
+      const list: LanguageItem[] = res.data.data || [];
       setData(list);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
@@ -68,15 +78,13 @@ const Language = () => {
   const handleRowClick = async (record: LanguageItem) => {
     setLoading(true);
     try {
-      // Optionally fetch detail if you need more fields:
-      const res = await getLanguageDetail(record._id);
-      const detail: LanguageItem = res.data;
+      const res = await getUserDetail(record._id);
+      const detail: LanguageItem = res.data.data.user;
 
       setSelectedRecord(detail);
       form.setFieldsValue({
-        name: detail.name,
-        code: detail.code,
-        flag_url: detail.flag_url,
+        role: detail.role,
+        email: detail.email,
       });
       setPanelVisible(true);
     } catch {
@@ -89,7 +97,7 @@ const Language = () => {
   const handleDelete = async (id: string) => {
     // setLoading(true);
     try {
-      await deleteLanguage(id);
+      await deleteUser(id);
       message.success("Deleted successfully");
       await fetchAll();
     } catch {
@@ -104,10 +112,10 @@ const Language = () => {
     setLoading(true);
     try {
       if (selectedRecord) {
-        await updateLanguage(selectedRecord._id, values);
+        await updateUser(selectedRecord._id, values);
         message.success("Updated successfully");
       } else {
-        await createLanguage(values);
+        await createUser(values);
         message.success("Created successfully");
       }
       setPanelVisible(false);
@@ -122,16 +130,8 @@ const Language = () => {
   };
 
   const columns = [
-    { title: "Name", dataIndex: "name", key: "name" },
-    { title: "Code", dataIndex: "code", key: "code" },
-    { 
-      title: "Flag url", 
-      dataIndex: "flag_url", 
-      key: "flag_url",
-      render: (url: string) => (
-        <Image width={50} src={url} preview={false} />
-      )
-    },
+    { title: "Role", dataIndex: "role", key: "role" },
+    { title: "Email", dataIndex: "email", key: "email" },
     {
       title: "Actions",
       key: "actions",
@@ -199,7 +199,7 @@ const Language = () => {
       </ContentCard>
 
       <Modal
-        title={selectedRecord ? "Edit Language" : "Add Language"}
+        title={selectedRecord ? "Edit User" : "Add User"}
         visible={panelVisible}
         onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
@@ -208,22 +208,16 @@ const Language = () => {
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            name="name"
-            label="Name"
-            rules={[{ required: true, message: "Please enter name" }]}
+            name="role"
+            label="Role"
+            rules={[{ required: true, message: "Please enter role" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            name="code"
-            label="Code"
-            rules={[{ required: true, message: "Please enter code" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="flag_url"
-            label="Flag url"
+            name="email"
+            label="Email"
+            rules={[{ required: true, message: "Please enter email" }]}
           >
             <Input />
           </Form.Item>
@@ -233,4 +227,4 @@ const Language = () => {
   );
 };
 
-export default Language;
+export default Users;

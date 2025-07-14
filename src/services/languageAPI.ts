@@ -1,4 +1,4 @@
-import { get, post, put, remove } from "./apiCaller"
+import { get, post, patch, remove } from "./apiCaller"
 
 export type CreateLanguage = {
     name: string;
@@ -35,7 +35,7 @@ export const createLanguage = (language: CreateLanguage) => {
 }
 
 export const updateLanguage = (id: string, language: UpdateLanguage) => {
-    return put(`/api/language/${id}`, language);
+    return patch(`/api/language/${id}`, language);
 }
 
 export const deleteLanguage = (id: string) => {
