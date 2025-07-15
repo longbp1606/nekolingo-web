@@ -25,8 +25,10 @@ export type LessonItem = {
   _id: string;
   title: string;
   order: number;
+  xp_reward: number;
+  mode: "normal" | "test";
   description?: string;
-  type: "vocabulary" | "grammar" | "listening" | "reading" | "speaking";  
+  type: ("vocabulary" | "grammar" | "listening" | "reading" | "speaking")[];
   topic: {
     _id: string;
     title: string;
@@ -92,22 +94,29 @@ const Lesson = () => {
   const handleRowClick = async (record: LessonItem) => {
     setLoading(true);
     try {
-      // Optionally fetch detail if you need more fields:
+      await fetchOptions(); // 👈 đảm bảo có options
       const res = await getLessonDetail(record._id);
       const detail: LessonItem = res.data;
+  
       setSelectedRecord(detail);
       form.setFieldsValue({
         title: detail.title,
         description: detail.description,
         topic: detail.topic._id,
+        type: Array.isArray(detail.type) ? detail.type : [detail.type],
+        order: Number(detail.order),
+        xp_reward: Number(detail.xp_reward),
+        mode: detail.mode,
       });
+  
       setPanelVisible(true);
     } catch {
-      message.error("Failed to load detail");
+      notification.error({ message: "Failed to load detail" });
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleDelete = async (id: string) => {
     setLoading(true);
@@ -124,6 +133,7 @@ const Lesson = () => {
 
   const handleFormSubmit = async () => {
     const values = await form.validateFields();
+
     setLoading(true);
     try {
       if (selectedRecord) {
@@ -153,14 +163,18 @@ const Lesson = () => {
       title: "Actions",
       key: "actions",
       render: (_: any, record: any) => (
-        <Popconfirm
-          title="Delete this grammar?"
-          onConfirm={() => handleDelete(record.id)}
-        >
-          <Button danger size="small">
-            Delete
-          </Button>
-        </Popconfirm>
+        <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
+          <Popconfirm
+            title="Delete this grammar?"
+            onConfirm={() => handleDelete(record.id)}
+          >
+            <Button danger size="small"
+              onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
+            >
+              Delete
+            </Button>
+          </Popconfirm>
+        </div>
       ),
     },
   ];
@@ -241,7 +255,7 @@ const Lesson = () => {
           <Form.Item
             name="type"
             label="Type"
-            rules={[{ required: true, message: "Please choose from language" }]}
+            rules={[{ required: true, message: "Please choose at least one type" }]}
             style={{ width: "100%" }}
           >
             <Select
@@ -250,6 +264,7 @@ const Lesson = () => {
                 height: 32,
                 borderRadius: 12,
               }}
+              mode="multiple"
               options={[
                 { value: "vocabulary", label: "Vocabulary" },
                 { value: "grammar", label: "Grammar" },
@@ -274,6 +289,38 @@ const Lesson = () => {
               options={topicOptions}
             />
           </Form.Item>
+          <Form.Item
+            name="order"
+            label="Order"
+            normalize={(value) => Number(value)}
+
+            rules={[{ required: true, message: "Please enter order" }]}
+          >
+            <Input type="number" />
+          </Form.Item>
+
+          <Form.Item
+            name="xp_reward"
+            label="XP Reward"
+            normalize={(value) => Number(value)}
+            rules={[{ required: true, message: "Please enter XP reward" }]}
+          >
+            <Input type="number" />
+          </Form.Item>
+
+          <Form.Item
+            name="mode"
+            label="Mode"
+            rules={[{ required: true, message: "Please select mode" }]}
+          >
+            <Select
+              options={[
+                { label: "Normal", value: "normal" },
+                { label: "Test", value: "test" },
+              ]}
+            />
+          </Form.Item>
+
         </Form>
       </Modal>
     </div>

@@ -4,7 +4,7 @@ import { theme } from "@/themes";
 import AdminSidebar from "@/components/AdminSidebar";
 import { getProfile } from "@/services/authAPI";
 import { useEffect, useState } from "react";
-import { Avatar, Typography } from "antd";
+import { Avatar, Dropdown, MenuProps, Typography } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useDocumentTitle } from "@/hooks";
 
@@ -12,6 +12,7 @@ const LayoutContainer = styled.div`
   display: flex;
   min-height: 100vh;
   background-color: #F1F4F9;
+  padding: 16px;
 `;
 
 const MainArea = styled.div`
@@ -46,6 +47,21 @@ const MainContent = styled.div`
   background-color: #F1F4F9;
 `;
 
+const Account = styled.div`
+  display: flex;
+  align-items: center; 
+  gap: 12px;
+  padding: 6px 10px;
+  
+
+  &&:hover {
+    cursor: pointer;
+    background: ${theme.color.primary}30;
+    border: 1px solid ${theme.color.primary};
+    border-radius: 8px;
+  }
+`;
+
 export type UserType = {
   id: string;
   email: string;
@@ -59,8 +75,7 @@ export type UserType = {
 
 const AdminLayout = () => {
   const [profile, setProfile] = useState<UserType | null>(null);
-    useDocumentTitle('Nekolingo');
-
+  useDocumentTitle('Nekolingo');
 
   const fetchProfile = async () => {
     try {
@@ -77,9 +92,18 @@ const AdminLayout = () => {
 
   const location = useLocation();
 
-  // Extract last part of the path to show as screen name
   const screenTitle = location.pathname.split("/").pop()?.replace(/-/g, " ");
 
+  const items: MenuProps['items'] = [
+    {
+      label: (
+        <a href="http://localhost:5173/login" target="_blank" rel="noopener noreferrer">
+          Logout
+        </a>
+      ),
+      key: '0',
+    }
+  ];
 
   return (
     <LayoutContainer>
@@ -89,12 +113,15 @@ const AdminLayout = () => {
           <PageTitle level={4}>
             {screenTitle ? screenTitle.charAt(0).toUpperCase() + screenTitle.slice(1) : "Dashboard"}
           </PageTitle>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <Avatar size="large" icon={<UserOutlined />} />
-            <Typography.Text strong>
-              {profile?.email || "Admin"}
-            </Typography.Text>
-          </div>
+          <Dropdown menu={{ items }} trigger={['click']}>
+
+            <Account onClick={(e) => e.preventDefault()}>
+              <Avatar size="large" icon={<UserOutlined />} />
+              <Typography.Text strong>
+                {profile?.email || "Admin"}
+              </Typography.Text>
+            </Account>
+          </Dropdown>
         </HeaderBar>
         <MainContent>
           <Outlet />

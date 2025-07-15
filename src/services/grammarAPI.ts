@@ -1,4 +1,4 @@
-import { get, post, put, remove } from "./apiCaller"
+import { get, post, patch, remove } from "./apiCaller"
 
 export type CreateGrammar = {
     name: string;
@@ -25,7 +25,7 @@ export const createGrammar = (grammar: CreateGrammar) => {
 }
 
 export const updateGrammar = (id: string, grammar: Partial<UpdateGrammar>) => {
-    return put(`/api/grammar/${id}`, grammar);
+    return patch(`/api/grammar/${id}`, grammar);
 }
 
 export const deleteGrammar = (id: string) => {

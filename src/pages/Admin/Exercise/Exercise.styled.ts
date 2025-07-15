@@ -30,7 +30,9 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 16px;
-  min-height: 100vh;
+  min-height: calc(100vh - 144px);
+  width: 100%;
+  overflow: auto;
 `;
 
 export const Header = styled.div`
@@ -45,6 +47,8 @@ export const Header = styled.div`
     font-weight: 600;
     color: #1f2937;
     margin: 0;
+    width: 100%;
+    text-align: center;
   }
 `;
 
@@ -57,6 +61,28 @@ export const BackButton = styled(Button)`
     padding: 6px 24px; /* giảm chiều cao */
     font-size: 14px;
     cursor: pointer;
+    max-width: max-content;
+  
+    &:hover {
+      background: #2fdfec;
+      color: #ffffff;
+      border-left: 1px solid #2fdfec;
+      border-top: 1px solid #2fdfec;
+      border-right: 1px solid #2fdfec;
+      border-bottom: 5px solid ${theme.color.borderNextButton};
+    }
+`;
+
+export const NextButton = styled(Button)`
+  width: max-content;
+  background: ${theme.color.green};
+    border-bottom: 5px solid ${theme.color.darkGreen};
+    color: white;
+    border-radius: 10px;
+    padding: 6px 24px; /* giảm chiều cao */
+    font-size: 14px;
+    cursor: pointer;
+    max-width: max-content;
   
     &:hover {
       background: #2fdfec;
@@ -73,19 +99,25 @@ export const LessonGrid = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 16px;
   padding-top: 12px;
+
+   .ant-col-6 {
+  max-width: 100% !important;
+  }
 `;
 
 export const TypeGrid = styled(LessonGrid)`
   background-color: #fff;
   padding: 24px;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  // box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 `;
 
 export const SlideList = styled.div`
   display: flex;
   gap: 8px;
   margin-top: 16px;
+
+ 
 `;
 
 export const SlideItem = styled.div<{ active?: boolean }>`
@@ -103,10 +135,13 @@ export const EditorArea = styled.div`
   background: #ffffff;
   padding: 32px;
   border-radius: 12px;
-  max-width: 720px;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  position: absolute;
+    top: 80px;
+    width: 79%;
 
   textarea,
   input,
@@ -124,11 +159,14 @@ export const EditorArea = styled.div`
   }
 
   button {
-    margin-top: 24px;
     width: 100%;
     height: 40px;
     font-weight: 600;
     border-radius: 8px;
+  }
+
+  .ant-col-6 {
+  max-width: 100% !important;
   }
 `;
 
@@ -157,4 +195,14 @@ export const ExerciseGrid = styled(Row)`
       font-weight: 500;
     }
   }
+`;
+
+export const ExerciseArea = styled.div`
+  margin-top: 24px;
+`;
+
+export const ActionButton = styled.div<{ active?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
