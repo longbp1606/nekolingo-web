@@ -5,7 +5,7 @@ export type CreateExercise = {
   question_format: string;
   question: string;
   correct_answer: string;
-  options?: string[];
+  options?: object[];
   audio_url?: string;
   image_url?: string;
   lesson: string;

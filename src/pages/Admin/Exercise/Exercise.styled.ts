@@ -136,6 +136,7 @@ export const EditorArea = styled.div`
   padding: 32px;
   border-radius: 12px;
   max-width: 100%;
+  height: 700px;
   margin-left: auto;
   margin-right: auto;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
