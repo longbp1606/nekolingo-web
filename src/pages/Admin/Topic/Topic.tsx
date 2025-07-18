@@ -25,8 +25,8 @@ const Topic = () => {
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [selectedCourse, setSelectedCourse] = useState<string | undefined>();
   const [form] = Form.useForm();
-  const [modalVisible, setModalVisible] = useState(false);
   const hasErrorNotified = useRef(false);
+  const [panelVisible, setPanelVisible] = useState(false);
 
   const fetchData = async (page = 1, take = 5, courseId?: string) => {
     setLoading(true);
@@ -75,7 +75,7 @@ const Topic = () => {
         order: detail.order,
         description: detail.description,
       });
-
+      setPanelVisible(true);
     } catch {
       message.error("Failed to load detail");
     } finally {
@@ -87,7 +87,7 @@ const Topic = () => {
     try {
       await deleteTopic(id); /* <-- gọi API xóa tương ứng */
       message.success("Deleted successfully");
-      await (pagination.current, pagination.pageSize, selectedCourse);
+      fetchData(pagination.current, pagination.pageSize, selectedCourse);
     } catch {
       message.error("Delete failed");
     }
@@ -103,10 +103,10 @@ const Topic = () => {
         await createTopic({ ...values, course: selectedCourse });
         message.success("Created successfully");
       }
-      setModalVisible(false);
+      setPanelVisible(false);
       setSelectedRecord(null);
       form.resetFields();
-      fetchData(pagination.current, pagination.pageSize, selectedCourse);
+      await fetchData(pagination.current, pagination.pageSize, selectedCourse);
     } catch {
       message.error("Submit failed");
     }
@@ -131,12 +131,6 @@ const Topic = () => {
     },
   ];
 
-  const handleModalCancel = () => {
-    setModalVisible(false);
-    setSelectedRecord(null);
-    form.resetFields();
-  };
-
   return (
     <div style={{ display: "flex", gap: 16 }}>
       <ContentCard style={{ flex: 2 }}>
@@ -145,7 +139,6 @@ const Topic = () => {
             onSelectCourse={(course) => {
               setSelectedCourse(course._id);
               setSelectedRecord(null);
-              // setPanelVisible(false);
             }}
           />
           <CAddButton
@@ -154,8 +147,7 @@ const Topic = () => {
             onClick={() => {
               setSelectedRecord(null);
               form.resetFields();
-              // setPanelVisible(true);
-              setModalVisible(true);
+              setPanelVisible(true);
             }}
           >
             Add Topic
@@ -175,11 +167,9 @@ const Topic = () => {
 
       <Modal
         title={selectedRecord ? "Edit Topic" : "Add Topic"}
-        open={modalVisible}
+        visible={panelVisible}
+        onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
-        onCancel={handleModalCancel}
-        okText="Save"
-        cancelText="Cancel"
         confirmLoading={loading}
         destroyOnClose
       >
@@ -190,7 +180,7 @@ const Topic = () => {
           <Form.Item name="order" label="Order" rules={[{ required: true, message: "Please enter order" }]}>
             <InputNumber style={{ width: "100%" }} />
           </Form.Item>
-          <Form.Item name="description" label="Description" rules={[{ required: true, message: "Please enter description" }]}>
+          <Form.Item name="description" label="Description">
             <ReactQuill theme="snow" style={{ height: '100%' }} />
           </Form.Item>
         </Form>

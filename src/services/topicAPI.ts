@@ -1,4 +1,4 @@
-import { get, post, put, remove } from "./apiCaller"
+import { get, post, patch, remove } from "./apiCaller"
 
 export type CreateTopic = {
     title: string;
@@ -34,7 +34,7 @@ export const createTopic = (topic: CreateTopic) => {
 }
 
 export const updateTopic = (id: string, topic: Partial<UpdateTopic>) => {
-    return put(`/api/topic/${id}`, topic);
+    return patch(`/api/topic/${id}`, topic);
 }
 
 export const deleteTopic = (id: string) => {
