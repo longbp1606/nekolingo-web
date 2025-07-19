@@ -1,12 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import { Outlet, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { theme } from "@/themes";
 import AdminSidebar from "@/components/AdminSidebar";
 import { getProfile } from "@/services/authAPI";
 import { useEffect, useState } from "react";
-import { Avatar, Dropdown, MenuProps, Typography } from "antd";
+import { Avatar, Dropdown, MenuProps, Segmented, Typography } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useDocumentTitle } from "@/hooks";
+import { getListCourses } from "@/services/courseAPI";
 
 const LayoutContainer = styled.div`
   display: flex;
@@ -40,6 +43,34 @@ const PageTitle = styled(Typography.Title)`
   }
 `;
 
+const SegmentedWrapper = styled.div`
+  padding: 16px 24px;
+
+  .ant-segmented {
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid ${theme.color.primary}50;
+  }
+
+  .ant-segmented-item {
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .ant-segmented-item-selected {
+    background-color: ${theme.color.primary};
+    color: white;
+  }
+
+  .ant-segmented-thumb {
+    background-color: ${theme.color.primary};
+    border-radius: 8px !important;
+  }
+`;
+
+
 const MainContent = styled.div`
   flex: 1;
   padding: 24px;
@@ -72,9 +103,16 @@ export type UserType = {
   is_primiere: boolean;
 }
 
+interface AdminProps {
+  selectedCourse: any;
+  setSelectedCourse: any;
+}
 
-const AdminLayout = () => {
+const AdminLayout: React.FC<AdminProps> = ({ selectedCourse, setSelectedCourse }) => {
+  const [selectedCourseState, setSelectedCourseState] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserType | null>(null);
+  const [courses, setCourses] = useState<any[]>([]);
+
   useDocumentTitle('Nekolingo');
 
   const fetchProfile = async () => {
@@ -87,12 +125,39 @@ const AdminLayout = () => {
   }
 
   useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await getListCourses(1, 10);
+        const courseList = res.data.courses || [];
+        setCourses(courseList);
+  
+        if (courseList.length > 0) {
+          const firstCourseId = courseList[0]._id;
+          setSelectedCourseState(firstCourseId);
+          setSelectedCourse(firstCourseId);
+        }
+      } catch {
+        console.log("Failed to fetch courses");
+      }
+    };
+  
+    fetchCourses();
+  }, []);
+  
+
+
+  useEffect(() => {
     fetchProfile();
   }, []);
 
   const location = useLocation();
 
   const screenTitle = location.pathname.split("/").pop()?.replace(/-/g, " ");
+  const onSegmentChange = (value: string | number) => {
+    console.log("Selected course ID:", value);
+    setSelectedCourseState(value as string);
+    setSelectedCourse(value as string);
+  };
 
   const items: MenuProps['items'] = [
     {
@@ -113,6 +178,18 @@ const AdminLayout = () => {
           <PageTitle level={4}>
             {screenTitle ? screenTitle.charAt(0).toUpperCase() + screenTitle.slice(1) : "Dashboard"}
           </PageTitle>
+
+          <SegmentedWrapper>
+            <Segmented
+              options={courses.map(c => ({
+                label: c.title.split(' ')[0],
+                value: c._id,
+              }))}
+              value={selectedCourseState ?? undefined}
+              onChange={onSegmentChange}
+            />
+          </SegmentedWrapper>
+
           <Dropdown menu={{ items }} trigger={['click']}>
 
             <Account onClick={(e) => e.preventDefault()}>
@@ -124,7 +201,7 @@ const AdminLayout = () => {
           </Dropdown>
         </HeaderBar>
         <MainContent>
-          <Outlet />
+                <Outlet context={{ selectedCourse }} />
         </MainContent>
       </MainArea>
     </LayoutContainer>

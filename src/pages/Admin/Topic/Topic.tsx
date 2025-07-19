@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { Button, Form, Input, InputNumber, Popconfirm, message, notification, Modal } from "antd";
 import { createTopic, deleteTopic, getListTopics, getTopicDetail, updateTopic } from "@/services/topicAPI";
 import { ContentCard, FilterArea } from "./Topic.styled";
-import InputCourse from "@/components/InputCourse/InputCourse";
 import CTable from "@/components/CustomedTable/CTable";
 import CAddButton from "@/components/AddButton/AddButton";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { useOutletContext } from "react-router-dom";
 
 export type TopicItem = {
   _id: string;
@@ -17,16 +17,17 @@ export type TopicItem = {
   description?: string;
   course: string;
 };
+interface OutletCtx { selectedCourse: string | null }
 
-const Topic = () => {
+const Topic: React.FC = () => {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
-  const [selectedCourse, setSelectedCourse] = useState<string | undefined>();
   const [form] = Form.useForm();
   const hasErrorNotified = useRef(false);
   const [panelVisible, setPanelVisible] = useState(false);
+  const { selectedCourse } = useOutletContext<OutletCtx>();
 
   const fetchData = async (page = 1, take = 5, courseId?: string) => {
     setLoading(true);
@@ -56,12 +57,12 @@ const Topic = () => {
   // Khi course thay đổi hoặc pageSize thay đổi
   useEffect(() => {
     setPagination(p => ({ ...p, current: 1 }));
-    fetchData(1, pagination.pageSize, selectedCourse);
+    fetchData(1, pagination.pageSize, selectedCourse ?? undefined);
   }, [selectedCourse, pagination.pageSize]);
 
   // Khi pagination.current hoặc selectedCourse thay đổi
   useEffect(() => {
-    fetchData(pagination.current, pagination.pageSize, selectedCourse);
+    fetchData(pagination.current, pagination.pageSize, selectedCourse ?? undefined);
   }, [pagination.current, pagination.pageSize, selectedCourse]);
 
   const handleRowClick = async (record: TopicItem) => {
@@ -87,7 +88,7 @@ const Topic = () => {
     try {
       await deleteTopic(id); /* <-- gọi API xóa tương ứng */
       message.success("Deleted successfully");
-      fetchData(pagination.current, pagination.pageSize, selectedCourse);
+      fetchData(pagination.current, pagination.pageSize, selectedCourse ?? undefined);
     } catch {
       message.error("Delete failed");
     }
@@ -106,7 +107,7 @@ const Topic = () => {
       setPanelVisible(false);
       setSelectedRecord(null);
       form.resetFields();
-      await fetchData(pagination.current, pagination.pageSize, selectedCourse);
+      await fetchData(pagination.current, pagination.pageSize, selectedCourse ?? undefined);
     } catch {
       message.error("Submit failed");
     }
@@ -135,12 +136,12 @@ const Topic = () => {
     <div style={{ display: "flex", gap: 16 }}>
       <ContentCard style={{ flex: 2 }}>
         <FilterArea>
-          <InputCourse
+          {/* <InputCourse
             onSelectCourse={(course) => {
               setSelectedCourse(course._id);
               setSelectedRecord(null);
             }}
-          />
+          /> */}
           <CAddButton
             type="primary"
             disabled={!selectedCourse}

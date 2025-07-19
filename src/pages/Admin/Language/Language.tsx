@@ -10,6 +10,7 @@ import {
   Modal,
   notification,
   Image,
+  Upload,
 } from "antd";
 import type { TablePaginationConfig } from "antd";// hãy chắc path đúng
 import { ContentCard, FilterArea } from "./Language.styled";
@@ -17,6 +18,8 @@ import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
 import { createLanguage, deleteLanguage, getLanguageDetail, getListLanguages, updateLanguage } from "@/services/languageAPI";
+import { uploadImage } from "@/services/uploadAPI";
+import { PlusOutlined } from "@ant-design/icons";
 type TableRecord = LanguageItem & { key: string };
 
 export type LanguageItem = {
@@ -39,6 +42,7 @@ const Language = () => {
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
   const hasErrorNotified = useRef(false);
+  const [flagUrl, setFlagUrl] = useState("");
 
   const fetchAll = async () => {
     setLoading(true);
@@ -78,6 +82,7 @@ const Language = () => {
         code: detail.code,
         flag_url: detail.flag_url,
       });
+      setFlagUrl(detail.flag_url || '');
       setPanelVisible(true);
     } catch {
       message.error("Failed to load detail");
@@ -124,29 +129,27 @@ const Language = () => {
   const columns = [
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Code", dataIndex: "code", key: "code" },
-    { 
-      title: "Flag url", 
-      dataIndex: "flag_url", 
+    {
+      title: "Flag",
+      dataIndex: "flag_url",
       key: "flag_url",
-      render: (url: string) => (
-        <Image width={50} src={url} preview={false} />
-      )
+      render: (url: string) => url ? <Image width={50} src={url} preview={false} /> : null,
     },
     {
       title: "Actions",
       key: "actions",
       render: (_: any, record: LanguageItem) => (
         <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
-        <Popconfirm
-          title="Delete this language?"
-          onConfirm={() => handleDelete(record._id)}
-        >
-          <Button danger size="small"
-                        onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
+          <Popconfirm
+            title="Delete this language?"
+            onConfirm={() => handleDelete(record._id)}
           >
-            Delete
-          </Button>
-        </Popconfirm>
+            <Button danger size="small"
+              onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
+            >
+              Delete
+            </Button>
+          </Popconfirm>
         </div>
       ),
     },
@@ -227,9 +230,35 @@ const Language = () => {
           </Form.Item>
           <Form.Item
             name="flag_url"
-            label="Flag url"
+            label="Flag"
+            getValueFromEvent={() => flagUrl}
           >
-            <Input />
+            <Upload
+              listType="picture-card"
+              showUploadList={false}
+              accept="image/*"
+              customRequest={async ({ file, onSuccess, onError }) => {
+                try {
+                  const res = await uploadImage({ file: file as File, folder: 'flags' });
+                  const url = res.url;  // lấy đúng từ response
+                  // gán URL vào Form-field ẩn
+                  form.setFieldsValue({ flag_url: url });
+                  setFlagUrl(url);
+                  onSuccess?.(null, file as File);
+                } catch (err) {
+                  onError?.(err as Error);
+                }
+              }}
+            >
+              {flagUrl ? (
+                <Image src={flagUrl} width={80} preview={false} />
+              ) : (
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </div>
+              )}
+            </Upload>
           </Form.Item>
         </Form>
       </Modal>

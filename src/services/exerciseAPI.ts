@@ -1,10 +1,11 @@
-import { get, post, put, remove } from "./apiCaller";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { get, post, patch, remove } from "./apiCaller";
 
 export type CreateExercise = {
   type: string;
   question_format: string;
   question: string;
-  correct_answer: string;
+  correct_answer: any;
   options?: object[];
   audio_url?: string;
   image_url?: string;
@@ -16,9 +17,9 @@ export type CreateExercise = {
 
 export type UpdateExercise = {
   type?: string;
-  question_format?: string;
+  question_format?: any;
   question?: string;
-  options?: string[];
+  options?: object[];
   audio_url?: string;
   image_url?: string;
   lesson?: string;
@@ -47,7 +48,7 @@ export const createExercise = (exercise: CreateExercise) => {
 };
 
 export const updateExercise = (id: string, exercise: UpdateExercise) => {
-  return put(`/api/exercise/${id}`, exercise);
+  return patch(`/api/exercise/${id}`, exercise);
 };
 
 export const deleteExercise = (id: string) => {
