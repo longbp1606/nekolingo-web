@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Button,
   Form,
@@ -16,6 +16,12 @@ import CAddButton from "@/components/AddButton/AddButton";
 import "react-quill/dist/quill.snow.css";
 import AddExercise from "./AddExercise";
 import { deleteExercise, getExerciseDetail, getListExercises } from "@/services/exerciseAPI";
+import { useOutletContext } from "react-router-dom";
+import { getTopicCourse } from "@/services/topicAPI";
+import { getListLessons } from "@/services/lessonAPI";
+import { LessonItem } from "../Lesson/Lesson";
+
+interface OutletCtx { selectedCourse: string | null }
 
 const Exercise = () => {
   const [data, setData] = useState<any[]>([]);
@@ -30,13 +36,43 @@ const Exercise = () => {
   const [searchText, setSearchText] = useState("");
   const hasErrorNotified = useRef(false);
   const [creating, setCreating] = useState(false);
+  const { selectedCourse } = useOutletContext<OutletCtx>();
+  const [topics, setTopics] = useState<{ _id: string; title: string }[]>([]);
+  const [lessons, setLessons] = useState<{ _id: string; title: string }[]>([]);
 
-  const fetchAll = async () => {
+  const fetchTopics = useCallback(async () => {
+    if (!selectedCourse) return setTopics([]);
+    const res = await getTopicCourse(selectedCourse);
+    setTopics(res.data.data || []);
+  }, [selectedCourse]);
+
+  const fetchLessons = useCallback(async () => {
+    if (!topics.length) return setLessons([]);
+    // giả sử API có phân trang, lấy 1000 cho đủ:
+    const res = await getListLessons(1, 100);
+    const all: LessonItem[] = res.data.lessons || [];
+    const topicIds = new Set(topics.map(t => t._id));
+    const filtered = all.filter(l => topicIds.has(l.topic._id));
+    setLessons(filtered);
+  }, [topics]);
+
+  useEffect(() => {
+    fetchTopics();
+  }, [fetchTopics]);
+
+  useEffect(() => {
+    fetchLessons();
+  }, [fetchLessons]);
+
+  const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
       const res = await getListExercises(pagination.current || 1, pagination.pageSize || 10);
       const list: any[] = res.data.exercises || [];
-      setData(list);
+      const lessonIds = lessons.map((l) => l._id);
+      const filtered = list.filter((exercise) => lessonIds.includes(exercise.lesson._id));
+
+      setData(filtered);
       setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
       if (!hasErrorNotified.current) {
@@ -50,11 +86,11 @@ const Exercise = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.current, pagination.pageSize, lessons]);
 
   useEffect(() => {
     fetchAll();
-  }, []);
+  }, [fetchAll]);
 
   const handleRowClick = async (record: any) => {
     setLoading(true);
@@ -88,7 +124,13 @@ const Exercise = () => {
   const columns = [
     { title: 'Question format', dataIndex: 'question_format', key: 'question_format' },
     { title: 'Question', dataIndex: 'question', key: 'question' },
-    { title: 'Correct answer', dataIndex: 'correct_answer', key: 'correct_answer' },
+    {
+      title: 'Correct answer', dataIndex: 'correct_answer', key: 'correct_answer',
+      render: (opts: any) => {
+        if (!Array.isArray(opts)) return String(opts ?? '');
+        return opts.map((o: any) => `${o.left} ↔ ${o.right}`).join('; ');
+      }
+    },
     {
       title: "Actions",
       key: "actions",

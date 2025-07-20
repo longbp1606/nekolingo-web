@@ -13,8 +13,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 // import { theme } from "@/themes";
 import { SidebarHeader, StyledSider } from "./AdminSidebar.styled";
 
-
-
 const menuItems = [
   { key: "/admin/language", label: "Language", icon: <GlobalOutlined /> },
   { key: "/admin/course", label: "Course", icon: <ReadOutlined /> },

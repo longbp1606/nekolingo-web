@@ -17,8 +17,9 @@ import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
 import ReactQuill from "react-quill";
-import { getTopicsAll } from "@/services/topicAPI";
+import { getTopicCourse, getTopicsAll } from "@/services/topicAPI";
 import { createLesson, deleteLesson, getLessonDetail, getListLessons, updateLesson } from "@/services/lessonAPI";
+import { useOutletContext } from "react-router-dom";
 type TableRecord = LessonItem & { key: string };
 
 export type LessonItem = {
@@ -35,6 +36,8 @@ export type LessonItem = {
   };
 };
 
+interface OutletCtx { selectedCourse: string | null }
+
 const Lesson = () => {
   const [data, setData] = useState<LessonItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -49,6 +52,26 @@ const Lesson = () => {
   const [searchText, setSearchText] = useState("");
   const hasErrorNotified = useRef(false);
   const [topicOptions, setTopicOptions] = useState<{ label: string; value: string }[]>([]);
+  const { selectedCourse } = useOutletContext<OutletCtx>();
+  const [topics, setTopics] = useState<{ _id: string; title: string }[]>([]);
+
+  console.log("topics:", topics);
+  
+
+  const fetchTopics = useCallback(async () => {
+    if (!selectedCourse) {
+      setTopics([]);
+      return;
+    }
+    try {
+      const res = await getTopicCourse(selectedCourse);
+      setTopics(res.data.data || []);
+    } catch (error) {
+      console.error("Error fetching topics:", error);
+      setTopics([]);
+    }
+  }, [selectedCourse]);
+
 
   const fetchOptions = useCallback(async () => {
     try {
@@ -65,31 +88,33 @@ const Lesson = () => {
   }, []);
 
 
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await getListLessons(pagination.current || 1, pagination.pageSize || 10);
+      const res = await getListLessons(pagination.current || 1, pagination.pageSize || 5);
       const list: LessonItem[] = res.data.lessons || [];
-      setData(list);
-      setPagination((p) => ({ ...p, total: list.length }));
+      const topicIds = topics.map((t) => t._id);
+      const filtered = list.filter((lesson) => topicIds.includes(lesson.topic._id));
+      setData(filtered);
+      setPagination((p) => ({ ...p, total: filtered.length }));
     } catch (error: any) {
       if (!hasErrorNotified.current) {
-        notification.error({
-          key: "fetch-grammar-error",
-          message: "Error",
-          description: error?.response?.data?.message || "Error fetching lessons",
-        });
+        notification.error({ key: "fetch-lesson-error", message: "Error", description: error?.response?.data?.message || "Error fetching lessons" });
         hasErrorNotified.current = true;
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.current, pagination.pageSize, topics]);
 
   useEffect(() => {
+    fetchTopics();
     fetchOptions();
+  }, [fetchTopics, fetchOptions]);
+
+  useEffect(() => {
     fetchAll();
-  }, [fetchOptions]);
+  }, [fetchAll]);
 
   const handleRowClick = async (record: LessonItem) => {
     setLoading(true);
@@ -133,7 +158,6 @@ const Lesson = () => {
 
   const handleFormSubmit = async () => {
     const values = await form.validateFields();
-
     setLoading(true);
     try {
       if (selectedRecord) {

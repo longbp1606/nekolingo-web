@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { get, post, patch, remove } from "./apiCaller"
 
 export type CreateTopic = {
@@ -25,7 +26,7 @@ export const getTopicDetail = (id: string) => {
     return get(`/api/topic/${id}`);
 }
 
-export const getTopicCourse = (courseId: string) => {
+export const getTopicCourse = (courseId: any) => {
     return get(`/api/topic/course/${courseId}`);
 }
 

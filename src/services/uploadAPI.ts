@@ -15,26 +15,26 @@ export interface ImageData {
 }
 
 export interface UploadRequest {
-    image: File;
+    file: File;
     folder: string;
 }
 
 export const uploadImage = async (request: UploadRequest) => {
     const formData = new FormData();
-    formData.append('image', request.image);
+    formData.append('file', request.file);
     formData.append('folder', request.folder);
 
     try {
         const response = await axios.post(
-            '/api/upload', 
+            'http://localhost:3000/api/upload/image', 
             formData,
-            {
-                headers: {
-                    'Content-Type': 'multipart/form-data', 
-                }
-            }
+            // {
+            //     headers: {
+            //         'Content-Type': 'multipart/form-data', 
+            //     }
+            // }
         );
-        return response.data as ImageData;
+        return response.data.image as ImageData;
     } catch (error) {
         throw new Error(error instanceof Error ? error.message : 'Upload failed');
     }
