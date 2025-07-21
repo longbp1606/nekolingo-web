@@ -17,7 +17,7 @@ const routes = {
     search: "/search",
   },
   admin: {
-    dashboard: "/admin/dashboard",
+    // dashboard: "/admin/dashboard",
     user: "/admin/user", 
     topic: "/admin/topic",
     grammar: "/admin/grammar",

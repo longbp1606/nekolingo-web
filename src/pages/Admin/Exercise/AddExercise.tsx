@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState, FC, useRef, useCallback } from "react";
-import { Button, Card, Col, Collapse, notification, Input, Space, Select, Upload } from "antd";
-import { ActionButton, BackButton, Container, EditorArea, ExerciseArea, ExerciseGrid, Header, LessonGrid, NextButton, TypeGrid } from "./Exercise.styled";
+import { Button, Card, Col, notification, Input, Space, Select, Upload, Steps, Menu, Row } from "antd";
+import { ActionButton, BackButton, Container, ContentBody, ContentColumn, EditorArea, ExerciseArea, ExerciseGrid, Header, NextButton, TypeGrid } from "./Exercise.styled";
 import { getTopicCourse } from "@/services/topicAPI";
 import { getLessonByTopic, getLessonDetail } from "@/services/lessonAPI";
 import { createExercise, updateExercise } from "@/services/exerciseAPI";
@@ -44,7 +44,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
   const [topics, setTopics] = useState<Array<{ _id: string; title: string }>>([]);
 
   // Lesson and exercise states
-  const [openKeys, setOpenKeys] = useState<string[]>([]);
+  // const [openKeys, setOpenKeys] = useState<string[]>([]);
   const [lessons, setLessons] = useState<Record<string, any[]>>({});
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [exercises, setExercises] = useState<any[]>([]);
@@ -53,12 +53,14 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
   const hasErrorNotified = useRef(false);
   const [creatingExercise, setCreatingExercise] = useState(false);
   const [editorData, setEditorData] = useState<EditorData>({});
-  const [isEditingContent, setIsEditingContent] = useState(false);
+  // const [isEditingContent, setIsEditingContent] = useState(false);
   const [isEditingExistingExercise, setIsEditingExistingExercise] = useState(false);
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
 
   const isReadyToNext = !!editorData.type && !!editorData.question_format;
   const { selectedCourse } = useOutletContext<OutletCtx>();
+  const [currentStep, setCurrentStep] = useState<number>(0);
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
 
   const fetchTopics = useCallback(async () => {
     if (!selectedCourse) {
@@ -84,7 +86,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
 
   // Handle topic collapse and fetch lessons by topic
   const onTopicChange = async (keys: string[]) => {
-    setOpenKeys(keys);
+    // setOpenKeys(keys);
     const topicId = keys[keys.length - 1];
     if (topicId && !lessons[topicId]) {
       try {
@@ -118,9 +120,6 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
       // tất cả formats text đều khởi tạo string[]
       defaultOptions = [''] as TextOption[];
     }
-    // const defaultOptions: ExerciseOptions = editorData.question_format === 'image_select'
-    //   ? [{ image: '', value: '' }] as ImageOption[]
-    //   : [] as TextOption[];
     setEditorData({
       lesson: selectedLesson._id,
       options: defaultOptions,
@@ -128,22 +127,29 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
       question_format: undefined,
     });
     setCreatingExercise(true);
+    setCurrentStep(1);
   };
 
   // Reset editor
   const resetEditor = () => {
     setEditorData({});
-    setIsEditingContent(false);
+    // setIsEditingContent(false);
+    setCurrentStep(currentStep - 1);
     setCreatingExercise(false);
     setIsEditingExistingExercise(false);
     setEditingExerciseId(null);
   };
 
   const handleBack = () => {
-    if (isEditingContent) {
-      setIsEditingContent(false);
-    } else {
+    if (currentStep > 0) {
+      setCurrentStep(prev => prev - 1);
+    }
+    if (currentStep === 1) {
+      // Exiting editor when returning to step 0
       setCreatingExercise(false);
+      setIsEditingExistingExercise(false);
+      setEditingExerciseId(null);
+      // setIsEditingContent(false);
     }
   };
 
@@ -254,8 +260,9 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
     // setEditorData({ lesson: selectedLesson._id, ...exercise });
     setEditingExerciseId(exercise._id);
     setIsEditingExistingExercise(true);
-    setIsEditingContent(true);
+    // setIsEditingContent(true);
     setCreatingExercise(true);
+    setCurrentStep(2);
   };
 
   // Render editor UI
@@ -263,19 +270,26 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
     <EditorArea>
       <ActionButton>
         <BackButton onClick={handleBack}>Back</BackButton>
-        {!isEditingContent && isReadyToNext && (
-          <NextButton onClick={() => setIsEditingContent(true)}>
+        {/* {!isEditingContent && isReadyToNext && ( */}
+        {currentStep !== 2 && isReadyToNext && (
+          <NextButton
+            type="primary"
+            disabled={!editorData.type || !editorData.question_format}
+            onClick={() => setCurrentStep(2)} // NEXT TO STEP 3
+          >
             Next
           </NextButton>
         )}
-        {isEditingContent && (
+        {/* {isEditingContent && ( */}
+        {currentStep === 2 && (
           <NextButton type="primary" onClick={handleDone}>
             Done
           </NextButton>
         )}
       </ActionButton>
 
-      {!isEditingContent && (
+      {/* {!isEditingContent && ( */}
+      {currentStep === 1 && (
         <Space direction="vertical" style={{ width: "100%", marginTop: 24 }}>
           <h3>Choose Type:</h3>
           <TypeGrid>
@@ -325,7 +339,8 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
         </Space>
       )}
 
-      {isEditingContent && (
+      {/* {isEditingContent && ( */}
+      {currentStep === 2 && (
         <Space direction="vertical" style={{ width: "100%", marginTop: 24 }}>
           <TextArea rows={2} placeholder="Enter your question" value={editorData.question} onChange={(e: any) => handleChange('question', e.target.value)} />
           {editorData.question_format === 'match' ? (
@@ -445,31 +460,72 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
 
   return (
     <Container>
-      {selectedCourse && (
+      <Steps current={currentStep} style={{ marginBottom: 24 }}>
+        <Steps.Step title="Select Topic & Lesson" />
+        <Steps.Step title="Select Type & Format" />
+        <Steps.Step title="Enter Question Content" />
+      </Steps>
+
+      {currentStep === 0 && selectedCourse && (
         <>
+
           <Header style={{ marginTop: 24 }}>
             <BackButton onClick={onBack}>Back</BackButton>
-            <h2>List of topics</h2>
           </Header>
-          <Collapse activeKey={openKeys} onChange={onTopicChange}>
+          <ContentBody>
+            <ContentColumn>
+              <h2>List of topics</h2>
+              <Menu
+                mode="inline"
+                selectedKeys={[selectedTopic!]}
+                onClick={({ key }) => { setSelectedTopic(key); onTopicChange([key]) }}
+                items={topics.map(t => ({ key: t._id, label: t.title }))}
+                style={{ width: "100%" }}
+              />
+            </ContentColumn>
+
+            <ContentColumn>
+            <h2>List of lessons</h2>
+            <Row gutter={[16, 16]}>
+              {lessons[selectedTopic!]?.map(les => (
+                <Col key={les._id} span={24} style={{height: "48px"}}>
+                  <Card onClick={() => {
+                    onLessonClick(les);
+                    setCurrentStep(1); // NEXT TO STEP 2
+                  }}>
+                    {les.title}
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+            </ContentColumn>
+          </ContentBody>
+          {/* <Collapse activeKey={openKeys} onChange={onTopicChange}>
             {topics.map(topic => (
               <Collapse.Panel header={topic.title} key={topic._id}>
                 <LessonGrid>
                   {(lessons[topic._id] || []).map(les => (
                     <Col span={6} key={les._id}>
-                      <Card hoverable onClick={() => onLessonClick(les)}>{les.title}</Card>
-                    </Col>
+                      <Card hoverable onClick={() => {
+                        onLessonClick(les);
+                        setCurrentStep(1); // NEXT TO STEP 2
+                      }}>
+                        {les.title}
+                      </Card>                    </Col>
                   ))}
                 </LessonGrid>
               </Collapse.Panel>
             ))}
-          </Collapse>
+          </Collapse> */}
         </>
       )}
 
-      {selectedLesson && (
+      {selectedLesson && currentStep > 0 && (
         <ExerciseArea>
-          <h2>Exercises of {selectedLesson.title}</h2>
+          <Header style={{ marginTop: 24 }}>
+            <BackButton onClick={handleBack}>Back</BackButton>
+            <h2>Exercises of {selectedLesson.title}</h2>
+          </Header>
           {creatingExercise ? renderEditor() : (
             <ExerciseGrid gutter={[16, 16]}>
               <Col span={6}>

@@ -22,8 +22,6 @@ export const FilterArea = styled.div`
   justify-content: space-between;
 `;
 
-
-
 // ------------------- ADD EXERCISE -------------------
 
 export const Container = styled.div`
@@ -33,6 +31,22 @@ export const Container = styled.div`
   min-height: calc(100vh - 144px);
   width: 100%;
   overflow: auto;
+
+  .ant-steps .ant-steps-item-process .ant-steps-item-icon {
+    background-color: ${theme.color.primary};
+    border-color: ${theme.color.primary};
+  }
+
+  :where(.css-dev-only-do-not-override-5uvb3z).ant-steps
+    .ant-steps-item-finish
+    .ant-steps-item-icon
+    > .ant-steps-icon {
+    color: ${theme.color.primary};
+  }
+
+  .ant-card .ant-card-body {
+    padding: 13px !important;
+  }
 `;
 
 export const Header = styled.div`
@@ -52,46 +66,60 @@ export const Header = styled.div`
   }
 `;
 
+export const ContentBody = styled.div`
+  display: flex;
+  width: 100%;
+  gap: 20px;
+`;
+
+export const ContentColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  text-align: center;
+  gap: 20px;
+`;
+
 export const BackButton = styled(Button)`
   width: max-content;
   background: ${theme.color.primary};
+  border-bottom: 5px solid ${theme.color.borderNextButton};
+  color: white;
+  border-radius: 10px;
+  padding: 6px 24px; /* giảm chiều cao */
+  font-size: 14px;
+  cursor: pointer;
+  max-width: max-content;
+
+  &:hover {
+    background: #2fdfec;
+    color: #ffffff;
+    border-left: 1px solid #2fdfec;
+    border-top: 1px solid #2fdfec;
+    border-right: 1px solid #2fdfec;
     border-bottom: 5px solid ${theme.color.borderNextButton};
-    color: white;
-    border-radius: 10px;
-    padding: 6px 24px; /* giảm chiều cao */
-    font-size: 14px;
-    cursor: pointer;
-    max-width: max-content;
-  
-    &:hover {
-      background: #2fdfec;
-      color: #ffffff;
-      border-left: 1px solid #2fdfec;
-      border-top: 1px solid #2fdfec;
-      border-right: 1px solid #2fdfec;
-      border-bottom: 5px solid ${theme.color.borderNextButton};
-    }
+  }
 `;
 
 export const NextButton = styled(Button)`
   width: max-content;
   background: ${theme.color.green};
-    border-bottom: 5px solid ${theme.color.darkGreen};
-    color: white;
-    border-radius: 10px;
-    padding: 6px 24px; /* giảm chiều cao */
-    font-size: 14px;
-    cursor: pointer;
-    max-width: max-content;
-  
-    &:hover {
-      background: #2fdfec;
-      color: #ffffff;
-      border-left: 1px solid #2fdfec;
-      border-top: 1px solid #2fdfec;
-      border-right: 1px solid #2fdfec;
-      border-bottom: 5px solid ${theme.color.borderNextButton};
-    }
+  border-bottom: 5px solid ${theme.color.darkGreen};
+  color: white;
+  border-radius: 10px;
+  padding: 6px 24px; /* giảm chiều cao */
+  font-size: 14px;
+  cursor: pointer;
+  max-width: max-content;
+
+  &:hover {
+    background: #2fdfec;
+    color: #ffffff;
+    border-left: 1px solid #2fdfec;
+    border-top: 1px solid #2fdfec;
+    border-right: 1px solid #2fdfec;
+    border-bottom: 5px solid ${theme.color.borderNextButton};
+  }
 `;
 
 export const LessonGrid = styled.div`
@@ -100,24 +128,43 @@ export const LessonGrid = styled.div`
   gap: 16px;
   padding-top: 12px;
 
-   .ant-col-6 {
-  max-width: 100% !important;
+  .ant-col-6 {
+    max-width: 100% !important;
   }
 `;
 
 export const TypeGrid = styled(LessonGrid)`
-  background-color: #fff;
+  background-color: #fafafa;
   padding: 24px;
   border-radius: 12px;
-  // box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+
+  .ant-card {
+    background: #fff;
+    border: 2px solid transparent;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: #40a9ff;
+      background: #e6f7ff;
+    }
+
+    &.ant-card-hoverable[style*="background-color: #e6f7ff"] {
+      /* khi được chọn */
+      border-color: #1890ff;
+      background: #bae7ff;
+    }
+  }
 `;
 
 export const SlideList = styled.div`
   display: flex;
   gap: 8px;
   margin-top: 16px;
-
- 
 `;
 
 export const SlideItem = styled.div<{ active?: boolean }>`
@@ -127,7 +174,7 @@ export const SlideItem = styled.div<{ active?: boolean }>`
   border-radius: 4px;
   text-align: center;
   cursor: pointer;
-  border: ${props => (props.active ? '2px solid #1890ff' : 'none')};
+  border: ${(props) => (props.active ? "2px solid #1890ff" : "none")};
 `;
 
 export const EditorArea = styled.div`
@@ -140,9 +187,9 @@ export const EditorArea = styled.div`
   margin-left: auto;
   margin-right: auto;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-  position: absolute;
-    top: 80px;
-    width: 79%;
+  // position: absolute;
+  //   top: 80px;
+  //   width: 79%;
 
   textarea,
   input,
@@ -167,7 +214,7 @@ export const EditorArea = styled.div`
   }
 
   .ant-col-6 {
-  max-width: 100% !important;
+    max-width: 100% !important;
   }
 `;
 
@@ -181,19 +228,35 @@ export const BottomControls = styled.div`
 export const ExerciseGrid = styled(Row)`
   margin-top: 24px;
 
+  .ant-col-6 {
+    display: flex;
+    justify-content: center;
+  }
+
   .ant-card {
-    border-radius: 12px;
-    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 200px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
     cursor: pointer;
+    padding: 16px;
+    text-align: center;
 
     &:hover {
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
-      transform: translateY(-4px);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.08);
     }
 
     .ant-card-body {
-      text-align: center;
+      padding: 0;
+      font-size: 14px;
       font-weight: 500;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 `;

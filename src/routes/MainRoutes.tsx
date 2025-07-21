@@ -22,7 +22,7 @@ const MainRouter = () => {
     };
 
     const role = cookieUtils.getRole();
-    if(role === 1) return <Navigate to={config.routes.admin.dashboard} />;
+    if(role === 1) return <Navigate to={config.routes.admin.language} />;
     
     return <MainLayout />;
 };
