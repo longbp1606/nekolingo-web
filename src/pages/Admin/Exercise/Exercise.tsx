@@ -28,7 +28,7 @@ const Exercise = () => {
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
-    pageSize: 5,
+    pageSize: 100,
     total: 0,
   });
   // const [selectedRecord, setSelectedRecord] = useState<any | null>(null);
