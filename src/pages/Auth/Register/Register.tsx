@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AuthForm from "@/components/AuthForm";
 import { RedirectType } from "@/components/AuthForm/AuthForm";
 import { registerFields } from "@/components/AuthForm/AuthForm.fields";
@@ -42,7 +43,7 @@ const Register = () => {
                     cookieUtils.setItem(config.cookies.refreshToken, loginResponse.data.data.refreshToken);
                     cookieUtils.setItem(config.cookies.role, loginResponse.data.data.role);
                 }
-                if (loginResponse.data.data.role === 1) navigate(config.routes.admin.dashboard)
+                if (loginResponse.data.data.role === 1) navigate(config.routes.admin.language)
                 else navigate(config.routes.public.home);
             }
         } catch (error: any) {

@@ -3,7 +3,6 @@
 import config from "@/config";
 import AdminLayout from "@/layouts/AdminLayout"
 import Course from "@/pages/Admin/Course/Course";
-import Dashboard from "@/pages/Admin/Dashboard";
 import ExerciseManager from "@/pages/Admin/Exercise/Exercise";
 import Grammar from "@/pages/Admin/Grammar/Grammar";
 import Language from "@/pages/Admin/Language/Language";
@@ -24,7 +23,7 @@ const AdminRouter = () => {
 
 const adminRoutes = {
     children: [
-        { path: config.routes.admin.dashboard, element: <Dashboard /> },
+        // { path: config.routes.admin.dashboard, element: <Dashboard /> },
         { path: config.routes.admin.topic, element: <Topic /> },
         { path: config.routes.admin.grammar, element: <Grammar /> },
         { path: config.routes.admin.vocabulary, element: <Vocab /> },

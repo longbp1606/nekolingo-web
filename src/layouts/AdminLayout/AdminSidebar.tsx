@@ -14,10 +14,10 @@ interface NavbarElement {
 }
 
 const navbarItems: NavbarElement[] = [
-    {
-        path: config.routes.admin.dashboard,
-        label: 'Dashboard',
-    },
+    // {
+    //     path: config.routes.admin.dashboard,
+    //     label: 'Dashboard',
+    // },
     {
         path: config.routes.admin.lesson,
         label: 'Lessons',
