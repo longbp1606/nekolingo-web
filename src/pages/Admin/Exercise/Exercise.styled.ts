@@ -1,6 +1,6 @@
 // import { theme } from "@/themes";
 import { theme } from "@/themes";
-import { Button, Row } from "antd";
+import { Button, Input, Row } from "antd";
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
@@ -140,7 +140,7 @@ export const TypeGrid = styled(LessonGrid)`
 
   .ant-card {
     background: #fff;
-    border: 2px solid transparent;
+    border: 2px solid ${theme.color.primary};
     min-height: 80px;
     display: flex;
     align-items: center;
@@ -178,18 +178,13 @@ export const SlideItem = styled.div<{ active?: boolean }>`
 `;
 
 export const EditorArea = styled.div`
-  margin-top: 24px;
-  background: #ffffff;
+  // margin-top: 24px;
   padding: 32px;
   border-radius: 12px;
   max-width: 100%;
-  height: 700px;
   margin-left: auto;
   margin-right: auto;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-  // position: absolute;
-  //   top: 80px;
-  //   width: 79%;
+  // box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
 
   textarea,
   input,
@@ -215,6 +210,10 @@ export const EditorArea = styled.div`
 
   .ant-col-6 {
     max-width: 100% !important;
+  }
+
+  .ant-space-item {
+    width: 100%; 
   }
 `;
 
@@ -269,4 +268,8 @@ export const ActionButton = styled.div<{ active?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
+`;
+
+export const OptionInput = styled(Input)`
+  width: 100%;
 `;

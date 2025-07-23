@@ -176,7 +176,7 @@ const AdminLayout: React.FC<AdminProps> = ({ selectedCourse, setSelectedCourse }
       <MainArea>
         <HeaderBar>
           <PageTitle level={4}>
-            {screenTitle ? screenTitle.charAt(0).toUpperCase() + screenTitle.slice(1) : "Dashboard"}
+            {screenTitle ? screenTitle.charAt(0).toUpperCase() + screenTitle.slice(1) : ""}
           </PageTitle>
 
           <SegmentedWrapper>

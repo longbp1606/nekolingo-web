@@ -8,7 +8,7 @@ import { getLessonByTopic, getLessonDetail } from "@/services/lessonAPI";
 import { createExercise, updateExercise } from "@/services/exerciseAPI";
 import type { CreateExercise } from "@/services/exerciseAPI";
 import TextArea from "antd/es/input/TextArea";
-import { PlusOutlined } from "@ant-design/icons";
+import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import { uploadImage } from "@/services/uploadAPI";
 import { useOutletContext } from "react-router-dom";
 
@@ -42,22 +42,18 @@ interface EditorData extends Omit<Partial<CreateExercise>, 'options'> {
 
 const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
   const [topics, setTopics] = useState<Array<{ _id: string; title: string }>>([]);
-
-  // Lesson and exercise states
   // const [openKeys, setOpenKeys] = useState<string[]>([]);
   const [lessons, setLessons] = useState<Record<string, any[]>>({});
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [exercises, setExercises] = useState<any[]>([]);
 
-  // Editor states
   const hasErrorNotified = useRef(false);
   const [creatingExercise, setCreatingExercise] = useState(false);
   const [editorData, setEditorData] = useState<EditorData>({});
   // const [isEditingContent, setIsEditingContent] = useState(false);
   const [isEditingExistingExercise, setIsEditingExistingExercise] = useState(false);
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
-
-  const isReadyToNext = !!editorData.type && !!editorData.question_format;
+  // const isReadyToNext = !!editorData.type && !!editorData.question_format;
   const { selectedCourse } = useOutletContext<OutletCtx>();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
@@ -265,13 +261,23 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
     setCurrentStep(2);
   };
 
+  const handleRemoveOption = (index: number) => {
+    setEditorData(prev => {
+      if (!prev.options) return prev;
+      const opts = [...(prev.options as any[])];
+      opts.splice(index, 1);
+      return { ...prev, options: opts as ExerciseOptions };
+    });
+  };
+
+
   // Render editor UI
   const renderEditor = () => (
     <EditorArea>
       <ActionButton>
         <BackButton onClick={handleBack}>Back</BackButton>
-        {/* {!isEditingContent && isReadyToNext && ( */}
-        {currentStep !== 2 && isReadyToNext && (
+        <h2><b>Exercises of {selectedLesson.title}</b></h2>
+        {currentStep !== 2 && (
           <NextButton
             type="primary"
             disabled={!editorData.type || !editorData.question_format}
@@ -346,17 +352,20 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
           {editorData.question_format === 'match' ? (
             <>
               {(editorData.options as MatchOption[])?.map((opt: any, i: number) => (
-                <Space key={i} style={{ marginBottom: 8 }}>
+                <div key={i} style={{ marginBottom: 8, display: 'flex', gap: 8 }}>
                   <Input placeholder="Left" value={opt.left} onChange={e => handleOptionChange(i, 'left', e.target.value)} />
                   <Input placeholder="Right" value={opt.right} onChange={e => handleOptionChange(i, 'right', e.target.value)} />
-                </Space>
+                  <CloseOutlined onClick={() => handleRemoveOption(i)} style={{ color: "red" }} />
+                </div>
               ))}
               <Button onClick={handleAddOption}>+ Add Pair</Button>
             </>
           ) : editorData.question_format === 'image_select' ? (
             <>
               {(editorData.options as ImageSelectOption[])?.map((opt, i) => (
-                <Space key={i} align="start">
+                <div key={i} style={{ marginBottom: 8, display: 'flex', gap: 8 }}>
+
+                  {/* <Space key={i} align="start"> */}
                   <Upload
                     listType="picture-card"
                     showUploadList={false}
@@ -379,7 +388,8 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
                   </Upload>
 
                   <Input placeholder="Value" value={opt.value} onChange={e => handleOptionChange(i, 'value', e.target.value)} />
-                </Space>
+                  <CloseOutlined onClick={() => handleRemoveOption(i)} style={{ color: "red" }} />
+                </div>
               ))}
               <Button onClick={handleAddOption}>+ Add Option</Button>
               <Select placeholder="Correct Answer (value)" value={editorData.correct_answer} onChange={v => handleChange('correct_answer', v)} options={(editorData.options as ImageOption[] || []).map(o => ({ value: o.value, label: o.value }))} />
@@ -395,13 +405,16 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
                     style={{ border: '1px solid rgb(9,175,45)' }}
                   />
                   {(editorData.options as TextOption[] || []).map((opt, i) => (
-                    <Input
-                      key={i}
-                      placeholder={`Option ${i + 1}`}
-                      // opt luôn là string
-                      value={opt}
-                      onChange={e => handleOptionChange(i, '', e.target.value)}
-                    />
+                    <div key={i} style={{ marginBottom: 8, display: 'flex', gap: 8 }}>
+                      <Input
+                        key={i}
+                        placeholder={`Option ${i + 1}`}
+                        value={typeof opt === 'string' ? opt : ''}
+                        onChange={e => handleOptionChange(i, '', e.target.value)}
+                      />
+                      <CloseOutlined onClick={() => handleRemoveOption(i)} style={{ color: "red" }} />
+
+                    </div>
                   ))}
 
                   <Button onClick={handleAddOption}>+ Add Option</Button>
@@ -416,13 +429,17 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
                     style={{ border: '1px solid rgb(9,175,45)' }}
                   />
                   {(editorData.options || []).map((opt, i) => (
-                    <Input
-                      key={i}
-                      placeholder={`Option ${i + 1}`}
-                      value={(opt as any).value}
-                      onChange={e => handleOptionChange(i, 'value', e.target.value)}
-                      style={{ border: '1px solid rgb(12,46,238)' }}
-                    />
+                    <div key={i} style={{ marginBottom: 8, display: 'flex', gap: 8 }}>
+                      <Input
+                        key={i}
+                        placeholder={`Option ${i + 1}`}
+                        value={typeof opt === 'string' ? opt : ''}
+                        onChange={e => handleOptionChange(i, 'value', e.target.value)}
+                        style={{ border: '1px solid rgb(12,46,238)' }}
+                      />
+                      <CloseOutlined onClick={() => handleRemoveOption(i)} style={{ color: "red" }} />
+
+                    </div>
                   ))}
 
                   <Button onClick={handleAddOption}>+ Add Option</Button>
@@ -485,19 +502,19 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
             </ContentColumn>
 
             <ContentColumn>
-            <h2>List of lessons</h2>
-            <Row gutter={[16, 16]}>
-              {lessons[selectedTopic!]?.map(les => (
-                <Col key={les._id} span={24} style={{height: "48px"}}>
-                  <Card onClick={() => {
-                    onLessonClick(les);
-                    setCurrentStep(1); // NEXT TO STEP 2
-                  }}>
-                    {les.title}
-                  </Card>
-                </Col>
-              ))}
-            </Row>
+              <h2>List of lessons</h2>
+              <Row gutter={[16, 16]}>
+                {lessons[selectedTopic!]?.map(les => (
+                  <Col key={les._id} span={24} style={{ height: "48px" }}>
+                    <Card onClick={() => {
+                      onLessonClick(les);
+                      setCurrentStep(1); // NEXT TO STEP 2
+                    }}>
+                      {les.title}
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
             </ContentColumn>
           </ContentBody>
           {/* <Collapse activeKey={openKeys} onChange={onTopicChange}>
@@ -522,10 +539,10 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
 
       {selectedLesson && currentStep > 0 && (
         <ExerciseArea>
-          <Header style={{ marginTop: 24 }}>
+          {/* <Header style={{ marginTop: 24 }}>
             <BackButton onClick={handleBack}>Back</BackButton>
             <h2>Exercises of {selectedLesson.title}</h2>
-          </Header>
+          </Header> */}
           {creatingExercise ? renderEditor() : (
             <ExerciseGrid gutter={[16, 16]}>
               <Col span={6}>
