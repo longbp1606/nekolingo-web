@@ -7,7 +7,7 @@ export type RegisterStateType = {
 }
 
 export const initialState: RegisterStateType = {
-    language_from: '684f91bf0fd356386a378623',
+    language_from: 'vi',
     language_to: '',
     currentLevel: 0,
 }

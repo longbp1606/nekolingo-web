@@ -47,8 +47,8 @@ const Step3: React.FC<Step3Props> = ({ onNext }) => {
           .map((language) => (
             <OptionCard
               key={language._id}
-              onClick={() => handleSelect(language._id)}
-              style={{ borderColor: selectedLang === language._id ? '#00C2D1' : '#ddd' }}
+              onClick={() => handleSelect(language.code)}
+              style={{ borderColor: selectedLang === language.code ? '#00C2D1' : '#ddd' }}
             >
               <FlagImage src={language.flag_url || `/src/assets/flag/${language.code}.png`} alt={language.name} />
               {language.name}
