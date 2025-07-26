@@ -8,10 +8,11 @@ interface SortSentenceProps {
     data: {
         question_id: number;
         type: string;
-        prompt: string;
+        question: string;
         sample_sentence: string;
-        words: string[];
+        options: string[];
         answer: string;
+        correct_answer: string;
     };
     totalQuestions: number;
     answeredQuestions: number;
@@ -21,8 +22,8 @@ interface SortSentenceProps {
 const SortSentence: React.FC<SortSentenceProps> = ({
     data, totalQuestions, answeredQuestions, onAnswered
 }) => {
-    const { prompt, sample_sentence, words, answer } = data;
-    const correctWords = answer.split(' ');
+    const { question, sample_sentence, options, answer, correct_answer } = data;
+    const correctWords = correct_answer?.split(' ');
     const slotCount = correctWords.length;
 
     // const [shuffledOptions, setShuffledOptions] = useState<string[]>([]);
@@ -35,11 +36,11 @@ const SortSentence: React.FC<SortSentenceProps> = ({
 
     useEffect(() => {
         setSelectedWords(Array(slotCount).fill(''));
-        setShuffledWords(words.sort(() => Math.random() - 0.5));
+        setShuffledWords(options);
         // setShuffledOptions(shuffleArray(options));
         setIsChecked(false);
         setIsCorrect(false);
-    }, [prompt, words, slotCount]);
+    }, [prompt, options, slotCount]);
 
     const handleSlotClick = (slotIndex: number): void => {
         if (isChecked) return;
@@ -94,7 +95,7 @@ const SortSentence: React.FC<SortSentenceProps> = ({
 
     const handleReset = (): void => {
         setSelectedWords(Array(slotCount).fill(''));
-        setShuffledWords(words.sort(() => Math.random() - 0.5));
+        setShuffledWords(options?.sort(() => Math.random() - 0.5));
         setIsChecked(false);
         setIsCorrect(false);
     };
@@ -122,7 +123,7 @@ const SortSentence: React.FC<SortSentenceProps> = ({
             />
 
             <Content>
-                <Title>{prompt}</Title>
+                <Title>{question}</Title>
                 <PersonSay>
                     <img
                         src="https://firebasestorage.googleapis.com/v0/b/orchid-92a2a.appspot.com/o/Nh%C3%A1p%2Fgirl-say.png?alt=media&token=9db5fc7a-0d65-4808-b114-81430b710929"
@@ -135,7 +136,7 @@ const SortSentence: React.FC<SortSentenceProps> = ({
 
 
                 <SentenceContainer>
-                    {selectedWords.map((word, index) => (
+                    {selectedWords?.map((word, index) => (
                         <WordSlot
                             key={index}
                             hasWord={!!word}
@@ -148,7 +149,7 @@ const SortSentence: React.FC<SortSentenceProps> = ({
                 </SentenceContainer>
 
                 <WordsContainer>
-                    {shuffledWords.map((word, index) => (
+                    {shuffledWords?.map((word, index) => (
                         <WordBox
                             key={`${word}-${index}`}
                             isChecked={isChecked}

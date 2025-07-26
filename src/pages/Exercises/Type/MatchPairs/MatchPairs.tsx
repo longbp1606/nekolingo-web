@@ -32,7 +32,7 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
 }) => {
     const { pairs, prompt } = data;
     // Tổng số cặp (5)
-    const totalPairs = pairs.length;
+    const totalPairs = pairs?.length;
     // ID của từ TIẾNG VIỆT và TIẾNG ANH đang chọn tạm
     const [selectedVi, setSelectedVi] = useState<number | null>(null);
     const [selectedEn, setSelectedEn] = useState<number | null>(null);
@@ -289,7 +289,7 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
                 >
                     {/* Cột tiếng Việt */}
                     <LeftOption>
-                        {pairs.map((pair) =>
+                        {pairs?.map((pair) =>
                             // renderButton(pair.vi, pair.id, true, idx)
                             renderButton(pair.left, pair.id, true)
                         )}

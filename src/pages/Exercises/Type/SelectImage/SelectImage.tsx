@@ -11,8 +11,7 @@ import BottomBar from "@/components/BottomBar/BottomBar";
 import GameOver from "@/components/ProgressBar/GameOver/GameOver";
 
 interface Option {
-  label: string;
-  image_url: string;
+  image: string;
   value: string;
 }
 
@@ -20,7 +19,7 @@ interface SelectImageProps {
   data: {
     prompt: string;
     options: Option[];
-    answer: string;
+    correct_answer: string;
   };
   totalQuestions: number;
   answeredQuestions: number;
@@ -39,7 +38,7 @@ const SelectImage: React.FC<SelectImageProps> = ({
   const [showGameOver, setShowGameOver] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-  const correctAnswer = data.answer;
+  const correctAnswer = data.correct_answer;
   const options = data.options;
 
   useEffect(() => {
@@ -50,7 +49,7 @@ const SelectImage: React.FC<SelectImageProps> = ({
     if (selectedIndex === null) return;
 
     const selectedOpt = options[selectedIndex];
-    const correct = selectedOpt.value.toLowerCase() === correctAnswer.toLowerCase();
+    const correct = selectedOpt.value?.toLowerCase() === correctAnswer?.toLowerCase();
 
     setIsCorrect(correct);
     setIsChecked(true);
@@ -119,7 +118,7 @@ const SelectImage: React.FC<SelectImageProps> = ({
                 `}
                 onClick={() => handleOptionClick(opt.value, idx)}
               >
-                <img src={opt.image_url} alt={opt.label} />
+                <img src={opt.image} alt={opt.value} />
                 <MeanText>
                   <p style={{fontWeight: '500'}}>{opt.value}</p>
                   <span className="option-number">{idx + 1}</span>
