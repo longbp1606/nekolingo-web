@@ -1,5 +1,4 @@
 import firefire from "@/assets/firefire.png";
-import scholar from "@/assets/scholar.png";
 import star from "@/assets/star.png";
 
 export const percentage1: number = 100;

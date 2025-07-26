@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Menu } from 'antd';
 import {
     BodyContent,
     LeaderboardContainer,
@@ -118,22 +117,22 @@ const Leaderboard = () => {
         setSelectedTournament(tournamentType);
     };
 
-    const tournamentMenu = (
-        <Menu onClick={({ key }) => handleTournamentChange(key)}>
-            <Menu.Item key="bronze" icon="🥉">
-                Giải đấu Đồng
-            </Menu.Item>
-            <Menu.Item key="silver" icon="🥈">
-                Giải đấu Bạc
-            </Menu.Item>
-            <Menu.Item key="gold" icon="🥇">
-                Giải đấu Vàng
-            </Menu.Item>
-            <Menu.Item key="diamond" icon="💎">
-                Giải đấu Kim Cương
-            </Menu.Item>
-        </Menu>
-    );
+    // const tournamentMenu = (
+    //     <Menu onClick={({ key }) => handleTournamentChange(key)}>
+    //         <Menu.Item key="bronze" icon="🥉">
+    //             Giải đấu Đồng
+    //         </Menu.Item>
+    //         <Menu.Item key="silver" icon="🥈">
+    //             Giải đấu Bạc
+    //         </Menu.Item>
+    //         <Menu.Item key="gold" icon="🥇">
+    //             Giải đấu Vàng
+    //         </Menu.Item>
+    //         <Menu.Item key="diamond" icon="💎">
+    //             Giải đấu Kim Cương
+    //         </Menu.Item>
+    //     </Menu>
+    // );
 
     const getRankColor = (rank: number) => {
         switch (rank) {

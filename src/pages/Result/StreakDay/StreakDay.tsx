@@ -12,14 +12,14 @@ interface Props {
 const StreakDay: React.FC<Props> = ({ onContinue }) => {
     const { profile } = useAuth();
     const [showReviewPopup, setShowReviewPopup] = useState(false);
-    const handleShowReview = () => {
-        setShowReviewPopup(true);
-        console.log('Xem lại bài học');
-    };
+    // const handleShowReview = () => {
+    //     setShowReviewPopup(true);
+    //     console.log('Xem lại bài học');
+    // };
 
     const day = new Date().getDay();
     const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-    const dayOfWeek = days[day];
+    // const dayOfWeek = days[day];
 
     const handleCloseReview = () => {
         setShowReviewPopup(false);

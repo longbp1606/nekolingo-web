@@ -22,7 +22,7 @@ interface SortSentenceProps {
 const SortSentence: React.FC<SortSentenceProps> = ({
     data, totalQuestions, answeredQuestions, onAnswered
 }) => {
-    const { question, sample_sentence, options, answer, correct_answer } = data;
+    const { question, sample_sentence, options, correct_answer } = data;
     const correctWords = correct_answer?.split(' ');
     const slotCount = correctWords.length;
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Step2Container, Step2ContentWrapper, CatAsk, CatImage, Footer, OptionGrid, OptionCard, FlagImage, ResultContent } from './Onboarding.styled';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import NextButton from './NextButton/NextButton';
 
 interface Step9Props {
@@ -8,16 +8,16 @@ interface Step9Props {
 }
 
 const Step10: React.FC<Step9Props> = ({ onNext }) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [selectedLink, setSelectedLink] = useState<string | null>(null);
 
-  const handleSelect = (src: string) => {
-    if (src === 'home') {
-      // navigate('/');
-    } else if (src === 'test') {
-      // navigate('/test');
-    }
-  };
+  // const handleSelect = (src: string) => {
+  //   if (src === 'home') {
+  //     // navigate('/');
+  //   } else if (src === 'test') {
+  //     // navigate('/test');
+  //   }
+  // };
 
   return (
     // <StepContainer>

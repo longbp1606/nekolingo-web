@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Modal } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import {
@@ -11,7 +11,6 @@ import {
     ReviewCard,
     CardContent,
     VietnameseText,
-    EnglishText,
     CheckIcon,
     DetailPopup,
     DetailHeader,

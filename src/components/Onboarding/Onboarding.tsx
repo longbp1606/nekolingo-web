@@ -14,7 +14,7 @@ import Step6 from './Step6';
 import Step7 from './Step7';
 import Step8 from './Step8';
 // import Step9 from './Step9';
-import Step10 from './Step10';
+// import Step10 from './Step10';
 import ProgressBar from './ProgressBar/ProgressBar';
 import { FaChevronLeft } from 'react-icons/fa6';
 import Step9 from './Step9';

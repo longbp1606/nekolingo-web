@@ -16,7 +16,7 @@ import { FiBookOpen, FiStar, FiZap } from 'react-icons/fi'
 // import { useState } from 'react'
 import Sidebar from '@/components/Sidebar'
 import LessonRoad from '@/components/LessonRoad'
-import { Flex, message } from 'antd'
+import { Flex } from 'antd'
 import { Navigate, useNavigate } from 'react-router-dom'
 import RightSidebar from '@/components/Rightbar/Rightbar'
 import { useEffect, useState } from 'react'
@@ -33,7 +33,6 @@ const Home = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [messageApi, contextHolder] = message.useMessage();
     const [topicList, setTopicList] = useState<any>([]); // Initialize topicLis
 
     const token = cookieUtils.getAccessToken();
@@ -65,9 +64,10 @@ const Home = () => {
         navigate(`/exercise/${moduleId}`);
     };
 
+    if (loading) return <div>Loading...</div>;
+
     return (
         <>
-            {contextHolder}
             <Sidebar />
             <BodyContent>
                 <HomeWrapper>

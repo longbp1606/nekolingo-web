@@ -3,8 +3,6 @@ import {
   HomeContent,
   BodyContent,
   TopicContent,
-  RewardCard,
-  RewardImage,
   SideCardContent,
   SideCardText,
   LeftSection,
@@ -41,7 +39,6 @@ import Sidebar from '@/components/Sidebar'
 import { theme } from '@/themes';
 import StatsBar from '@/components/StatsBar/StatsBar';
 import { achievements } from './data';
-import { Avatar } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
 
 const Quest = () => {
