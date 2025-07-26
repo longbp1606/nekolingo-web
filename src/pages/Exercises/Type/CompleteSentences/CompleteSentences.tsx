@@ -18,15 +18,15 @@ interface CompleteSentencesProps {
   data: {
     question_id: number;
     type: "complete_sentences";
-    prompt: string;
+    question: string;
     sample_sentence: string;
     image: string;
-    sentence: {
-      before: string;
-      after: string;
-    };
+    // sentence: {
+    //   before: string;
+    //   after: string;
+    // };
     options: string[];
-    answer: string;
+    correct_answer: string;
   };
   totalQuestions: number;
   answeredQuestions: number;
@@ -39,8 +39,12 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = ({
   answeredQuestions,
   onAnswered,
 }) => {
-  const { prompt, sample_sentence, image, sentence, options, answer } = data;
-  const { before, after } = sentence;
+  const { question, sample_sentence, image, options, correct_answer } = data;
+  // const { before, after } = sentence;
+
+  const sentence = question.split("___");
+  const before = sentence[0];
+  const after = sentence[1];
 
   const [selectedWords, setSelectedWords] = useState<string[]>([""]);
   const [availableWords, setAvailableWords] = useState<string[]>(options);
@@ -89,7 +93,7 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = ({
 
   const handleCheck = () => {
     if (!selectedWords[0]) return;
-    const correct = selectedWords[0].trim().toLowerCase() === answer.trim().toLowerCase();
+    const correct = selectedWords[0].trim().toLowerCase() === correct_answer.trim().toLowerCase();
     setIsCorrect(correct);
     setIsChecked(true);
     if (!correct) setLives(prev => Math.max(0, prev - 1));
@@ -138,7 +142,7 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = ({
         onClose
       />
 
-      <Typography.Title level={4} style={{ fontSize: '24px', fontWeight: 'bold', color: `${theme.color.title}` }}>{prompt}</Typography.Title>
+      <Typography.Title level={4} style={{ fontSize: '24px', fontWeight: 'bold', color: `${theme.color.title}` }}>{question}</Typography.Title>
       <Vietnamese>{sample_sentence}</Vietnamese>
       <Image src={image} alt="example" />
 

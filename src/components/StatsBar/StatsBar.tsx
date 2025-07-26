@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Dropdown } from 'antd';
-import { CaretDownOutlined, PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import {
     StatsBarContainer,
     StatItemWrapper,

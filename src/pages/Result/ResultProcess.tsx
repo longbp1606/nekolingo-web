@@ -3,7 +3,7 @@ import StreakDay from './StreakDay/StreakDay';
 import StreakGoal from './StreakGoal/StreakGoal';
 import LessionComplete from './LessionComplete/LessionComplete';
 import { useDispatch } from 'react-redux';
-import { setExercisesProgress, setUserProgress } from '@/store/userProgress.slice';
+import { setUserProgress } from '@/store/userProgress.slice';
 
 
 const ResultProcess = () => {

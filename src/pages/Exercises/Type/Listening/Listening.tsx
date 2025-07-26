@@ -23,7 +23,7 @@ interface ListeningProps {
         prompt: string;
         audio_url: string;
         options: string[];
-        answer: string;
+        correct_answer: string;
     };
     totalQuestions: number;
     answeredQuestions: number;
@@ -31,7 +31,7 @@ interface ListeningProps {
 }
 
 const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQuestions, onAnswered }) => {
-    const { audio_url, options, answer } = data;
+    const { audio_url, options, correct_answer } = data;
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const [isChecked, setIsChecked] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
@@ -57,7 +57,7 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
     const handleCheck = () => {
         if (selectedIndex === null) return;
         const selectedValue = options[selectedIndex];
-        const correct = selectedValue.trim().toLowerCase() === answer.trim().toLowerCase();
+        const correct = selectedValue.trim().toLowerCase() === correct_answer.trim().toLowerCase();
         setIsCorrect(correct);
         setIsChecked(true);
         if (!correct) setLives(prev => Math.max(0, prev - 1));
@@ -117,7 +117,7 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
             <Space direction="vertical" style={{ width: "100%", marginTop: '16px' }} size="middle">
                 {options?.map((choice, index) => {
                     const isSelected = selectedIndex === index;
-                    const isAnswerChoice = choice.trim().toLowerCase() === answer.trim().toLowerCase();
+                    const isAnswerChoice = choice?.trim().toLowerCase() === correct_answer?.trim().toLowerCase();
 
                     const bgColor = isChecked
                         ? isAnswerChoice

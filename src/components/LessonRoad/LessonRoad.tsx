@@ -13,7 +13,7 @@ import {
     ModuleStatus,
     FloatingIcon,
 } from './LessonRoad.styled';
-import { useAuth } from '@/hooks';
+// import { useAuth } from '@/hooks';
 
 interface LessonModule {
     index: number;

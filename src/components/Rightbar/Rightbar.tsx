@@ -16,19 +16,15 @@ import {
     ProgressBar,
     ProgressFill,
     ProgressText,
-    StatsRow,
-    StatItem,
-    StatValue,
-    StatLabel,
     RightSection,
 } from './Rightbar.styled';
 import { theme } from '@/themes';
 import { FiAward, FiTarget, FiZap, FiCheck } from 'react-icons/fi';
 import StatsBar from '../StatsBar/StatsBar';
-import { useAuth } from '@/hooks';
+// import { useAuth } from '@/hooks';
 
 const RightSidebar = () => {
-    const { profile } = useAuth();
+    // const { profile } = useAuth();
     return (
         <RightSection>
             <StatsBar />

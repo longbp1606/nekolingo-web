@@ -100,7 +100,7 @@ const Exercise = () => {
     const { question_format } = currentQuestion;
 
     switch (question_format) {
-      case "select_image":
+      case "image_select":
         return (
           <SelectImage
             data={currentQuestion}
@@ -120,7 +120,7 @@ const Exercise = () => {
           />
         );
 
-      case "match_pairs":
+      case "match":
         return (
           <MatchPairs
             data={currentQuestion}
@@ -130,7 +130,7 @@ const Exercise = () => {
           />
         );
 
-      case "sort_sentence":
+      case "reorder":
         return (
           <SortSentence
             data={currentQuestion}
@@ -150,7 +150,7 @@ const Exercise = () => {
           />
         );
 
-      case "complete_sentences":
+      case "fill_in_blank":
         return (
           <CompleteSentences
             data={currentQuestion}

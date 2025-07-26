@@ -25,7 +25,8 @@ type PopupInviteProps = {
 };
 
 const PopupInvite: React.FC<PopupInviteProps> = ({ onClose }) => {
-    const [isOpen, setIsOpen] = useState(true);
+    // const [isOpen, setIsOpen] = useState(true);
+    const isOpen = true;
     const [copied, setCopied] = useState(false);
 
     const inviteLink = 'https://invite.duolingo.com/BDHTZ...';
