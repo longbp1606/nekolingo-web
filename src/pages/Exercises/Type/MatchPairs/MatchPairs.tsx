@@ -177,12 +177,11 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
             }
             const updatedExercises = [...exercises, exercisesResult];
             dispatch(setExercisesProgress(updatedExercises));
-            dispatch(removeHeart())
         }
 
         // Tăng progress
         // setAnswered(prev => prev + 1);
-        if (!isCorrectBar) setLives((prev) => prev - 1);
+        // if (!isCorrectBar) setLives((prev) => prev - 1);
     };
 
     // Khi user bấm "TIẾP TỤC"

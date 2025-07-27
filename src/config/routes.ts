@@ -15,6 +15,7 @@ const routes = {
     shop: "/shop",
     achievements: "/profile/achievements",
     search: "/search",
+    paymentResult: "/payment/result",
   },
   admin: {
     // dashboard: "/admin/dashboard",

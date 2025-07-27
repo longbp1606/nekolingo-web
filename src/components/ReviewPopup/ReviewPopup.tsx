@@ -39,7 +39,7 @@ const ReviewPopup: React.FC<ReviewPopupProps> = ({ visible, onClose }) => {
 
     const handleCardClick = (item: ExerciseProgressState) => {
         setSelectedItem(item);
-        setShowDetail(true);
+        if (item.question_format !== 'match') setShowDetail(true);
     };
 
     const handleCloseDetail = () => {
@@ -133,9 +133,11 @@ const ReviewPopup: React.FC<ReviewPopupProps> = ({ visible, onClose }) => {
                                 <div>
                                     <AnswerLabel>Đáp án của bạn:</AnswerLabel>
                                     <AnswerText isCorrect={selectedItem.is_correct ? true : false}>
-                                        {selectedItem.question_format !== "reorder"
-                                            ? renderDiffAnswer(selectedItem.user_answer, selectedItem.correct_answer)
-                                            : renderDiffAnswer(selectedItem.user_answer, selectedItem.correct_answer)
+                                        {
+                                            renderDiffAnswer(
+                                                selectedItem.user_answer,
+                                                selectedItem.correct_answer
+                                            )
                                         }
                                     </AnswerText>
                                 </div>

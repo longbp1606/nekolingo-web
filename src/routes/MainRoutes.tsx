@@ -13,6 +13,7 @@ import AllAchievement from '@/pages/Profile/AllAchievement/AllAchievement';
 import FriendSearch from '@/pages/FriendSearch/FriendSearch';
 import cookieUtils from '@/services/cookieUtils';
 import { Navigate } from 'react-router-dom';
+import Return from '@/pages/Return';
 
 
 const MainRouter = () => {
@@ -40,7 +41,7 @@ const publicRoutes = {
         { path: config.routes.user.shop, element: <Shop /> },
         { path: config.routes.user.achievements, element: <AllAchievement /> },
         { path: config.routes.user.search, element: <FriendSearch /> },
-
+        { path: config.routes.user.paymentResult, element: <Return />},
     ]
 };
 
