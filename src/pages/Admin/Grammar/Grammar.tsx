@@ -10,7 +10,6 @@ import {
   Modal,
   notification,
 } from "antd";
-import type { TablePaginationConfig } from "antd";
 import {
   getListGrammars,
   getGrammarDetail,
@@ -36,11 +35,6 @@ export type GrammarItem = {
 const Grammar = () => {
   const [data, setData] = useState<GrammarItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState<TablePaginationConfig>({
-    current: 1,
-    pageSize: 5,
-    total: 0,
-  });
   const [selectedRecord, setSelectedRecord] = useState<GrammarItem | null>(null);
   const [panelVisible, setPanelVisible] = useState(false);
   const [form] = Form.useForm();
@@ -53,7 +47,6 @@ const Grammar = () => {
       const res = await getListGrammars();
       const list: GrammarItem[] = res.data.data || [];
       setData(list);
-      setPagination((p) => ({ ...p, total: list.length }));
     } catch (error: any) {
       if (!hasErrorNotified.current) {
         notification.error({
@@ -194,11 +187,13 @@ const Grammar = () => {
           dataSource={tableData}
           rowKey="_id"
           loading={loading}
-          pagination={pagination}
-          onChange={(pag) => setPagination(pag)}
           onRow={(record) => ({
             onClick: () => handleRowClick(record),
           })}
+          pagination={{
+            pageSize: 8,       // mỗi trang 5 item
+            showSizeChanger: false, // ẩn dropdown chọn số dòng/page (tuỳ chọn)
+          }}
         />
       </ContentCard>
 

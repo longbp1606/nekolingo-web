@@ -42,7 +42,7 @@ const Vocab = () => {
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
-    pageSize: 5,
+    pageSize: 9,
     total: 0,
   });
   const [selectedRecord, setSelectedRecord] = useState<any | null>(null);
@@ -65,16 +65,22 @@ const Vocab = () => {
     }
   }, []);
 
-  const fetchAll = async () => {
+  const fetchAll = async (page = 1, take = 9) => {
     setLoading(true);
     try {
-      const res = await getListVocabs(pagination.current || 1, pagination.pageSize || 10);
+      const res = await getListVocabs(page, take);
       const list: any[] = res.data.data.map((item: any) => ({
         ...item,
         id: item._id, // chuẩn hóa để dùng thống nhất
       }));
+      const { totalRecord } = res.data.pagination;
+
       setData(list);
-      setPagination((p) => ({ ...p, total: list.length }));
+      setPagination({
+        current: page,
+        pageSize: take,
+        total: totalRecord,
+      });        
     } catch (error: any) {
       if (!hasErrorNotified.current) {
         notification.error({
@@ -91,8 +97,13 @@ const Vocab = () => {
 
   useEffect(() => {
     fetchOptions();
-    fetchAll();
+    fetchAll(pagination.current as number, pagination.pageSize as number);
   }, [fetchOptions]);
+
+  const handleTableChange = (pag: TablePaginationConfig) => {
+      fetchAll(pag.current as number, pag.pageSize as number);
+    };
+  
 
   const handleRowClick = async (record: LessonItem) => {
     setLoading(true);
@@ -228,7 +239,7 @@ const Vocab = () => {
           rowKey="_id"
           loading={loading}
           pagination={pagination}
-          onChange={(pag) => setPagination(pag)}
+          onChange={handleTableChange}
           onRow={(record) => ({
             onClick: () => handleRowClick(record),
           })}
