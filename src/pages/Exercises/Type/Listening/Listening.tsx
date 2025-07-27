@@ -71,6 +71,7 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
     };
 
     const handleCheck = () => {
+        setIsRunning(false);
         if (selectedIndex === null) return;
         const selectedValue = options[selectedIndex];
         const correct = selectedValue.trim().toLowerCase() === correct_answer.trim().toLowerCase();

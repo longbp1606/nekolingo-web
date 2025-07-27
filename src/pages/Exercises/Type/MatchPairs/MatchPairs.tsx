@@ -9,7 +9,6 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { ExerciseProgressState, setExercisesProgress } from '@/store/userProgress.slice';
-import { removeHeart } from '@/store/user.slice';
 
 interface WordPair {
     id: number;

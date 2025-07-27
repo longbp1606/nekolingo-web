@@ -163,7 +163,7 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = ({
   if (showGameOver) {
     return (
       <GameOver
-        onCancel={() => setShowGameOver(false)}
+        onCancel={() => navigate('/')}
         onRecover={() => {
           setLives(1);
           setShowGameOver(false);
