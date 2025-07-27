@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ExerciseProgressState, setExercisesProgress } from "@/store/userProgress.slice";
 import { RootState } from "@/store";
 import { removeHeart } from "@/store/user.slice";
+import { useNavigate } from "react-router-dom";
 
 interface MultipleChoiceProps {
     data: any;
@@ -27,6 +28,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
     answeredQuestions,
     onAnswered,
 }) => {
+    const navigate = useNavigate();
     const exercises = useSelector((state: RootState) => state.userProgress.exercises);
     const hearts = useSelector((state: RootState) => state.user.hearts);
     const dispatch = useDispatch();
@@ -38,6 +40,20 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
     const [isCorrect, setIsCorrect] = useState(false);
     const correctAnswer = data.correct_answer;
     const options = data.options;
+    const [seconds, setSeconds] = useState(0);
+    const [isRunning, setIsRunning] = useState(true);
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+
+        if (isRunning) {
+            interval = setInterval(() => {
+                setSeconds((prevSeconds) => prevSeconds + 1);
+            }, 1000); 
+        }
+
+        return () => clearInterval(interval);
+    }, [isRunning]);
 
     useEffect(() => {
         if (lives === 0) {
@@ -45,8 +61,15 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
         }
     }, [lives]);
 
+    const handleTimeReset = () => {
+        setSeconds(0);
+        setIsRunning(true);
+    }
+
     // Handle selection and checking
     const handleCheck = () => {
+        setIsRunning(false);
+        
         if (selectedIndex === null) return;
         const selectedOpt = options[selectedIndex];
 
@@ -56,9 +79,10 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
             const exercisesResult: ExerciseProgressState = {
                 exercise_id: data._id ? data._id : "",
                 user_answer: selectedOpt,
-                answer_time: new Date().getTime(),
+                answer_time: seconds,
                 is_correct: true,
                 question: data.question,
+                question_format: data.question_format,
             }
             const updatedExercises = [...exercises, exercisesResult];
             dispatch(setExercisesProgress(updatedExercises));
@@ -66,10 +90,11 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
             const exercisesResult: ExerciseProgressState = {
                 exercise_id: data._id? data._id : "",
                 user_answer: selectedOpt,
-                answer_time: new Date().getTime(),
+                answer_time: seconds,
                 is_correct: false, 
                 correct_answer: data.correct_answer,
                 question: data.question,
+                question_format: data.question_format,
             }
             const updatedExercises = [...exercises, exercisesResult];
             dispatch(setExercisesProgress(updatedExercises));
@@ -78,6 +103,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
 
         setIsCorrect(correct);
         setIsChecked(true);
+        handleTimeReset();
 
         if (!correct) setLives((prev) => prev - 1);
     };
@@ -104,7 +130,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
         <Wrapper>
             {showGameOver && (
                 <GameOver
-                    onCancel={() => setShowGameOver(false)}
+                    onCancel={() => navigate("/")}
                     onRecover={() => {
                         setLives(1);
                         setShowGameOver(false);
