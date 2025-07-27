@@ -1,6 +1,6 @@
 import { getProfile } from "@/services/authAPI";
 import cookieUtils from "@/services/cookieUtils";
-import { setHearts } from "@/store/user.slice";
+import { setBalance, setFreezeCount, setHearts } from "@/store/user.slice";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
@@ -32,7 +32,7 @@ export type UserType = {
     createdAt: Date;
 }
 
-const getUserID = () => {
+export const getUserID = () => {
     const decoded = cookieUtils.decodeJwt(cookieUtils.getAccessToken()) as JwtType;
     if (!decoded || !decoded.sub) return null;
 
@@ -63,6 +63,8 @@ const useAuth = () => {
             const res = await getProfile();
             setProfile(res.data.data as UserType);
             dispatch(setHearts(res.data.data.hearts));
+            dispatch(setBalance(res.data.data.balance));
+            dispatch(setFreezeCount(res.data.data.freeze_count));
         } catch (error) {
             console.log(error); 
         }

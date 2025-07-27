@@ -1,4 +1,5 @@
 import { theme } from "@/themes";
+import { Button } from "antd";
 import styled from "styled-components";
 
 export const HomeWrapper = styled.div`
@@ -186,6 +187,7 @@ export const HeartTitle = styled.h3`
   font-weight: 700;
   color: ${theme.color.title};
   margin: 0 0 8px 0;
+  text-transform: capitalize;
 `;
 
 export const HeartDescription = styled.p`
@@ -195,7 +197,7 @@ export const HeartDescription = styled.p`
   line-height: 1.4;
 `;
 
-export const PurchaseButton = styled.div`
+export const PurchaseButton = styled(Button)`
   color: white;
   font-size: 12px;
   font-weight: 700;
@@ -212,14 +214,10 @@ export const PurchaseButton = styled.div`
   text-align: center;
 
   &.buy {
-    background: ${theme.color.bgGreen};
-    color: ${theme.color.green};
-    border: 1px solid ${theme.color.green};
-    border-bottom: 3px solid ${theme.color.green};
-    &:hover {
-      background: ${theme.color.green};
-      color: white;
-    }
+    // background: ${theme.color.bgGreen};
+    color: ${theme.color.textSecondary};
+    border: 1px solid ${theme.color.borderDefault};
+    border-bottom: 3px solid ${theme.color.borderDefault};
   }
 
   &.free {

@@ -35,7 +35,7 @@ const Button: React.FC<ButtonProps> = ({
             icon={icon}
             htmlType={htmlType}
         >
-            {icon && <span className="button-icon">{icon}</span>}
+            {/* {icon && <span className="button-icon">{icon}</span>} */}
             {title}
         </StyledButton>
     );

@@ -20,16 +20,13 @@ export type CreateUser = {
 };
 
 export type UpdateUser = {
-    // _id: string;
-	email: string;
-	password: string;
-	role?: number;
-	username?: string;
+	email?: string;
+  password?: string;
+	role?: string;
 	avatar_url?: string;
 	current_level?: number;
 	xp?: number;
 	weekly_xp?: number;
-	hearts?: number;
 	streak_days?: number;
 	is_freeze?: boolean;
 	last_active_date?: Date;
@@ -37,6 +34,8 @@ export type UpdateUser = {
 	language_from?: string;
 	language_to?: string;
 	is_premiere?: boolean;
+	balance?: number;
+	hearts?: number;
 };
 
 export const getListUsers = () => {
