@@ -57,7 +57,7 @@ interface StatItemData {
         title: string;
         content: string;
         description?: string;
-        type: 'courses' | 'streak' | 'hearts';
+        type: 'courses' | 'streak' | 'hearts' | 'balance';
         progress?: number;
         maxProgress?: number;
         hearts?: number;
@@ -131,6 +131,20 @@ const StatsBar: React.FC = () => {
                 type: 'streak',
                 progress: 3,
                 maxProgress: 7
+            }
+        },
+        {
+            id: 'diamond',
+            icon: <HeartIcon>💎</HeartIcon>,
+            value: profile?.balance || 0,
+            color: '#1cb0f6',
+            bgColor: '#e6f7ff',
+            borderColor: '#1cb0f6',
+            dropdown: {
+                title: '',
+                content: '',
+                description: '',
+                type: 'balance'
             }
         },
         {
