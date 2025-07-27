@@ -1,108 +1,115 @@
+"use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-    Card,
-    CardHeader,
-    CardTitle,
-    ViewLink,
-    LeagueCard,
-    LeagueIcon,
-    LeagueInfo,
-    LeagueRank,
-    LeagueStatus,
-    QuestItem,
-    QuestHeader,
-    QuestIcon,
-    QuestInfo,
-    QuestTitle,
-    ProgressBar,
-    ProgressFill,
-    ProgressText,
-    RightSection,
+  Card,
+  CardHeader,
+  CardTitle,
+  ViewLink,
+  LeagueCard,
+  LeagueIcon,
+  LeagueInfo,
+  LeagueRank,
+  LeagueStatus,
+  QuestItem,
+  QuestHeader,
+  QuestIcon,
+  QuestInfo,
+  QuestTitle,
+  ProgressBar,
+  ProgressFill,
+  ProgressText,
+  RightSection,
 } from './Rightbar.styled';
 import { theme } from '@/themes';
 import { FiAward, FiTarget, FiZap, FiCheck } from 'react-icons/fi';
 import StatsBar from '../StatsBar/StatsBar';
-// import { useAuth } from '@/hooks';
+import { useEffect, useState } from 'react';
+import { notification } from 'antd';
+import { getQuestDaily } from '@/services/questAPI';
+import { Link } from 'react-router-dom';
 
 const RightSidebar = () => {
-    // const { profile } = useAuth();
-    return (
-        <RightSection>
-            <StatsBar />
+  const [rawData, setRawData] = useState<any[]>([]);
 
-            <LeagueCard>
-                <CardHeader>
-                    <CardTitle>Sapphire League</CardTitle>
-                    <ViewLink>VIEW LEAGUE</ViewLink>
-                </CardHeader>
-                <LeagueInfo>
-                    <LeagueIcon>
-                        <FiAward />
-                    </LeagueIcon>
-                    <div>
-                        <LeagueRank>
-                            You're ranked <span>#5</span>
-                        </LeagueRank>
-                        <LeagueStatus>You moved up 1 rank!</LeagueStatus>
-                    </div>
-                </LeagueInfo>
-            </LeagueCard>
+  const fetchData = async () => {
+    try {
+      const res = await getQuestDaily();
+      setRawData(res.data || []);
+    } catch (error: any) {
+      notification.error({
+        key: 'fetch-quest-error',
+        message: 'Error',
+        description: error?.response?.data?.message || 'Error fetching quests',
+      });
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Daily Quests</CardTitle>
-                    <ViewLink>VIEW ALL</ViewLink>
-                </CardHeader>
+    }
+  };
 
-                {/* Quest 1 */}
-                <QuestItem>
-                    <QuestHeader>
-                        <QuestIcon style={{ backgroundColor: theme.color.primary }}>
-                            <FiZap color="white" />
-                        </QuestIcon>
-                        <QuestInfo>
-                            <QuestTitle>Earn 20 XP</QuestTitle>
-                        </QuestInfo>
-                    </QuestHeader>
-                    <ProgressBar>
-                        <ProgressFill width="75%" color={theme.color.primary} />
-                        <ProgressText>15 / 20</ProgressText>
-                    </ProgressBar>
-                </QuestItem>
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-                {/* Quest 2 */}
-                <QuestItem>
-                    <QuestHeader>
-                        <QuestIcon style={{ backgroundColor: theme.color.quaternary }}>
-                            <FiCheck color="white" />
-                        </QuestIcon>
-                        <QuestInfo>
-                            <QuestTitle>Get 5 in a row correct in 2 lessons</QuestTitle>
-                        </QuestInfo>
-                    </QuestHeader>
-                    <ProgressBar>
-                        <ProgressFill width="50%" color={theme.color.quaternary} />
-                        <ProgressText>1 / 2</ProgressText>
-                    </ProgressBar>
-                </QuestItem>
+  return (
+    <RightSection>
+      <StatsBar />
 
-                {/* Quest 3 */}
-                <QuestItem>
-                    <QuestHeader>
-                        <QuestIcon style={{ backgroundColor: theme.color.tertiary }}>
-                            <FiTarget color="white" />
-                        </QuestIcon>
-                        <QuestInfo>
-                            <QuestTitle>Complete 3 perfect lessons</QuestTitle>
-                        </QuestInfo>
-                    </QuestHeader>
-                    <ProgressBar>
-                        <ProgressFill width="33%" color={theme.color.tertiary} />
-                        <ProgressText>1 / 3</ProgressText>
-                    </ProgressBar>
-                </QuestItem>
-            </Card>
-        </RightSection>
-    )
+      <LeagueCard>
+        <CardHeader>
+          <CardTitle>Sapphire League</CardTitle>
+          <ViewLink>VIEW LEAGUE</ViewLink>
+        </CardHeader>
+        <LeagueInfo>
+          <LeagueIcon>
+            <FiAward />
+          </LeagueIcon>
+          <div>
+            <LeagueRank>
+              You're ranked <span>#5</span>
+            </LeagueRank>
+            <LeagueStatus>You moved up 1 rank!</LeagueStatus>
+          </div>
+        </LeagueInfo>
+      </LeagueCard>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Daily Quests</CardTitle>
+          <ViewLink as={Link} to="/quest">VIEW ALL</ViewLink>
+        </CardHeader>
+
+        {rawData.map((item, idx) => {
+          const { quest_id } = item;
+          const { title, condition, progress } = quest_id;
+          // tính % và text
+          const pct = condition > 0
+            ? Math.min(100, Math.round((progress / condition) * 100))
+            : 0;
+          const progressText = `${progress} / ${condition}`;
+
+          // chọn màu/icon tuỳ type
+          const bgColor = [theme.color.primary, theme.color.quaternary, theme.color.tertiary][idx % 3];
+          const IconComponent = [FiZap, FiCheck, FiTarget][idx % 3];
+
+          return (
+            <QuestItem key={quest_id._id}>
+              <QuestHeader>
+                <QuestIcon style={{ backgroundColor: bgColor }}>
+                  <IconComponent color="white" />
+                </QuestIcon>
+                <QuestInfo>
+                  <QuestTitle>{title}</QuestTitle>
+                </QuestInfo>
+              </QuestHeader>
+              <ProgressBar>
+                <ProgressFill width={`${pct}%`} color={bgColor} />
+                <ProgressText>{progressText}</ProgressText>
+              </ProgressBar>
+            </QuestItem>
+          );
+        })}
+      </Card>
+    </RightSection>
+  )
 }
 
 export default RightSidebar

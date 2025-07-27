@@ -8,8 +8,8 @@ export const Card = styled.div`
 `;
 
 export const AchievementImg = styled.img`
-  width: 100%;
-  height: 100%;
+  width: 60px;
+  // height: 100%;
   display: block;
 `;
 
