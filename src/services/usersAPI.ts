@@ -21,17 +21,18 @@ export type CreateUser = {
 
 export type UpdateUser = {
 	email?: string;
+  password?: string;
 	role?: string;
-	avatarUrl?: string;
-	currentLevel?: number;
+	avatar_url?: string;
+	current_level?: number;
 	xp?: number;
-	weeklyXp?: number;
-	streakDays?: number;
-	isFreeze?: boolean;
-	lastActiveDate?: Date;
-	freezeCount?: number;
-	languageFrom?: string;
-	languageTo?: string;
+	weekly_xp?: number;
+	streak_days?: number;
+	is_freeze?: boolean;
+	last_active_date?: Date;
+	freeze_count?: number;
+	language_from?: string;
+	language_to?: string;
 	is_premiere?: boolean;
 	balance?: number;
 	hearts?: number;

@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from "react";
-import { Button, Form, Input, InputNumber, Popconfirm, message, notification, Modal } from "antd";
+import { Button, Form, Input, InputNumber, Popconfirm, message, notification, Modal, TablePaginationConfig } from "antd";
 import { createTopic, deleteTopic, getListTopics, getTopicDetail, updateTopic } from "@/services/topicAPI";
 import { ContentCard, FilterArea } from "./Topic.styled";
 import CTable from "@/components/CustomedTable/CTable";
@@ -22,7 +22,11 @@ interface OutletCtx { selectedCourse: string | null }
 const Topic: React.FC = () => {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
+  const [pagination, setPagination] = useState<TablePaginationConfig>({
+    current: 1,
+    pageSize: 5,
+    total: 0,
+  });  
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [form] = Form.useForm();
   const hasErrorNotified = useRef(false);
@@ -38,8 +42,14 @@ const Topic: React.FC = () => {
         return;
       }
       const res = await getListTopics(page, take, courseId);
+      const { totalRecord } = res.data.pagination;
+
       setData(res.data?.data || []);
-      setPagination(prev => ({ ...prev, total: res.data?.total || 0 }));
+      setPagination({
+        current: page,
+        pageSize: take,
+        total: totalRecord,
+      });
     } catch (error: any) {
       if (!hasErrorNotified.current) {
         notification.error({
@@ -54,16 +64,13 @@ const Topic: React.FC = () => {
     }
   };
 
-  // Khi course thay đổi hoặc pageSize thay đổi
   useEffect(() => {
-    setPagination(p => ({ ...p, current: 1 }));
-    fetchData(1, pagination.pageSize, selectedCourse ?? undefined);
-  }, [selectedCourse, pagination.pageSize]);
-
-  // Khi pagination.current hoặc selectedCourse thay đổi
-  useEffect(() => {
-    fetchData(pagination.current, pagination.pageSize, selectedCourse ?? undefined);
+    fetchData(pagination.current as number, pagination.pageSize as number, selectedCourse ?? undefined);
   }, [pagination.current, pagination.pageSize, selectedCourse]);
+
+  const handleTableChange = (pag: TablePaginationConfig) => {
+    fetchData(pag.current as number, pag.pageSize as number);
+  };
 
   const handleRowClick = async (record: TopicItem) => {
     try {
@@ -136,12 +143,6 @@ const Topic: React.FC = () => {
     <div style={{ display: "flex", gap: 16 }}>
       <ContentCard style={{ flex: 2 }}>
         <FilterArea>
-          {/* <InputCourse
-            onSelectCourse={(course) => {
-              setSelectedCourse(course._id);
-              setSelectedRecord(null);
-            }}
-          /> */}
           <CAddButton
             type="primary"
             disabled={!selectedCourse}
@@ -161,7 +162,7 @@ const Topic: React.FC = () => {
           rowKey="id"
           loading={loading}
           pagination={pagination}
-          onChange={(pag: any) => setPagination(pag)}
+          onChange={handleTableChange}
           onRow={(record) => ({ onClick: () => handleRowClick(record) })}
         />
       </ContentCard>

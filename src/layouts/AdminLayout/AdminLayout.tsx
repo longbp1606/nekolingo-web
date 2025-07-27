@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { theme } from "@/themes";
 import AdminSidebar from "@/components/AdminSidebar";
 import { getProfile } from "@/services/authAPI";
 import { useEffect, useState } from "react";
-import { Avatar, Dropdown, MenuProps, Segmented, Typography } from "antd";
+import { Avatar, Dropdown, MenuProps, Select, Typography } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useDocumentTitle } from "@/hooks";
 import { getListCourses } from "@/services/courseAPI";
@@ -43,32 +43,32 @@ const PageTitle = styled(Typography.Title)`
   }
 `;
 
-const SegmentedWrapper = styled.div`
-  padding: 16px 24px;
+// const SegmentedWrapper = styled.div`
+//   padding: 16px 24px;
 
-  .ant-segmented {
-    background-color: white;
-    border-radius: 8px;
-    border: 1px solid ${theme.color.primary}50;
-  }
+//   .ant-segmented {
+//     background-color: white;
+//     border-radius: 8px;
+//     border: 1px solid ${theme.color.primary}50;
+//   }
 
-  .ant-segmented-item {
-    font-weight: 500;
-    padding: 6px 16px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-  }
+//   .ant-segmented-item {
+//     font-weight: 500;
+//     padding: 6px 16px;
+//     border-radius: 8px;
+//     transition: all 0.3s ease;
+//   }
 
-  .ant-segmented-item-selected {
-    background-color: ${theme.color.primary};
-    color: white;
-  }
+//   .ant-segmented-item-selected {
+//     background-color: ${theme.color.primary};
+//     color: white;
+//   }
 
-  .ant-segmented-thumb {
-    background-color: ${theme.color.primary};
-    border-radius: 8px !important;
-  }
-`;
+//   .ant-segmented-thumb {
+//     background-color: ${theme.color.primary};
+//     border-radius: 8px !important;
+//   }
+// `;
 
 
 const MainContent = styled.div`
@@ -130,7 +130,7 @@ const AdminLayout: React.FC<AdminProps> = ({ selectedCourse, setSelectedCourse }
         const res = await getListCourses(1, 10);
         const courseList = res.data.courses || [];
         setCourses(courseList);
-  
+
         if (courseList.length > 0) {
           const firstCourseId = courseList[0]._id;
           setSelectedCourseState(firstCourseId);
@@ -140,11 +140,9 @@ const AdminLayout: React.FC<AdminProps> = ({ selectedCourse, setSelectedCourse }
         console.log("Failed to fetch courses");
       }
     };
-  
+
     fetchCourses();
   }, []);
-  
-
 
   useEffect(() => {
     fetchProfile();
@@ -162,9 +160,9 @@ const AdminLayout: React.FC<AdminProps> = ({ selectedCourse, setSelectedCourse }
   const items: MenuProps['items'] = [
     {
       label: (
-        <a href="http://localhost:5173/login" target="_blank" rel="noopener noreferrer">
+        <Link to="http://localhost:5173/login" target="_blank" rel="noopener noreferrer">
           Logout
-        </a>
+        </Link>
       ),
       key: '0',
     }
@@ -172,23 +170,24 @@ const AdminLayout: React.FC<AdminProps> = ({ selectedCourse, setSelectedCourse }
 
   return (
     <LayoutContainer>
-      <AdminSidebar />
+      <AdminSidebar profile={profile}/>
       <MainArea>
         <HeaderBar>
           <PageTitle level={4}>
             {screenTitle ? screenTitle.charAt(0).toUpperCase() + screenTitle.slice(1) : ""}
           </PageTitle>
 
-          <SegmentedWrapper>
-            <Segmented
+          {["/admin/topic", "/admin/lesson", "/admin/exercise"].includes(location.pathname) && (
+            <Select
               options={courses.map(c => ({
-                label: c.title.split(' ')[0],
+                label: c.title,
                 value: c._id,
               }))}
               value={selectedCourseState ?? undefined}
               onChange={onSegmentChange}
+              style={{ minWidth: 200 }}
             />
-          </SegmentedWrapper>
+          )}
 
           <Dropdown menu={{ items }} trigger={['click']}>
 
@@ -201,7 +200,7 @@ const AdminLayout: React.FC<AdminProps> = ({ selectedCourse, setSelectedCourse }
           </Dropdown>
         </HeaderBar>
         <MainContent>
-                <Outlet context={{ selectedCourse }} />
+          <Outlet context={{ selectedCourse }} />
         </MainContent>
       </MainArea>
     </LayoutContainer>

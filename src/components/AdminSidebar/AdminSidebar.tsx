@@ -10,7 +10,6 @@ import {
   FileSearchOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
-// import { theme } from "@/themes";
 import { SidebarHeader, StyledSider } from "./AdminSidebar.styled";
 
 const menuItems = [
@@ -21,12 +20,24 @@ const menuItems = [
   { key: "/admin/vocabulary", label: "Vocabulary", icon: <FileTextOutlined /> },
   { key: "/admin/grammar", label: "Grammar", icon: <FileDoneOutlined /> },
   { key: "/admin/exercise", label: "Exercise", icon: <FileSearchOutlined /> },
+  { key: "/admin/quest", label: "Quest", icon: <FileSearchOutlined /> },
+  { key: "/admin/archivement", label: "Archivement", icon: <FileSearchOutlined /> },
   { key: "/admin/user", label: "User", icon: <UserOutlined /> },
 ];
 
-const AdminSidebar = () => {
+interface AdminSidebarProps {
+  profile: {
+    role: number;
+  } | null;
+}
+
+const AdminSidebar: React.FC<AdminSidebarProps> = ({ profile }) => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const filteredItems = profile?.role === 2
+  ? menuItems.filter(item => item.key !== "/admin/user")
+  : menuItems;
 
   return (
     <StyledSider width={260}>
@@ -42,7 +53,7 @@ const AdminSidebar = () => {
           fontSize: 16,
         }}
         theme="light"
-        items={menuItems.map((item) => ({
+        items={filteredItems.map((item) => ({
           ...item,
           icon: <span style={{ color: "#fff" }}>{item.icon}</span>,
           label: <span style={{ color: "#fff" }}>{item.label}</span>,

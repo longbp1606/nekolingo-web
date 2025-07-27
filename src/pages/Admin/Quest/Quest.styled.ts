@@ -19,9 +19,3 @@ export const FilterArea = styled.div`
   display: flex;
   justify-content: space-between;
 `;
-
-export const RowField = styled.div`
-  width: 100%;
-  display: flex;
-  gap: 20px;
-`;

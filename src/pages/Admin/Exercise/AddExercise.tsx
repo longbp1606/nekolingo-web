@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState, FC, useRef, useCallback } from "react";
-import { Button, Card, Col, notification, Input, Space, Select, Upload, Steps, Menu, Row } from "antd";
+import { Button, Card, Col, notification, Input, Space, Select, Upload, Steps, Menu, Row, Popconfirm, message } from "antd";
 import { ActionButton, BackButton, Container, ContentBody, ContentColumn, EditorArea, ExerciseArea, ExerciseGrid, Header, NextButton, TypeGrid } from "./Exercise.styled";
 import { getTopicCourse } from "@/services/topicAPI";
 import { getLessonByTopic, getLessonDetail } from "@/services/lessonAPI";
-import { createExercise, updateExercise } from "@/services/exerciseAPI";
+import { createExercise, deleteExercise, updateExercise } from "@/services/exerciseAPI";
 import type { CreateExercise } from "@/services/exerciseAPI";
 import TextArea from "antd/es/input/TextArea";
-import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
+import { CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { uploadImage } from "@/services/uploadAPI";
 import { useOutletContext } from "react-router-dom";
 
@@ -42,7 +42,6 @@ interface EditorData extends Omit<Partial<CreateExercise>, 'options'> {
 
 const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
   const [topics, setTopics] = useState<Array<{ _id: string; title: string }>>([]);
-  // const [openKeys, setOpenKeys] = useState<string[]>([]);
   const [lessons, setLessons] = useState<Record<string, any[]>>({});
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [exercises, setExercises] = useState<any[]>([]);
@@ -57,6 +56,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
   const { selectedCourse } = useOutletContext<OutletCtx>();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  const [showExercise, setShowExercise] = useState(false);
 
   const fetchTopics = useCallback(async () => {
     if (!selectedCourse) {
@@ -113,7 +113,6 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
     } else if (editorData.question_format === 'match') {
       defaultOptions = [];
     } else {
-      // tất cả formats text đều khởi tạo string[]
       defaultOptions = [''] as TextOption[];
     }
     setEditorData({
@@ -129,7 +128,6 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
   // Reset editor
   const resetEditor = () => {
     setEditorData({});
-    // setIsEditingContent(false);
     setCurrentStep(currentStep - 1);
     setCreatingExercise(false);
     setIsEditingExistingExercise(false);
@@ -141,11 +139,10 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
       setCurrentStep(prev => prev - 1);
     }
     if (currentStep === 1) {
-      // Exiting editor when returning to step 0
       setCreatingExercise(false);
       setIsEditingExistingExercise(false);
       setEditingExerciseId(null);
-      // setIsEditingContent(false);
+      setShowExercise(false); 
     }
   };
 
@@ -268,6 +265,16 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
       opts.splice(index, 1);
       return { ...prev, options: opts as ExerciseOptions };
     });
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteExercise(id);
+      message.success("Deleted successfully");
+      await onLessonClick(selectedLesson);
+    } catch {
+      message.error("Delete failed");
+    }
   };
 
 
@@ -517,36 +524,33 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
               </Row>
             </ContentColumn>
           </ContentBody>
-          {/* <Collapse activeKey={openKeys} onChange={onTopicChange}>
-            {topics.map(topic => (
-              <Collapse.Panel header={topic.title} key={topic._id}>
-                <LessonGrid>
-                  {(lessons[topic._id] || []).map(les => (
-                    <Col span={6} key={les._id}>
-                      <Card hoverable onClick={() => {
-                        onLessonClick(les);
-                        setCurrentStep(1); // NEXT TO STEP 2
-                      }}>
-                        {les.title}
-                      </Card>                    </Col>
-                  ))}
-                </LessonGrid>
-              </Collapse.Panel>
-            ))}
-          </Collapse> */}
         </>
       )}
 
       {selectedLesson && currentStep > 0 && (
         <ExerciseArea>
-          {/* <Header style={{ marginTop: 24 }}>
-            <BackButton onClick={handleBack}>Back</BackButton>
-            <h2>Exercises of {selectedLesson.title}</h2>
-          </Header> */}
+          {!showExercise && (
+            <Header style={{ marginTop: 24 }}>
+              <BackButton onClick={() => {
+                handleBack();
+                setShowExercise(false);   // reset lại
+              }}>
+                Back
+              </BackButton>
+              <h2>Exercises of {selectedLesson.title}</h2>
+            </Header>
+          )}
           {creatingExercise ? renderEditor() : (
             <ExerciseGrid gutter={[16, 16]}>
               <Col span={6}>
-                <Card hoverable onClick={startCreate} style={{ textAlign: 'center' }}>
+                <Card
+                  hoverable
+                  onClick={() => {
+                    startCreate();
+                    setShowExercise(true);
+                  }}
+                  style={{ textAlign: 'center' }}
+                >
                   ➕ Create Exercise
                 </Card>
               </Col>
@@ -554,12 +558,31 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
                 <Col span={6} key={ex._id}>
                   <Card
                     hoverable
-                    onClick={() => onEditExercise(ex)}
+                    onClick={() => {
+                      onEditExercise(ex);
+                      setShowExercise(true);
+                    }} 
                     title={<b>{ex.type} - {ex.question_format}</b>}
                     size="small"
                   >
-                    <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {ex.question || "(no question)"}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                      <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {ex.question || "(no question)"}
+                      </div>
+
+                      <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
+
+                        <Popconfirm
+                          title="Delete this exercise?"
+                          onConfirm={() => handleDelete(ex._id)}
+                        >
+                          <Button danger size="small"
+                            onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
+                          >
+                            <DeleteOutlined style={{ color: "red" }} />
+                          </Button>
+                        </Popconfirm>
+                      </div>
                     </div>
                   </Card>
                 </Col>

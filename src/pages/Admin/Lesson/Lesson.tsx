@@ -43,7 +43,7 @@ const Lesson = () => {
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
-    pageSize: 5,
+    pageSize: 10,
     total: 0,
   });
   const [selectedRecord, setSelectedRecord] = useState<LessonItem | null>(null);
@@ -53,21 +53,16 @@ const Lesson = () => {
   const hasErrorNotified = useRef(false);
   const [topicOptions, setTopicOptions] = useState<{ label: string; value: string }[]>([]);
   const { selectedCourse } = useOutletContext<OutletCtx>();
-  const [topics, setTopics] = useState<{ _id: string; title: string }[]>([]);
-
-  console.log("topics:", topics);
-  
+  const [topics, setTopics] = useState<{ _id: string; title: string }[]>([]);  
 
   const fetchTopics = useCallback(async () => {
-    if (!selectedCourse) {
-      setTopics([]);
-      return;
-    }
+    if (!selectedCourse) { setTopics([]); return; }
     try {
       const res = await getTopicCourse(selectedCourse);
       setTopics(res.data.data || []);
+      fetchAll(1, pagination.pageSize as number);
     } catch (error) {
-      console.error("Error fetching topics:", error);
+      console.error(error);
       setTopics([]);
     }
   }, [selectedCourse]);
@@ -87,16 +82,25 @@ const Lesson = () => {
     }
   }, []);
 
+  useEffect(() => {
+    fetchTopics();
+    fetchOptions();
+  }, [fetchTopics, fetchOptions]);
 
-  const fetchAll = useCallback(async () => {
+  const fetchAll = async (page = 1, take = 10) => {
     setLoading(true);
     try {
-      const res = await getListLessons(pagination.current || 1, pagination.pageSize || 5);
+      const res = await getListLessons(page, take);
       const list: LessonItem[] = res.data.lessons || [];
+      const { totalRecord } = res.data.pagination;
       const topicIds = topics.map((t) => t._id);
       const filtered = list.filter((lesson) => topicIds.includes(lesson.topic._id));
       setData(filtered);
-      setPagination((p) => ({ ...p, total: filtered.length }));
+      setPagination({
+        current: page,
+        pageSize: take,
+        total: totalRecord,
+      });       
     } catch (error: any) {
       if (!hasErrorNotified.current) {
         notification.error({ key: "fetch-lesson-error", message: "Error", description: error?.response?.data?.message || "Error fetching lessons" });
@@ -105,16 +109,16 @@ const Lesson = () => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.current, pagination.pageSize, topics]);
+  };
 
   useEffect(() => {
-    fetchTopics();
-    fetchOptions();
-  }, [fetchTopics, fetchOptions]);
+    if (topics.length > 0) {
+      fetchAll(pagination.current as number, pagination.pageSize as number);
+    }  }, [topics]);
 
-  useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
+   const handleTableChange = (pag: TablePaginationConfig) => {
+      fetchAll(pag.current as number, pag.pageSize as number);
+    };
 
   const handleRowClick = async (record: LessonItem) => {
     setLoading(true);
@@ -246,7 +250,7 @@ const Lesson = () => {
           rowKey="_id"
           loading={loading}
           pagination={pagination}
-          onChange={(pag) => setPagination(pag)}
+          onChange={handleTableChange}
           onRow={(record) => ({
             onClick: () => handleRowClick(record),
           })}
