@@ -39,12 +39,27 @@ const ReviewPopup: React.FC<ReviewPopupProps> = ({ visible, onClose }) => {
 
     const handleCardClick = (item: ExerciseProgressState) => {
         setSelectedItem(item);
-        setShowDetail(true);
+        if (item.question_format !== 'match') setShowDetail(true);
     };
 
     const handleCloseDetail = () => {
         setShowDetail(false);
         setSelectedItem(null);
+    };
+
+    // Helper function to render user answer with differences bolded
+    const renderDiffAnswer = (user: string, correct: string) => {
+        const userWords = user ? user.split(' ') : [];
+        const correctWords = correct ? correct.split(' ') : [];
+        return userWords.map((word, idx) => {
+            const isDifferent = correctWords[idx] !== word;
+            return (
+                <span key={idx} style={isDifferent ? { fontWeight: 'bold' } : {}}>
+                    {word}
+                    {idx < userWords.length - 1 ? ' ' : ''}
+                </span>
+            );
+        });
     };
 
     return (
@@ -118,7 +133,12 @@ const ReviewPopup: React.FC<ReviewPopupProps> = ({ visible, onClose }) => {
                                 <div>
                                     <AnswerLabel>Đáp án của bạn:</AnswerLabel>
                                     <AnswerText isCorrect={selectedItem.is_correct ? true : false}>
-                                        {selectedItem.user_answer}
+                                        {
+                                            renderDiffAnswer(
+                                                selectedItem.user_answer,
+                                                selectedItem.correct_answer
+                                            )
+                                        }
                                     </AnswerText>
                                 </div>
 

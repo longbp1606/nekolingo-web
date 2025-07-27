@@ -3,17 +3,14 @@ import { Content, PersonSay, SentenceContainer, Title, Vietnamese, WordBox, Word
 import ProgressBar from '@/components/ProgressBar';
 import BottomBar from '@/components/BottomBar/BottomBar';
 import GameOver from '@/components/ProgressBar/GameOver/GameOver';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { ExerciseProgressState, setExercisesProgress } from '@/store/userProgress.slice';
+import { removeHeart } from '@/store/user.slice';
 
 interface SortSentenceProps {
-    data: {
-        question_id: number;
-        type: string;
-        question: string;
-        sample_sentence: string;
-        options: string[];
-        answer: string;
-        correct_answer: string;
-    };
+    data: any;
     totalQuestions: number;
     answeredQuestions: number;
     onAnswered: (correct: boolean) => void;
@@ -22,6 +19,10 @@ interface SortSentenceProps {
 const SortSentence: React.FC<SortSentenceProps> = ({
     data, totalQuestions, answeredQuestions, onAnswered
 }) => {
+    const navigate = useNavigate();
+    const exercises = useSelector((state: RootState) => state.userProgress.exercises);
+    const hearts = useSelector((state: RootState) => state.user.hearts);
+    const dispatch = useDispatch();
     const { question, sample_sentence, options, correct_answer } = data;
     const correctWords = correct_answer?.split(' ');
     const slotCount = correctWords.length;
@@ -31,8 +32,22 @@ const SortSentence: React.FC<SortSentenceProps> = ({
     const [selectedWords, setSelectedWords] = useState<string[]>([]);
     const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isCorrect, setIsCorrect] = useState<boolean>(false);
-    const [lives, setLives] = useState(3);
+    const [lives, setLives] = useState(hearts);
     const [showGameOver, setShowGameOver] = useState(false);
+    const [seconds, setSeconds] = useState(0);
+    const [isRunning, setIsRunning] = useState(true);
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+
+        if (isRunning) {
+            interval = setInterval(() => {
+                setSeconds((prevSeconds) => prevSeconds + 1);
+            }, 1000); 
+        }
+
+        return () => clearInterval(interval);
+    }, [isRunning]);
 
     useEffect(() => {
         setSelectedWords(Array(slotCount).fill(''));
@@ -86,7 +101,36 @@ const SortSentence: React.FC<SortSentenceProps> = ({
 
         // const correct = userSentence.length === correctWithoutA.length &&
         //     userSentence.every((word, index) => word === correctWithoutA[index]);
-        const correct = correctWords.every((word, index) => word === selectedWords[index]);
+        const correct = correctWords.every((word: string, index: number) => word === selectedWords[index]);
+        setIsRunning(false);
+
+        const answer = selectedWords.join(' ');
+
+        if (correct) {
+            const exercisesResult: ExerciseProgressState = {
+                exercise_id: data._id ? data._id : "",
+                user_answer: answer,
+                answer_time: seconds,
+                is_correct: true,
+                question: data.question,
+                question_format: data.question_format,
+            }
+            const updatedExercises = [...exercises, exercisesResult];
+            dispatch(setExercisesProgress(updatedExercises));
+        } else {
+            const exercisesResult: ExerciseProgressState = {
+                exercise_id: data._id? data._id : "",
+                user_answer: answer,
+                answer_time: seconds,
+                is_correct: false, 
+                correct_answer: data.correct_answer,
+                question: data.question,
+                question_format: data.question_format,
+            }
+            const updatedExercises = [...exercises, exercisesResult];
+            dispatch(setExercisesProgress(updatedExercises));
+            dispatch(removeHeart())
+        }
 
         setIsCorrect(correct);
         setIsChecked(true);
@@ -108,7 +152,7 @@ const SortSentence: React.FC<SortSentenceProps> = ({
         <Wrapper>
             {showGameOver && (
                 <GameOver
-                    onCancel={() => setShowGameOver(false)}
+                    onCancel={() => navigate('/')}
                     onRecover={() => {
                         setLives(1);
                         setShowGameOver(false);

@@ -13,21 +13,14 @@ import BottomBar from "@/components/BottomBar/BottomBar";
 import ProgressBar from "@/components/ProgressBar";
 import GameOver from "@/components/ProgressBar/GameOver/GameOver";
 import { theme } from "@/themes";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { ExerciseProgressState, setExercisesProgress } from "@/store/userProgress.slice";
+import { removeHeart } from "@/store/user.slice";
 
 interface CompleteSentencesProps {
-  data: {
-    question_id: number;
-    type: "complete_sentences";
-    question: string;
-    sample_sentence: string;
-    image: string;
-    // sentence: {
-    //   before: string;
-    //   after: string;
-    // };
-    options: string[];
-    correct_answer: string;
-  };
+  data: any;
   totalQuestions: number;
   answeredQuestions: number;
   onAnswered: (correct: boolean) => void;
@@ -39,6 +32,10 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = ({
   answeredQuestions,
   onAnswered,
 }) => {
+  const navigate = useNavigate();
+  const exercises = useSelector((state: RootState) => state.userProgress.exercises);
+  const hearts = useSelector((state: RootState) => state.user.hearts);
+  const dispatch = useDispatch();
   const { question, sample_sentence, image, options, correct_answer } = data;
   // const { before, after } = sentence;
 
@@ -51,8 +48,22 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = ({
   const numberOfSlots = options.length;
   const [isChecked, setIsChecked] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-  const [lives, setLives] = useState(3);
+  const [lives, setLives] = useState(hearts);
   const [showGameOver, setShowGameOver] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  const [isRunning, setIsRunning] = useState(true);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (isRunning) {
+      interval = setInterval(() => {
+        setSeconds((prevSeconds) => prevSeconds + 1);
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [isRunning]);
 
   // Sync availableWords when options change
   useEffect(() => {
@@ -94,6 +105,34 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = ({
   const handleCheck = () => {
     if (!selectedWords[0]) return;
     const correct = selectedWords[0].trim().toLowerCase() === correct_answer.trim().toLowerCase();
+
+    setIsRunning(false);
+    if (correct) {
+      const exercisesResult: ExerciseProgressState = {
+        exercise_id: data._id ? data._id : "",
+        user_answer: selectedWords[0],
+        answer_time: seconds,
+        is_correct: true,
+        question: data.question,
+        question_format: data.question_format,
+      }
+      const updatedExercises = [...exercises, exercisesResult];
+      dispatch(setExercisesProgress(updatedExercises));
+    } else {
+      const exercisesResult: ExerciseProgressState = {
+        exercise_id: data._id ? data._id : "",
+        user_answer: selectedWords[0],
+        answer_time: seconds,
+        is_correct: false,
+        correct_answer: data.correct_answer,
+        question: data.question,
+        question_format: data.question_format,
+      }
+      const updatedExercises = [...exercises, exercisesResult];
+      dispatch(setExercisesProgress(updatedExercises));
+      dispatch(removeHeart())
+    }
+
     setIsCorrect(correct);
     setIsChecked(true);
     if (!correct) setLives(prev => Math.max(0, prev - 1));
@@ -124,7 +163,7 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = ({
   if (showGameOver) {
     return (
       <GameOver
-        onCancel={() => setShowGameOver(false)}
+        onCancel={() => navigate('/')}
         onRecover={() => {
           setLives(1);
           setShowGameOver(false);

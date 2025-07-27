@@ -55,9 +55,9 @@ const Register = () => {
     }
 
     const registerRedirect: RedirectType = {
-        description: 'Hãy tạo tài khoản để lưu tiến trình học của bạn nha!',
-        title: '',
-        url: ''
+        description: 'Đã có tài khoản?',
+        title: 'Đăng nhập ngay',
+        url: '/login'
     }
 
     return (

@@ -13,30 +13,46 @@ import BottomBar from "@/components/BottomBar/BottomBar";
 import ProgressBar from '@/components/ProgressBar';
 import GameOver from "@/components/ProgressBar/GameOver/GameOver";
 import { theme } from "@/themes";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { ExerciseProgressState, setExercisesProgress } from "@/store/userProgress.slice";
+import { removeHeart } from "@/store/user.slice";
 
 const { Title } = Typography;
 
 interface ListeningProps {
-    data: {
-        question_id: number;
-        type: string;
-        prompt: string;
-        audio_url: string;
-        options: string[];
-        correct_answer: string;
-    };
+    data: any;
     totalQuestions: number;
     answeredQuestions: number;
     onAnswered: (correct: boolean) => void;
 }
 
 const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQuestions, onAnswered }) => {
+    const navigate = useNavigate();
+    const exercises = useSelector((state: RootState) => state.userProgress.exercises);
+    const hearts = useSelector((state: RootState) => state.user.hearts);
+    const dispatch = useDispatch();
     const { audio_url, options, correct_answer } = data;
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const [isChecked, setIsChecked] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
-    const [lives, setLives] = useState(3);
+    const [lives, setLives] = useState(hearts);
     const [showGameOver, setShowGameOver] = useState(false);
+    const [seconds, setSeconds] = useState(0);
+    const [isRunning, setIsRunning] = useState(true);
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+
+        if (isRunning) {
+            interval = setInterval(() => {
+                setSeconds((prevSeconds) => prevSeconds + 1);
+            }, 1000); 
+        }
+
+        return () => clearInterval(interval);
+    }, [isRunning]);
 
     const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -55,9 +71,35 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
     };
 
     const handleCheck = () => {
+        setIsRunning(false);
         if (selectedIndex === null) return;
         const selectedValue = options[selectedIndex];
         const correct = selectedValue.trim().toLowerCase() === correct_answer.trim().toLowerCase();
+        if (correct) {
+            const exercisesResult: ExerciseProgressState = {
+                exercise_id: data._id ? data._id : "",
+                user_answer: selectedValue,
+                answer_time: seconds,
+                is_correct: true,
+                question: data.question,
+                question_format: data.question_format,
+            }
+            const updatedExercises = [...exercises, exercisesResult];
+            dispatch(setExercisesProgress(updatedExercises));
+        } else {
+            const exercisesResult: ExerciseProgressState = {
+                exercise_id: data._id? data._id : "",
+                user_answer: selectedValue,
+                answer_time: seconds,
+                is_correct: false, 
+                correct_answer: data.correct_answer,
+                question: data.question,
+                question_format: data.question_format,
+            }
+            const updatedExercises = [...exercises, exercisesResult];
+            dispatch(setExercisesProgress(updatedExercises));
+            dispatch(removeHeart())
+        }
         setIsCorrect(correct);
         setIsChecked(true);
         if (!correct) setLives(prev => Math.max(0, prev - 1));
@@ -80,7 +122,7 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
     if (showGameOver) {
         return (
             <GameOver
-                onCancel={() => setShowGameOver(false)}
+                onCancel={() => navigate('/')}
                 onRecover={() => {
                     setLives(1);
                     setShowGameOver(false);
@@ -115,7 +157,7 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
             {/* <QuestionTitle>{prompt}</QuestionTitle> */}
 
             <Space direction="vertical" style={{ width: "100%", marginTop: '16px' }} size="middle">
-                {options?.map((choice, index) => {
+                {options?.map((choice: any, index: number) => {
                     const isSelected = selectedIndex === index;
                     const isAnswerChoice = choice?.trim().toLowerCase() === correct_answer?.trim().toLowerCase();
 
