@@ -5,6 +5,11 @@ import ProgressBar from '@/components/ProgressBar';
 import BottomBar from '@/components/BottomBar/BottomBar';
 import GameOver from '@/components/ProgressBar/GameOver/GameOver';
 import { theme } from '@/themes';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { ExerciseProgressState, setExercisesProgress } from '@/store/userProgress.slice';
+import { removeHeart } from '@/store/user.slice';
 
 interface WordPair {
     id: number;
@@ -13,12 +18,7 @@ interface WordPair {
 }
 
 interface MatchPairsProps {
-    data: {
-        question_id: number;
-        type: string;
-        prompt: string;
-        pairs: WordPair[];
-    };
+    data: any;
     totalQuestions: number;
     answeredQuestions: number;
     onAnswered: (correct: boolean) => void;
@@ -30,9 +30,14 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
     answeredQuestions,
     onAnswered
 }) => {
-    const { pairs, prompt } = data;
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const hearts = useSelector((state: RootState) => state.user.hearts);
+    const exercises = useSelector((state: RootState) => state.userProgress.exercises);
+    
+    const { options, question } = data;
     // Tổng số cặp (5)
-    const totalPairs = pairs?.length;
+    const totalPairs = options?.length;
     // ID của từ TIẾNG VIỆT và TIẾNG ANH đang chọn tạm
     const [selectedVi, setSelectedVi] = useState<number | null>(null);
     const [selectedEn, setSelectedEn] = useState<number | null>(null);
@@ -49,16 +54,30 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
     const [recentMatchedPair, setRecentMatchedPair] = useState<{ viId: number; enId: number } | null>(null);
 
     // Danh sách tiếng Anh đã shuffle 1 lần khi mount
-    const [shuffledEnPairs, setShuffledEnPairs] = useState<WordPair[]>([]);
+    const [shuffledRightPairs, setShuffledRightPairs] = useState<WordPair[]>([]);
     const [hasAutoChecked, setHasAutoChecked] = useState(false);
-    const [lives, setLives] = useState(3);
+    const [lives, setLives] = useState(hearts);
     const [showGameOver, setShowGameOver] = useState(false);
     const [isCheckedBar, setIsCheckedBar] = useState(false);
     const [isCorrectBar, setIsCorrectBar] = useState(false);
+    const [seconds, setSeconds] = useState(0);
+    const [isRunning, setIsRunning] = useState(true);
 
     useEffect(() => {
-        const shuffled = [...pairs].sort(() => Math.random() - 0.5);
-        setShuffledEnPairs(shuffled);
+        let interval: NodeJS.Timeout;
+
+        if (isRunning) {
+            interval = setInterval(() => {
+                setSeconds((prevSeconds) => prevSeconds + 1);
+            }, 1000); 
+        }
+
+        return () => clearInterval(interval);
+    }, [isRunning]);
+
+    useEffect(() => {
+        const shuffled = [...options].sort(() => Math.random() - 0.5);
+        setShuffledRightPairs(shuffled);
     }, []);
 
     // Mỗi khi matchedIds thay đổi, nếu đủ 5 cặp, auto-check
@@ -98,8 +117,8 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
 
     // Hàm kiểm tra cặp (viId, enId)
     const checkPair = (viId: number, enId: number) => {
-        const pairVi = pairs.find(p => p.id === viId)!;
-        const pairEn = pairs.find(p => p.id === enId)!;
+        const pairVi = options.find((p: any) => p.id === viId)!;
+        const pairEn = options.find((p: any) => p.id === enId)!;
 
         const isMatch = pairVi.left === pairEn.left;
 
@@ -131,8 +150,35 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
     // Khi user "KIỂM TRA" (auto-called khi đủ 5 cặp)
     const handleCheckBar = () => {
         // Vì nối đủ 5 cặp ⇒ đúng
+        setIsRunning(false);
         setIsCorrectBar(true);
         setIsCheckedBar(true);
+
+        if (matchedPairs) {
+            const exercisesResult: ExerciseProgressState = {
+                exercise_id: data._id ? data._id : "",
+                user_answer: matchedPairs,
+                answer_time: seconds,
+                is_correct: true,
+                question: data.question,
+                question_format: data.question_format,
+            }
+            const updatedExercises = [...exercises, exercisesResult];
+            dispatch(setExercisesProgress(updatedExercises));
+        } else {
+            const exercisesResult: ExerciseProgressState = {
+                exercise_id: data._id? data._id : "",
+                user_answer: matchedPairs,
+                answer_time: seconds,
+                is_correct: false, 
+                correct_answer: data.correct_answer,
+                question: data.question,
+                question_format: data.question_format,
+            }
+            const updatedExercises = [...exercises, exercisesResult];
+            dispatch(setExercisesProgress(updatedExercises));
+            dispatch(removeHeart())
+        }
 
         // Tăng progress
         // setAnswered(prev => prev + 1);
@@ -268,7 +314,7 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
         <Wrapper>
             {showGameOver && (
                 <GameOver
-                    onCancel={() => setShowGameOver(false)}
+                    onCancel={() => navigate("/")}
                     onRecover={() => {
                         setLives(1);
                         setShowGameOver(false);
@@ -283,21 +329,21 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
             />
 
             <Content>
-                <Title style={{ margin: '16px 0' }}>{prompt}</Title>
+                <Title style={{ margin: '16px 0' }}>{question}</Title>
 
                 <MatchArea
                 >
                     {/* Cột tiếng Việt */}
                     <LeftOption>
-                        {pairs?.map((pair) =>
+                        {options?.map((option: any) =>
                             // renderButton(pair.vi, pair.id, true, idx)
-                            renderButton(pair.left, pair.id, true)
+                            renderButton(option.left, option.id, true)
                         )}
                     </LeftOption>
 
                     {/* Cột tiếng Anh */}
                     <RightOption>
-                        {shuffledEnPairs.map((pair) =>
+                        {shuffledRightPairs.map((pair) =>
                             // renderButton(pair.en, pair.id, false, idx)
                             renderButton(pair.right, pair.id, false)
                         )}

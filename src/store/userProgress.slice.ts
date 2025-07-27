@@ -7,6 +7,7 @@ export type ExerciseProgressState = {
     is_correct?: boolean;
     correct_answer?: any;
     question?: any;
+    question_format?: string;
 }
 
 export type CompleteFullLessonState = {
