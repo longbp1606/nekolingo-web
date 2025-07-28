@@ -9,6 +9,10 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { ExerciseProgressState, setExercisesProgress } from '@/store/userProgress.slice';
+import config from '@/config';
+import { explainAnswer } from '@/services/userProgressAPI';
+import { Flex, FloatButton, Spin } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 interface WordPair {
     id: number;
@@ -31,9 +35,10 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
 }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const userId = useSelector((state: RootState) => state.user.user_id);
     const hearts = useSelector((state: RootState) => state.user.hearts);
     const exercises = useSelector((state: RootState) => state.userProgress.exercises);
-    
+
     const { options, question } = data;
     // Tổng số cặp (5)
     const totalPairs = options?.length;
@@ -55,12 +60,15 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
     // Danh sách tiếng Anh đã shuffle 1 lần khi mount
     const [shuffledRightPairs, setShuffledRightPairs] = useState<WordPair[]>([]);
     const [hasAutoChecked, setHasAutoChecked] = useState(false);
-    const [lives, setLives] = useState(hearts);
+    const lives = hearts;
     const [showGameOver, setShowGameOver] = useState(false);
     const [isCheckedBar, setIsCheckedBar] = useState(false);
     const [isCorrectBar, setIsCorrectBar] = useState(false);
     const [seconds, setSeconds] = useState(0);
     const [isRunning, setIsRunning] = useState(true);
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [explainAI, setExplainAI] = useState("");
+    const [answerLoading, setAnswerLoading] = useState(false);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -68,7 +76,7 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
         if (isRunning) {
             interval = setInterval(() => {
                 setSeconds((prevSeconds) => prevSeconds + 1);
-            }, 1000); 
+            }, 1000);
         }
 
         return () => clearInterval(interval);
@@ -78,6 +86,12 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
         const shuffled = [...options].sort(() => Math.random() - 0.5);
         setShuffledRightPairs(shuffled);
     }, []);
+
+    useEffect(() => {
+        if (lives <= 0) {
+            setShowGameOver(true);
+        }
+    }, [lives]);
 
     // Mỗi khi matchedIds thay đổi, nếu đủ 5 cặp, auto-check
     useEffect(() => {
@@ -152,6 +166,7 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
         setIsRunning(false);
         setIsCorrectBar(true);
         setIsCheckedBar(true);
+        setIsSubmitted(true);
 
         if (matchedPairs) {
             const exercisesResult: ExerciseProgressState = {
@@ -166,10 +181,10 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
             dispatch(setExercisesProgress(updatedExercises));
         } else {
             const exercisesResult: ExerciseProgressState = {
-                exercise_id: data._id? data._id : "",
+                exercise_id: data._id ? data._id : "",
                 user_answer: matchedPairs,
                 answer_time: seconds,
-                is_correct: false, 
+                is_correct: false,
                 correct_answer: data.correct_answer,
                 question: data.question,
                 question_format: data.question_format,
@@ -308,15 +323,26 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
         );
     };
 
+    const getAIExplaiation = async () => {
+        setAnswerLoading(true);
+        const payload = {
+            user_id: userId,
+            exercise_id: data._id,
+        }
+
+        const res = await explainAnswer(payload);
+        if (res.status === 201) {
+            setExplainAI(res.data.explanation);
+        }
+        setAnswerLoading(false);
+    }
+
     return (
         <Wrapper>
             {showGameOver && (
                 <GameOver
                     onCancel={() => navigate("/")}
-                    onRecover={() => {
-                        setLives(1);
-                        setShowGameOver(false);
-                    }}
+                    onRecover={() => navigate(config.routes.user.shop)}
                 />
             )}
             <ProgressBar
@@ -358,6 +384,23 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
                 handleReset={() => { }}
                 handleNext={handleNextBar}
             />
+
+            {isSubmitted && (
+                <FloatButton.Group
+                    trigger="click"
+                    placement="left"
+                    icon={<QuestionCircleOutlined />}
+                    type="primary"
+                    onClick={getAIExplaiation}
+                >
+
+                    {answerLoading ? <Spin /> : (
+                        <Flex vertical className="w-80 bg-white rounded p-4 mb-60 border" align="flex-end" >
+                            {explainAI ? explainAI : 'Không có phản hồi'}
+                        </Flex>
+                    )}
+                </FloatButton.Group>
+            )}
         </Wrapper>
     );
 };

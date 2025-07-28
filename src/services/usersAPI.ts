@@ -1,7 +1,7 @@
 import { get, post, patch, remove } from "./apiCaller";
 
 export type CreateUser = {
-    email: string;
+	email: string;
 	password: string;
 	role?: number;
 	username?: string;
@@ -21,8 +21,9 @@ export type CreateUser = {
 
 export type UpdateUser = {
 	email?: string;
-  password?: string;
+	password?: string;
 	role?: string;
+	username?: string;
 	avatar_url?: string;
 	current_level?: number;
 	xp?: number;
@@ -39,21 +40,21 @@ export type UpdateUser = {
 };
 
 export const getListUsers = () => {
-    return get("/api/user");
+	return get("/api/user");
 }
 
 export const getUserDetail = (id: string) => {
-  return get(`/api/user/${id}`);
+	return get(`/api/user/${id}`);
 };
 
 export const createUser = (user: CreateUser) => {
-  return post(`/api/user`, user);
+	return post(`/api/user`, user);
 };
 
 export const updateUser = (id: string, user: UpdateUser) => {
-  return patch(`/api/user/${id}`, user);
+	return patch(`/api/user/${id}`, user);
 };
 
 export const deleteUser = (id: string) => {
-  return remove(`/api/user/${id}`);
+	return remove(`/api/user/${id}`);
 };

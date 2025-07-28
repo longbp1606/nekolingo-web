@@ -42,7 +42,7 @@ import { theme } from '@/themes';
 import StatsBar from '@/components/StatsBar/StatsBar';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { useEffect, useRef, useState, useMemo } from 'react';
-import { getQuestDaily } from '@/services/questAPI';
+import { generateQuestDaily, getQuestDaily } from '@/services/questAPI';
 import { notification } from 'antd';
 import firefire from "@/assets/firefire.png";
 import { useAuth } from '@/hooks';
@@ -57,6 +57,7 @@ const Quest = () => {
 
   const fetchData = async () => {
     try {
+      await generateQuestDaily();
       const res = await getQuestDaily();
       setRawData(res.data || []);
     } catch (error: any) {

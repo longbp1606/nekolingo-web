@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     BodyContent,
     LeaderboardContainer,
@@ -36,9 +36,28 @@ import {
 import Sidebar from '@/components/Sidebar';
 import { theme } from '@/themes';
 import StatsBar from '@/components/StatsBar/StatsBar';
+import { useAuth } from '@/hooks';
+import { getLeaderboardOverall } from '@/services/leaderboardAPI';
 
 const Leaderboard = () => {
+    const { profile } = useAuth();
     const [selectedTournament, setSelectedTournament] = useState('bronze');
+    const [leaderboardList, setLeaderboardList] = useState<any>([]);
+    
+    const fetchLeaderboard = async () => {
+        try {
+            const response = await getLeaderboardOverall();
+            if (response.status === 200) {
+                setLeaderboardList(response.data); 
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    useEffect(() => {
+        fetchLeaderboard();
+    }, [profile])
 
     const tournaments = {
         bronze: {
@@ -179,24 +198,24 @@ const Leaderboard = () => {
 
                             <LeaderboardContainer>
                                 <LeaderboardList>
-                                    {currentTournament.data.map((player, index) => (
+                                    {leaderboardList?.map((player: any, index: number) => (
                                         <LeaderboardItem key={index}>
-                                            <RankBadge rank={player.rank} color={getRankColor(player.rank)}>
-                                                {player.rank}
+                                            <RankBadge rank={index + 1} color={getRankColor(index + 1)}>
+                                                {index + 1}
                                             </RankBadge>
 
                                             <div style={{ position: 'relative' }}>
-                                                <UserAvatar color={player.color}>
-                                                    {player.avatar}
+                                                <UserAvatar color={theme.color.primary}>
+                                                    {player.avatar ? player.avatar : player.username?.charAt(0).toUpperCase()}
                                                 </UserAvatar>
-                                                {player.isOnline && <OnlineIndicator />}
+                                                {<OnlineIndicator />}
                                             </div>
 
                                             <UserInfo>
-                                                <UserName>{player.name}</UserName>
+                                                <UserName>{player?.username ? player.username : `Anonymous ${index}`}</UserName>
                                             </UserInfo>
 
-                                            <UserScore>{player.score}</UserScore>
+                                            <UserScore>{player?.xp} XP</UserScore>
                                         </LeaderboardItem>
                                     ))}
                                 </LeaderboardList>

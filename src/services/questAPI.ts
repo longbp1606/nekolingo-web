@@ -41,6 +41,10 @@ export const getQuestDaily = () => {
   return get("/api/quest/daily");
 };
 
+export const generateQuestDaily = () => {
+  return post("/api/quest/daily");
+};
+
 export const getQuest = () => {
   return get("/api/quest");
 };

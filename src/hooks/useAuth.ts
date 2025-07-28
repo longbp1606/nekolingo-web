@@ -1,6 +1,6 @@
 import { getProfile } from "@/services/authAPI";
 import cookieUtils from "@/services/cookieUtils";
-import { setBalance, setFreezeCount, setHearts } from "@/store/user.slice";
+import { setBalance, setFreezeCount, setHearts, setUserIDStore } from "@/store/user.slice";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
@@ -62,6 +62,7 @@ const useAuth = () => {
         try {
             const res = await getProfile();
             setProfile(res.data.data as UserType);
+            dispatch(setUserIDStore(res.data.data.id));
             dispatch(setHearts(res.data.data.hearts));
             dispatch(setBalance(res.data.data.balance));
             dispatch(setFreezeCount(res.data.data.freeze_count));

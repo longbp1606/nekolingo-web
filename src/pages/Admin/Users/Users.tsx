@@ -16,7 +16,7 @@ import { ContentCard, FilterArea, RowField } from "./Users.styled";
 import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
-import { CreateUser, deleteUser, getListUsers, getUserDetail, updateUser } from "@/services/usersAPI";
+import { deleteUser, getListUsers, getUserDetail, UpdateUser, updateUser } from "@/services/usersAPI";
 import moment from "moment";
 import { register } from "@/services/authAPI";
 import { getListLanguages } from "@/services/languageAPI";
@@ -151,7 +151,7 @@ const Users = () => {
     const values = await form.validateFields();
     setLoading(true);
     try {
-      const payload: CreateUser = {
+      const payload: UpdateUser = {
         email: values.email,
         password: values.password,
         role: values.role,

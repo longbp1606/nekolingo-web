@@ -15,6 +15,9 @@ import { ExerciseProgressState, setExercisesProgress } from "@/store/userProgres
 import { removeHeart } from "@/store/user.slice";
 import { useNavigate } from "react-router-dom";
 import config from "@/config";
+import { explainAnswer } from "@/services/userProgressAPI";
+import { Flex, FloatButton, Spin } from "antd";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 interface SelectImageProps {
   data: any;
@@ -30,12 +33,13 @@ const SelectImage: React.FC<SelectImageProps> = ({
   onAnswered,
 }) => {
   const navigate = useNavigate();
+  const userId = useSelector((state: RootState) => state.user.user_id);
   const exercises = useSelector((state: RootState) => state.userProgress.exercises);
   const hearts = useSelector((state: RootState) => state.user.hearts);
   const dispatch = useDispatch();
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [lives, setLives] = useState(hearts);
+  const lives = hearts;
   const [showGameOver, setShowGameOver] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
@@ -43,6 +47,9 @@ const SelectImage: React.FC<SelectImageProps> = ({
   const options = data.options;
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(true);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [explainAI, setExplainAI] = useState("");
+  const [answerLoading, setAnswerLoading] = useState(false);
 
   useEffect(() => {
     if (lives === 0) setShowGameOver(true);
@@ -62,6 +69,7 @@ const SelectImage: React.FC<SelectImageProps> = ({
 
   const handleCheck = () => {
     setIsRunning(false);
+    setIsSubmitted(true);
     if (selectedIndex === null) return;
 
     const selectedOpt = options[selectedIndex];
@@ -98,9 +106,23 @@ const SelectImage: React.FC<SelectImageProps> = ({
 
     // onAnswered(correct);
     // handleReset();
-    if (!correct) setLives((prev) => prev - 1);
+    // if (!correct) setLives((prev) => prev - 1);
 
   };
+
+  const getAIExplaiation = async () => {
+    setAnswerLoading(true);
+    const payload = {
+      user_id: userId,
+      exercise_id: data._id,
+    }
+
+    const res = await explainAnswer(payload);
+    if (res.status === 201) {
+      setExplainAI(res.data.explanation);
+    }
+    setAnswerLoading(false);
+  }
 
   const handleNext = () => {
     onAnswered(isCorrect); // thông báo lên cha là câu này đã trả lời
@@ -125,10 +147,7 @@ const SelectImage: React.FC<SelectImageProps> = ({
       {showGameOver && (
         <GameOver
           onCancel={() => navigate(config.routes.public.home)}
-          onRecover={() => {
-            setLives(1);
-            setShowGameOver(false);
-          }}
+          onRecover={() => navigate(config.routes.user.shop)}
         />
       )}
       <ProgressBar
@@ -179,6 +198,23 @@ const SelectImage: React.FC<SelectImageProps> = ({
         handleReset={handleReset}
         handleNext={handleNext}
       />
+
+      {isSubmitted && (
+        <FloatButton.Group
+          trigger="click"
+          placement="left"
+          icon={<QuestionCircleOutlined />}
+          type="primary"
+          onClick={getAIExplaiation}
+        >
+
+          {answerLoading ? <Spin /> : (
+            <Flex vertical className="w-80 bg-white rounded p-4 mb-60 border" align="flex-end" >
+              {explainAI ? explainAI : 'Không có phản hồi'}
+            </Flex>
+          )}
+        </FloatButton.Group>
+      )}
     </SelectWrapper>
   );
 };

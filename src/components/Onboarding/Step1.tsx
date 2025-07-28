@@ -21,7 +21,7 @@ const Step1: React.FC<Step1Props> = ({ onNext }) => {
     <StepContainer>
       <IntroContainer>
         {/* Ảnh minh họa bên trái */}
-        <LeftImage src="/src/assets/cat-learning.png" alt="Nekolingo Intro" />
+        <LeftImage src="https://res.cloudinary.com/dzwfahgui/image/upload/v1753673338/cat-learning_vuacaw.png" alt="Nekolingo Intro" />
 
         {/* Nội dung bên phải */}
         <RightContent>

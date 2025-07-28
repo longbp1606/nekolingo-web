@@ -17,7 +17,7 @@ const Step2: React.FC<Step2Props> = ({ onNext }) => {
     <Step2Container>
       <Step2ContentWrapper>
         <WelcomeText>Chào mừng bạn đến với Nekolingo!</WelcomeText>
-        <NekoImage src="/src/assets/cat-hi.png" alt="Neko" />
+        <NekoImage src="https://res.cloudinary.com/dzwfahgui/image/upload/v1753673330/cat-hi_tnewez.png" alt="Neko" />
       </Step2ContentWrapper>
       {/* <ButtonLarge onClick={onNext}>Tiếp tục</ButtonLarge> */}
       <Footer>
