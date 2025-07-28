@@ -22,7 +22,7 @@ export type CreateUser = {
 export type UpdateUser = {
 	email?: string;
 	password?: string;
-	role?: string;
+	role?: number;
 	username?: string;
 	avatar_url?: string;
 	current_level?: number;

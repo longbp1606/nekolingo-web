@@ -6,8 +6,6 @@ import {
   WordSlot,
   WordsContainer,
   WordBox,
-  Vietnamese,
-  Image,
 } from "./CompleteSentences.styled";
 import BottomBar from "@/components/BottomBar/BottomBar";
 import ProgressBar from "@/components/ProgressBar";
@@ -40,7 +38,7 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = ({
   const exercises = useSelector((state: RootState) => state.userProgress.exercises);
   const hearts = useSelector((state: RootState) => state.user.hearts);
   const dispatch = useDispatch();
-  const { question, sample_sentence, image, options, correct_answer } = data;
+  const { question, options, correct_answer } = data;
   // const { before, after } = sentence;
 
   const sentence = question.split("___");
@@ -198,8 +196,8 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = ({
       />
 
       <Typography.Title level={4} style={{ fontSize: '24px', fontWeight: 'bold', color: `${theme.color.title}` }}>{question}</Typography.Title>
-      <Vietnamese>{sample_sentence}</Vietnamese>
-      <Image src={image} alt="example" />
+      {/* <Vietnamese>{sample_sentence}</Vietnamese>
+      <Image src={image} alt="example" /> */}
 
       <SentenceContainer>
         <Typography.Title level={5} style={{ display: 'inline' }}>{before}</Typography.Title>
