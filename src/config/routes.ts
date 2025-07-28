@@ -28,6 +28,8 @@ const routes = {
     course: "/admin/course",
     lesson: "/admin/lesson",
     exercise: "/admin/exercise",
+    quest: "/admin/quest",
+    archivement: "/admin/archivement",
     account: "/admin/account",
   },
   api: {

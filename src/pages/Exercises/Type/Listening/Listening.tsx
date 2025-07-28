@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Space, Typography } from "antd";
-import { SoundOutlined, MutedOutlined } from '@ant-design/icons';
+import { Flex, FloatButton, Space, Spin, Typography } from "antd";
+import { SoundOutlined, MutedOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import {
     ListeningWrapper,
     PlayButton,
@@ -18,6 +18,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { ExerciseProgressState, setExercisesProgress } from "@/store/userProgress.slice";
 import { removeHeart } from "@/store/user.slice";
+import config from "@/config";
+import { explainAnswer } from "@/services/userProgressAPI";
 
 const { Title } = Typography;
 
@@ -30,6 +32,7 @@ interface ListeningProps {
 
 const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQuestions, onAnswered }) => {
     const navigate = useNavigate();
+    const userId = useSelector((state: RootState) => state.user.user_id);
     const exercises = useSelector((state: RootState) => state.userProgress.exercises);
     const hearts = useSelector((state: RootState) => state.user.hearts);
     const dispatch = useDispatch();
@@ -37,10 +40,13 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const [isChecked, setIsChecked] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
-    const [lives, setLives] = useState(hearts);
+    const lives = hearts;
     const [showGameOver, setShowGameOver] = useState(false);
     const [seconds, setSeconds] = useState(0);
     const [isRunning, setIsRunning] = useState(true);
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [explainAI, setExplainAI] = useState("");
+    const [answerLoading, setAnswerLoading] = useState(false);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -48,7 +54,7 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
         if (isRunning) {
             interval = setInterval(() => {
                 setSeconds((prevSeconds) => prevSeconds + 1);
-            }, 1000); 
+            }, 1000);
         }
 
         return () => clearInterval(interval);
@@ -57,7 +63,7 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
     const audioRef = useRef<HTMLAudioElement>(null);
 
     useEffect(() => {
-        if (lives === 0) {
+        if (lives <= 0) {
             setShowGameOver(true);
         }
     }, [lives]);
@@ -72,6 +78,7 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
 
     const handleCheck = () => {
         setIsRunning(false);
+        setIsSubmitted(true);
         if (selectedIndex === null) return;
         const selectedValue = options[selectedIndex];
         const correct = selectedValue.trim().toLowerCase() === correct_answer.trim().toLowerCase();
@@ -88,10 +95,10 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
             dispatch(setExercisesProgress(updatedExercises));
         } else {
             const exercisesResult: ExerciseProgressState = {
-                exercise_id: data._id? data._id : "",
+                exercise_id: data._id ? data._id : "",
                 user_answer: selectedValue,
                 answer_time: seconds,
-                is_correct: false, 
+                is_correct: false,
                 correct_answer: data.correct_answer,
                 question: data.question,
                 question_format: data.question_format,
@@ -102,7 +109,6 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
         }
         setIsCorrect(correct);
         setIsChecked(true);
-        if (!correct) setLives(prev => Math.max(0, prev - 1));
     };
 
     const handleNext = () => {
@@ -116,19 +122,29 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
         setSelectedIndex(null);
         setIsChecked(false);
         setIsCorrect(false);
-        setLives(3);
     };
 
     if (showGameOver) {
         return (
             <GameOver
                 onCancel={() => navigate('/')}
-                onRecover={() => {
-                    setLives(1);
-                    setShowGameOver(false);
-                }}
+                onRecover={() => navigate(config.routes.user.shop)}
             />
         );
+    }
+
+    const getAIExplaiation = async () => {
+        setAnswerLoading(true);
+        const payload = {
+            user_id: userId,
+            exercise_id: data._id,
+        }
+
+        const res = await explainAnswer(payload);
+        if (res.status === 201) {
+            setExplainAI(res.data.explanation);
+        }
+        setAnswerLoading(false);
     }
 
     return (
@@ -203,6 +219,23 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
                 handleReset={handleReset}
                 handleNext={handleNext}
             />
+
+            {isSubmitted && (
+                <FloatButton.Group
+                    trigger="click"
+                    placement="left"
+                    icon={<QuestionCircleOutlined />}
+                    type="primary"
+                    onClick={getAIExplaiation}
+                >
+
+                    {answerLoading ? <Spin /> : (
+                        <Flex vertical className="w-80 bg-white rounded p-4 mb-60 border" align="flex-end" >
+                            {explainAI ? explainAI : 'Không có phản hồi'}
+                        </Flex>
+                    )}
+                </FloatButton.Group>
+            )}
         </ListeningWrapper>
     );
 };

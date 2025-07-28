@@ -2,11 +2,13 @@
 "use client";
 import config from "@/config";
 import AdminLayout from "@/layouts/AdminLayout"
+import Archivement from "@/pages/Admin/Archivement/Archivement";
 import Course from "@/pages/Admin/Course/Course";
 import ExerciseManager from "@/pages/Admin/Exercise/Exercise";
 import Grammar from "@/pages/Admin/Grammar/Grammar";
 import Language from "@/pages/Admin/Language/Language";
 import Lesson from "@/pages/Admin/Lesson/Lesson";
+import Quest from "@/pages/Admin/Quest/Quest";
 import Topic from "@/pages/Admin/Topic/Topic";
 import Users from "@/pages/Admin/Users/Users";
 import Vocab from "@/pages/Admin/Vocabulary/Vocab";
@@ -31,6 +33,8 @@ const adminRoutes = {
         { path: config.routes.admin.course, element: <Course /> },
         { path: config.routes.admin.lesson, element: <Lesson /> },
         { path: config.routes.admin.exercise, element: <ExerciseManager /> },
+        { path: config.routes.admin.quest, element: <Quest /> },
+        { path: config.routes.admin.archivement, element: <Archivement /> },
         { path: config.routes.admin.user, element: <Users /> },
     ]
 }

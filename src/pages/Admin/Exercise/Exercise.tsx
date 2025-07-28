@@ -193,11 +193,15 @@ const Exercise = () => {
             dataSource={filteredData.map((item) => ({ ...item, key: item._id }))}
             rowKey="_id"
             loading={loading}
-            pagination={pagination}
-            onChange={(pag) => setPagination(pag)}
+            // pagination={pagination}
+            // onChange={(pag) => setPagination(pag)}
             onRow={(record) => ({
               onClick: () => handleRowClick(record),
             })}
+            pagination={{
+              pageSize: 8,       // mỗi trang 5 item
+              showSizeChanger: false, // ẩn dropdown chọn số dòng/page (tuỳ chọn)
+            }}
           />
         </ContentCard>
       )}

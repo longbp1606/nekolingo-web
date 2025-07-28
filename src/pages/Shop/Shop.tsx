@@ -24,7 +24,7 @@ import {
     GemsIcon,
 } from './Shop.styled';
 import Sidebar from '@/components/Sidebar';
-import { Button, Flex, InputNumber, message, Modal } from 'antd'
+import { Button, Flex, InputNumber, message, Modal, Spin } from 'antd'
 import chill from "@/assets/chill.gif";
 import { useEffect, useState } from 'react';
 import { buyItem, getShopItem, getShopStatus } from '@/services/shopAPI';
@@ -250,7 +250,7 @@ const Shop = () => {
                                 </Flex>
 
                                 <Section>
-                                    {loading ? <div>Loading...</div> : (
+                                    {loading ? <Spin /> : (
                                         items?.map((item: any) => renderItem(item))
                                     )}
                                 </Section>

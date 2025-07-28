@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Space } from "antd";
+import { Flex, FloatButton, Space, Spin } from "antd";
 import {
     Wrapper,
     PersonSay,
@@ -14,6 +14,9 @@ import { ExerciseProgressState, setExercisesProgress } from "@/store/userProgres
 import { RootState } from "@/store";
 import { removeHeart } from "@/store/user.slice";
 import { useNavigate } from "react-router-dom";
+import config from "@/config";
+import { explainAnswer } from "@/services/userProgressAPI";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 interface MultipleChoiceProps {
     data: any;
@@ -29,12 +32,13 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
     onAnswered,
 }) => {
     const navigate = useNavigate();
+    const userId = useSelector((state: RootState) => state.user.user_id);
     const exercises = useSelector((state: RootState) => state.userProgress.exercises);
     const hearts = useSelector((state: RootState) => state.user.hearts);
     const dispatch = useDispatch();
     const [selectedValue, setSelectedValue] = useState<string | null>(null);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-    const [lives, setLives] = useState(hearts);
+    const lives = hearts;
     const [showGameOver, setShowGameOver] = useState(false);
     const [isChecked, setIsChecked] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
@@ -42,6 +46,9 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
     const options = data.options;
     const [seconds, setSeconds] = useState(0);
     const [isRunning, setIsRunning] = useState(true);
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [explainAI, setExplainAI] = useState("");
+    const [answerLoading, setAnswerLoading] = useState(false);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -49,14 +56,14 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
         if (isRunning) {
             interval = setInterval(() => {
                 setSeconds((prevSeconds) => prevSeconds + 1);
-            }, 1000); 
+            }, 1000);
         }
 
         return () => clearInterval(interval);
     }, [isRunning]);
 
     useEffect(() => {
-        if (lives === 0) {
+        if (lives <= 0) {
             setShowGameOver(true);
         }
     }, [lives]);
@@ -69,7 +76,8 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
     // Handle selection and checking
     const handleCheck = () => {
         setIsRunning(false);
-        
+        setIsSubmitted(true);
+
         if (selectedIndex === null) return;
         const selectedOpt = options[selectedIndex];
 
@@ -88,10 +96,10 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
             dispatch(setExercisesProgress(updatedExercises));
         } else {
             const exercisesResult: ExerciseProgressState = {
-                exercise_id: data._id? data._id : "",
+                exercise_id: data._id ? data._id : "",
                 user_answer: selectedOpt,
                 answer_time: seconds,
-                is_correct: false, 
+                is_correct: false,
                 correct_answer: data.correct_answer,
                 question: data.question,
                 question_format: data.question_format,
@@ -104,8 +112,6 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
         setIsCorrect(correct);
         setIsChecked(true);
         handleTimeReset();
-
-        if (!correct) setLives((prev) => prev - 1);
     };
 
     const handleNext = () => {
@@ -126,15 +132,26 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
         setSelectedIndex(idx);
     };
 
+    const getAIExplaiation = async () => {
+        setAnswerLoading(true);
+        const payload = {
+            user_id: userId,
+            exercise_id: data._id,
+        }
+
+        const res = await explainAnswer(payload);
+        if (res.status === 201) {
+            setExplainAI(res.data.explanation);
+        }
+        setAnswerLoading(false);
+    }
+
     return (
         <Wrapper>
             {showGameOver && (
                 <GameOver
                     onCancel={() => navigate("/")}
-                    onRecover={() => {
-                        setLives(1);
-                        setShowGameOver(false);
-                    }}
+                    onRecover={() => navigate(config.routes.user.shop)}
                 />
             )}
 
@@ -203,6 +220,22 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
                 handleNext={handleNext}
             />
 
+            {isSubmitted && (
+                <FloatButton.Group
+                    trigger="click"
+                    placement="left"
+                    icon={<QuestionCircleOutlined />}
+                    type="primary"
+                    onClick={getAIExplaiation}
+                >
+
+                    {answerLoading ? <Spin /> : (
+                        <Flex vertical className="w-80 bg-white rounded p-4 mb-60 border" align="flex-end" >
+                            {explainAI ? explainAI : 'Không có phản hồi'}
+                        </Flex>
+                    )}
+                </FloatButton.Group>
+            )}
         </Wrapper>
     );
 };

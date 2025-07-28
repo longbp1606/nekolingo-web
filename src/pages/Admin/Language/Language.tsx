@@ -44,13 +44,18 @@ const Language = () => {
   const hasErrorNotified = useRef(false);
   const [flagUrl, setFlagUrl] = useState("");
 
-  const fetchAll = async () => {
+  const fetchAll = async (page = 1, take = 10) => {
     setLoading(true);
     try {
-      const res = await getListLanguages(pagination.current || 1, pagination.pageSize || 10);
+      const res = await getListLanguages(page, take);
       const list: LanguageItem[] = res.data.languages || [];
+      const { totalRecord } = res.data.pagination;
       setData(list);
-      setPagination((p) => ({ ...p, total: list.length }));
+      setPagination({
+        current: page,
+        pageSize: take,
+        total: totalRecord,
+      });    
     } catch (error: any) {
       if (!hasErrorNotified.current) {
         notification.error({
@@ -66,8 +71,12 @@ const Language = () => {
   };
 
   useEffect(() => {
-    fetchAll();
+    fetchAll(pagination.current as number, pagination.pageSize as number);
   }, []);
+
+  const handleTableChange = (pag: TablePaginationConfig) => {
+    fetchAll(pag.current as number, pag.pageSize as number);
+  };
 
   const handleRowClick = async (record: LanguageItem) => {
     setLoading(true);
@@ -198,7 +207,7 @@ const Language = () => {
           rowKey="_id"
           loading={loading}
           pagination={pagination}
-          onChange={(pag) => setPagination(pag)}
+          onChange={handleTableChange}
           onRow={(record) => ({
             onClick: () => handleRowClick(record),
           })}

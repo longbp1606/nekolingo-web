@@ -8,6 +8,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { ExerciseProgressState, setExercisesProgress } from '@/store/userProgress.slice';
 import { removeHeart } from '@/store/user.slice';
+import config from '@/config';
+import { explainAnswer } from '@/services/userProgressAPI';
+import { Flex, FloatButton, Spin } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 interface SortSentenceProps {
     data: any;
@@ -20,6 +24,7 @@ const SortSentence: React.FC<SortSentenceProps> = ({
     data, totalQuestions, answeredQuestions, onAnswered
 }) => {
     const navigate = useNavigate();
+    const userId = useSelector((state: RootState) => state.user.user_id);
     const exercises = useSelector((state: RootState) => state.userProgress.exercises);
     const hearts = useSelector((state: RootState) => state.user.hearts);
     const dispatch = useDispatch();
@@ -32,10 +37,13 @@ const SortSentence: React.FC<SortSentenceProps> = ({
     const [selectedWords, setSelectedWords] = useState<string[]>([]);
     const [isChecked, setIsChecked] = useState<boolean>(false);
     const [isCorrect, setIsCorrect] = useState<boolean>(false);
-    const [lives, setLives] = useState(hearts);
+    const lives = hearts;
     const [showGameOver, setShowGameOver] = useState(false);
     const [seconds, setSeconds] = useState(0);
     const [isRunning, setIsRunning] = useState(true);
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [explainAI, setExplainAI] = useState("");
+    const [answerLoading, setAnswerLoading] = useState(false);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -43,11 +51,15 @@ const SortSentence: React.FC<SortSentenceProps> = ({
         if (isRunning) {
             interval = setInterval(() => {
                 setSeconds((prevSeconds) => prevSeconds + 1);
-            }, 1000); 
+            }, 1000);
         }
 
         return () => clearInterval(interval);
     }, [isRunning]);
+
+    useEffect(() => {
+        if (lives === 0) setShowGameOver(true);
+    }, [lives]);
 
     useEffect(() => {
         setSelectedWords(Array(slotCount).fill(''));
@@ -94,6 +106,7 @@ const SortSentence: React.FC<SortSentenceProps> = ({
     const handleCheck = (): void => {
         // if (selectedWords.some(word => word === "")) return;
         if (selectedWords.includes('')) return;
+        setIsSubmitted(true);
 
         // // 	Compare with the correct sentence
         // const userSentence = selectedWords.filter(word => word !== "");
@@ -119,10 +132,10 @@ const SortSentence: React.FC<SortSentenceProps> = ({
             dispatch(setExercisesProgress(updatedExercises));
         } else {
             const exercisesResult: ExerciseProgressState = {
-                exercise_id: data._id? data._id : "",
+                exercise_id: data._id ? data._id : "",
                 user_answer: answer,
                 answer_time: seconds,
-                is_correct: false, 
+                is_correct: false,
                 correct_answer: data.correct_answer,
                 question: data.question,
                 question_format: data.question_format,
@@ -134,8 +147,21 @@ const SortSentence: React.FC<SortSentenceProps> = ({
 
         setIsCorrect(correct);
         setIsChecked(true);
-        if (!correct) setLives(prev => prev - 1);
     };
+
+    const getAIExplaiation = async () => {
+        setAnswerLoading(true);
+        const payload = {
+            user_id: userId,
+            exercise_id: data._id,
+        }
+
+        const res = await explainAnswer(payload);
+        if (res.status === 201) {
+            setExplainAI(res.data.explanation);
+        }
+        setAnswerLoading(false);
+    }
 
     const handleReset = (): void => {
         setSelectedWords(Array(slotCount).fill(''));
@@ -153,10 +179,7 @@ const SortSentence: React.FC<SortSentenceProps> = ({
             {showGameOver && (
                 <GameOver
                     onCancel={() => navigate('/')}
-                    onRecover={() => {
-                        setLives(1);
-                        setShowGameOver(false);
-                    }}
+                    onRecover={() => navigate(config.routes.user.shop)}
                 />
             )}
             <ProgressBar
@@ -212,6 +235,23 @@ const SortSentence: React.FC<SortSentenceProps> = ({
                 handleReset={handleReset}
                 handleNext={handleNext}
             />
+
+            {isSubmitted && (
+                <FloatButton.Group
+                    trigger="click"
+                    placement="left"
+                    icon={<QuestionCircleOutlined />}
+                    type="primary"
+                    onClick={getAIExplaiation}
+                >
+
+                    {answerLoading ? <Spin /> : (
+                        <Flex vertical className="w-80 bg-white rounded p-4 mb-60 border" align="flex-end" >
+                            {explainAI ? explainAI : 'Không có phản hồi'}
+                        </Flex>
+                    )}
+                </FloatButton.Group>
+            )}
         </Wrapper>
     );
 };

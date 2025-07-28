@@ -16,6 +16,7 @@ import { ExerciseProgressState, setUserProgress } from "@/store/userProgress.sli
 import { completeFullLesson } from "@/services/userProgressAPI";
 import { message } from "antd";
 import { RootState } from "@/store";
+import Loading from "../Loading";
 
 const Exercise = () => {
   useDocumentTitle("Exercise");
@@ -89,7 +90,7 @@ const Exercise = () => {
 
   // Nếu chưa load xong
   if (!questions || questions.length === 0 || apiLoading) {
-    return <div>Đang tải bài tập...</div>;
+    return <Loading />;
   }
 
   // Lấy question hiện tại

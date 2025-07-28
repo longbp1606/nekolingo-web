@@ -25,15 +25,20 @@ import cookieUtils from '@/services/cookieUtils'
 import { getCourseMetaData } from '@/services/courseAPI'
 import { useDispatch } from 'react-redux'
 import { setCourseMetadata } from '@/store/metadata.slice'
+import Loading from '../Loading'
+import { generatePersonalizedLesson } from '@/services/userProgressAPI'
 
 const Home = () => {
     useDocumentTitle('Nekolingo');
     // const [activeTab, setActiveTab] = useState('home');
+    // const hearts = useSelector((state: RootState) => state.user.hearts);
     const { profile } = useAuth();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [topicList, setTopicList] = useState<any>([]); // Initialize topicLis
+    // Remove completedLessons state
+    // const [completedLessons, setCompletedLessons] = useState<number>(0);
 
     const token = cookieUtils.getAccessToken();
     const isFirstStep = localStorage.getItem('FIRST_STEP');
@@ -45,6 +50,35 @@ const Home = () => {
     useEffect(() => {
         fetchData();
     }, [profile]);
+
+    const generatePersonalizedLessonsRequest = async () => {
+        const payload = {
+            userId: profile ? profile.id : '',
+        };
+        await generatePersonalizedLesson(payload);
+    }
+
+    const completedLessons = topicList.reduce((count: number, topic: any) => {
+        if (!topic.lessons) return count;
+        const currentLessonId = profile?.currentLesson ? profile.currentLesson : '';
+        const currentTopic = profile?.currentTopic ? profile.currentTopic : '';
+        return (
+            count +
+            topic.lessons.filter((lesson: any) => {
+                if (currentLessonId !== lesson._id && currentTopic === topic._id) {
+                    const currentLesson = topic.lessons.find((l: any) => l._id === currentLessonId);
+                    return currentLesson && currentLesson.order > lesson.order;
+                }
+                return false;
+            }).length
+        );
+    }, 0);
+
+    useEffect(() => {
+        if (completedLessons === 3) {
+            generatePersonalizedLessonsRequest();
+        } 
+    }, [completedLessons]);
 
     const fetchData = async () => {
         try {
@@ -64,7 +98,7 @@ const Home = () => {
         navigate(`/exercise/${moduleId}`);
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <Loading />;
 
     return (
         <>
@@ -102,6 +136,8 @@ const Home = () => {
                                                 if (currentLessonId === lesson._id && currentTopic === topic._id) currentStatus = 'current';
                                                 else if (currentLessonId === lesson._id && currentTopic !== topic._id) currentStatus = 'locked';
                                                 else if (currentLessonId !== lesson._id && currentTopic === topic._id && currentLesson.order > lesson.order) currentStatus = 'completed';
+
+                                                // REMOVE setCompletedLessons here!
 
                                                 return {
                                                     index,

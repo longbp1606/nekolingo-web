@@ -37,7 +37,7 @@ const Step5: React.FC<Step5Props> = ({ onNext }) => {
     <Step2Container>
       <Step2ContentWrapper>
         <CatAsk>
-          <CatImage src="/src/assets/cat-writing.png" alt="Languages" />
+          <CatImage src="https://res.cloudinary.com/dzwfahgui/image/upload/v1753673472/cat-writing_oshf5l.png" alt="Languages" />
           <h2>Tại sao bạn học ngôn ngữ đó?</h2>
         </CatAsk>
         <OptionGridSrc>

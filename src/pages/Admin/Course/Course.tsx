@@ -65,13 +65,18 @@ const Course = () => {
     }
   }, []);
 
-  const fetchAll = async () => {
+  const fetchAll = async (page = 1, take = 5) => {
     setLoading(true);
     try {
-      const res = await getListCourses(pagination.current || 1, pagination.pageSize || 10);
+      const res = await getListCourses(page, take);
       const list: CourseItem[] = res.data.courses || [];
+      const { totalRecord } = res.data.pagination;
       setData(list);
-      setPagination((p) => ({ ...p, total: list.length }));
+      setPagination({
+        current: page,
+        pageSize: take,
+        total: totalRecord,
+      });    
     } catch (error: any) {
       if (!hasErrorNotified.current) {
         notification.error({
@@ -88,8 +93,12 @@ const Course = () => {
 
   useEffect(() => {
     fetchOptions();
-    fetchAll();
+    fetchAll(pagination.current as number, pagination.pageSize as number);
   }, [fetchOptions]);
+
+  const handleTableChange = (pag: TablePaginationConfig) => {
+      fetchAll(pag.current as number, pag.pageSize as number);
+    };
 
   const handleRowClick = async (record: any) => {
     setLoading(true);
@@ -221,7 +230,7 @@ const Course = () => {
           rowKey="_id"
           loading={loading}
           pagination={pagination}
-          onChange={(pag) => setPagination(pag)}
+          onChange={handleTableChange}
           onRow={(record) => ({
             onClick: () => handleRowClick(record),
           })}
