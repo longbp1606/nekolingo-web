@@ -60,6 +60,27 @@ const GlobalStyles = createGlobalStyle`
         outline: 4px auto -webkit-focus-ring-color;
     }
 
+    /* For Chrome, Edge, Safari */
+    #scrollableDiv::-webkit-scrollbar {
+    width: 8px;
+    background: #f1f1f1;
+    }
+
+    #scrollableDiv::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+    }
+
+    #scrollableDiv::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+    }
+
+    /* For Firefox */
+    #scrollableDiv {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #f1f1f1;
+    }
+
     @media (prefers-color-scheme: light) {
         :root {
             color: #213547;

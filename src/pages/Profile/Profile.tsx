@@ -1,4 +1,4 @@
-import { EditFilled, RightOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, CloseCircleFilled, EditFilled } from '@ant-design/icons';
 import {
     BodyContent,
     LeftSection,
@@ -15,37 +15,21 @@ import {
     ProfileName,
     ProfileHandle,
     ProfileJoinDate,
-    FollowSection,
-    FollowStats,
     StatsGrid,
     StatCard,
     StatImg,
     StatValue,
     StatLabel,
     EditButton,
-    TabsContainer,
-    TabButton,
-    TabContent,
-    EmptyMessage,
     AddFriendsSection,
     AddFriendsTitle,
-    FriendOption,
-    FriendText,
-    ArrowIcon,
-    Img,
-    ImgIcon,
-    ImgIconGlass,
     Title,
     MainCard,
 } from './Profile.styled';
 import Sidebar from '@/components/Sidebar';
 import StatsBar from '@/components/StatsBar/StatsBar';
-import { useState } from 'react';
-import following from "@/assets/following.gif";
-import addFriend from "@/assets/addfriend.gif";
-import add from "@/assets/add.png";
-import glass from "@/assets/glass.png";
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import config from '@/config';
 import firefire from "@/assets/firefire.png";
 import thunder from "@/assets/thunder.png";
@@ -58,18 +42,61 @@ import PopupInvite from '@/components/PopupInvite/PopupInvite';
 import { useAuth } from '@/hooks';
 import Button from '@/components/Button';
 import cookieUtils from '@/services/cookieUtils';
-
-
+import { Divider, Flex, InputNumber, List, message, Modal } from 'antd';
+import { depositRequest } from '@/services/walletAPI';
+import { getUserTransactions } from '@/services/transactionAPI';
+import { formatDateTime } from '@/utils/format-datetime';
+import { dateFormat } from '@/utils/enum';
+import { formatCurrency } from '@/utils/format-currency';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const Profile = () => {
     const { profile } = useAuth();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<'following' | 'followers'>('following');
     const [showPopup, setShowPopup] = useState(false);
+    const [messageApi, contextHolder] = message.useMessage();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [amount, setAmount] = useState(10000);
+    const [transactionHistory, setTransactionHistory] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const hasFetchedHistory = useRef(false);
 
     const logout = () => {
         cookieUtils.clear();
         navigate(config.routes.public.login);
+    }
+
+    const fetchTransactionHistory = async () => {
+        try {
+            setLoading(true)
+            const res = await getUserTransactions();
+            if (res.status === 200) {
+                setTransactionHistory(res.data);
+                setLoading(false);
+            }
+        } catch (error: any) {
+            messageApi.error(error.response.data.message);
+        }
+        setLoading(false);
+    }
+
+    useEffect(() => {
+        if (!hasFetchedHistory.current) {
+            fetchTransactionHistory();
+            hasFetchedHistory.current = true;
+        }
+    }, []);
+
+    const createPaymentRequest = async (amount: number) => {
+        try {
+            const res = await depositRequest(amount);
+            if (res.status === 201) {
+                window.location.href = res.data.url;
+                setIsModalOpen(false);
+            }
+        } catch (error: any) {
+            messageApi.error(error.data.message);
+        }
     }
 
     const stats = [
@@ -101,6 +128,7 @@ const Profile = () => {
 
     return (
         <>
+            {contextHolder}
             <Sidebar />
             <BodyContent>
                 <HomeWrapper>
@@ -119,12 +147,6 @@ const Profile = () => {
                                     <ProfileName>{profile?.username || "User"}</ProfileName>
                                     <ProfileHandle>{profile?.username || "User"}</ProfileHandle>
                                     <ProfileJoinDate>{profile ? profile.createdAt.toString() : ""}</ProfileJoinDate>
-                                    <FollowSection>
-                                        <FollowStats>Đang theo dõi {0}</FollowStats>
-                                        <FollowStats>
-                                            <span>{0} Người theo dõi</span>
-                                        </FollowStats>
-                                    </FollowSection>
                                 </ProfileInfo>
 
                             </ProfileHeader>
@@ -147,58 +169,39 @@ const Profile = () => {
                         </LeftSection>
                         <StyledSidebar>
                             <StatsBar />
-                            <Card>
-                                <TabsContainer>
-                                    <TabButton
-                                        $active={activeTab === 'following'}
-                                        onClick={() => setActiveTab('following')}
-                                    >
-                                        ĐANG THEO DÕI
-                                    </TabButton>
-                                    <TabButton
-                                        $active={activeTab === 'followers'}
-                                        onClick={() => setActiveTab('followers')}
-                                    >
-                                        NGƯỜI THEO DÕI
-                                    </TabButton>
-                                </TabsContainer>
-
-                                <TabContent>
-                                    {activeTab === 'following' ? (
-                                        <>
-                                            <Img src={following} alt="Following" />
-                                            <EmptyMessage>
-                                                Kết nối bạn bè giúp học vui và hiệu quả hơn.
-                                            </EmptyMessage>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Img src={addFriend} alt="Add" />
-                                            <EmptyMessage>
-                                                Chưa có người theo dõi
-                                            </EmptyMessage>
-                                        </>
-                                    )}
-                                </TabContent>
-                            </Card>
                             <Card style={{ padding: '16px' }}>
                                 <AddFriendsSection>
-                                    <AddFriendsTitle>Thêm bạn bè</AddFriendsTitle>
-                                    <FriendOption>
-                                        <ImgIconGlass src={glass} alt="Glass" />
-                                        <FriendText as={Link} to={config.routes.user.search}>Tìm bạn bè</FriendText>
-                                        <ArrowIcon>
-                                            <RightOutlined />
-                                        </ArrowIcon>
-                                    </FriendOption>
+                                    <AddFriendsTitle>Lịch sử giao dịch</AddFriendsTitle>
+                                    <div
+                                        id="scrollableDiv"
+                                        className="h-[400px] overflow-auto pr-2"
+                                    >
+                                        <InfiniteScroll
+                                            dataLength={transactionHistory.length}
+                                            next={() => {}}
+                                            hasMore={transactionHistory.length < 50}
+                                            loader={<></>}
+                                            endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
+                                            scrollableTarget="scrollableDiv"
+                                        >
+                                            <List
+                                                loading={loading}
+                                                itemLayout='horizontal'
+                                                dataSource={transactionHistory}
+                                                renderItem={(item: any) => (
+                                                    <List.Item key={item?.id}>
+                                                        <List.Item.Meta
+                                                            avatar={item?.status === "SUCCESS" ? <CheckCircleFilled style={{ color: '#52c41a' }} /> : <CloseCircleFilled style={{ color: '#ff4d4f' }} />}
+                                                            title={formatCurrency(item?.vnd_amount)}
+                                                            description={formatDateTime(new Date(item?.createdAt), dateFormat.vietnamFormat)}
+                                                        />
+                                                        <span>{item?.gem_amount} 💎</span>
+                                                    </List.Item>
+                                                )}
+                                            />
+                                        </InfiniteScroll>
+                                    </div>
 
-                                    <FriendOption onClick={() => setShowPopup(true)}>
-                                        <ImgIcon src={add} alt="Add" />
-                                        <FriendText>Mời bạn bè</FriendText>
-                                        <ArrowIcon>
-                                            <RightOutlined />
-                                        </ArrowIcon>
-                                    </FriendOption>
                                 </AddFriendsSection>
                             </Card>
                             <FooterWrapper>
@@ -214,17 +217,42 @@ const Profile = () => {
                                     <FooterLink>QUYỀN RIÊNG TƯ</FooterLink>
                                 </FooterRow>
                             </FooterWrapper>
-                            <Button
-                                onClick={logout}
-                                color='danger'
-                                title={"Đăng xuất"}
-                                size='medium'
-                            />
+                            <Flex vertical gap={20}>
+                                <Button
+                                    onClick={() => setIsModalOpen(true)}
+                                    color='primary'
+                                    title={"Nạp tiền"}
+                                    size='medium'
+                                />
+                                <Button
+                                    onClick={logout}
+                                    color='danger'
+                                    title={"Đăng xuất"}
+                                    size='medium'
+                                />
+                            </Flex>
                         </StyledSidebar>
                     </HomeContent>
                 </HomeWrapper>
             </BodyContent>
             {showPopup && <PopupInvite onClose={() => setShowPopup(false)} />}
+
+            <Modal
+                title="Nạp tiền"
+                open={isModalOpen}
+                onOk={() => createPaymentRequest(amount)}
+                onCancel={() => setIsModalOpen(false)}
+            >
+                <p>Nhập số tiền cần nạp</p>
+                <InputNumber
+                    min={10000}
+                    max={10000000}
+                    step={10000}
+                    defaultValue={10000}
+                    addonAfter="VNĐ"
+                    onChange={(value) => setAmount(value === null ? 10000 : value)}
+                />
+            </Modal>
         </>
     );
 };
