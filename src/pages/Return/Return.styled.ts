@@ -52,7 +52,6 @@ export const Message = styled.p`
 export const DetailItem = styled.div`
     display: flex;
     justify-content: space-between;
-    width: 100%;
     padding: 12px 0;
     border-bottom: 1px solid ${theme.color.borderDefault};
     
@@ -69,7 +68,6 @@ export const DetailLabel = styled.span`
 export const DetailValue = styled.span`
     color: ${theme.color.description};
     font-weight: 500;
-    width: 50%;
     word-break: break-word;
 `;
 

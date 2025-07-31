@@ -1,7 +1,7 @@
 import { getProfile } from "@/services/authAPI";
 import cookieUtils from "@/services/cookieUtils";
 import { setBalance, setFreezeCount, setHearts, setUserIDStore } from "@/store/user.slice";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 
 type JwtType = {
@@ -44,6 +44,7 @@ const useAuth = () => {
     const [profile, setProfile] = useState<UserType | null>(null);
     const [userID, setUserID] = useState<string | null>(getUserID());
     const [loading, setLoading] = useState(true);
+    const hasFetched = useRef(false);
 
     const accessToken = cookieUtils.getAccessToken();
 
@@ -67,7 +68,7 @@ const useAuth = () => {
             dispatch(setBalance(res.data.data.balance));
             dispatch(setFreezeCount(res.data.data.freeze_count));
         } catch (error) {
-            console.log(error); 
+            console.log(error);
         }
     }
 
@@ -81,7 +82,10 @@ const useAuth = () => {
         try {
             setLoading(true);
             setUserID(getUserID());
-            fetchProfile();
+            if (!hasFetched.current) {
+                fetchProfile();
+                hasFetched.current = true;
+            }
         } finally {
             setLoading(false);
         }
