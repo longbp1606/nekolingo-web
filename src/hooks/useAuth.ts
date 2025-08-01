@@ -44,6 +44,7 @@ const useAuth = () => {
     const [profile, setProfile] = useState<UserType | null>(null);
     const [userID, setUserID] = useState<string | null>(getUserID());
     const [loading, setLoading] = useState(true);
+    const [loadingProfile, setLoadingProfile] = useState(false);
     const hasFetched = useRef(false);
 
     const accessToken = cookieUtils.getAccessToken();
@@ -60,6 +61,7 @@ const useAuth = () => {
     }, [accessToken]);
 
     const fetchProfile = async () => {
+        setLoadingProfile(true);
         try {
             const res = await getProfile();
             setProfile(res.data.data as UserType);
@@ -69,6 +71,8 @@ const useAuth = () => {
             dispatch(setFreezeCount(res.data.data.freeze_count));
         } catch (error) {
             console.log(error);
+        } finally {
+            setLoadingProfile(false);
         }
     }
 
@@ -95,7 +99,7 @@ const useAuth = () => {
         return () => clearInterval(interval);
     }, [checkTokenExpiration]);
 
-    return { loading, profile, userID };
+    return { loadingProfile, loading, profile, userID, fetchProfile };
 }
 
 export default useAuth;

@@ -29,6 +29,8 @@ import {
 } from './StatsBar.styled';
 import { theme } from '@/themes';
 import { useAuth } from '@/hooks';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 interface Course {
     id: string;
@@ -67,6 +69,7 @@ interface StatItemData {
 
 const StatsBar: React.FC = () => {
     const { profile } = useAuth();
+    const balance = useSelector((state: RootState) => state.user.balance);
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     const [selectedCourse, setSelectedCourse] = useState<Course>({
         id: 'en',
@@ -136,7 +139,7 @@ const StatsBar: React.FC = () => {
         {
             id: 'diamond',
             icon: <HeartIcon>💎</HeartIcon>,
-            value: profile?.balance || 0,
+            value: balance || 0,
             color: '#1cb0f6',
             bgColor: '#e6f7ff',
             borderColor: '#1cb0f6',

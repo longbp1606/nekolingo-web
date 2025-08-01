@@ -1,4 +1,4 @@
-import { CheckCircleFilled, CloseCircleFilled, EditFilled } from '@ant-design/icons';
+import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 import {
     BodyContent,
     LeftSection,
@@ -20,7 +20,6 @@ import {
     StatImg,
     StatValue,
     StatLabel,
-    EditButton,
     AddFriendsSection,
     AddFriendsTitle,
     Title,
@@ -140,13 +139,12 @@ const Profile = () => {
                                         <span>+</span>
                                     </div>
                                 </ProfileAvatar>
-                                <EditButton>
-                                    <EditFilled />
-                                </EditButton>
                                 <ProfileInfo>
                                     <ProfileName>{profile?.username || "User"}</ProfileName>
                                     <ProfileHandle>{profile?.username || "User"}</ProfileHandle>
-                                    <ProfileJoinDate>{profile ? profile.createdAt.toString() : ""}</ProfileJoinDate>
+                                    <ProfileJoinDate>
+                                        Đã tham gia vào {profile ? formatDateTime(new Date(profile.createdAt), dateFormat.vietnamFormat) : ""}
+                                    </ProfileJoinDate>
                                 </ProfileInfo>
 
                             </ProfileHeader>
