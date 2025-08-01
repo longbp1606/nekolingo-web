@@ -9,7 +9,7 @@ import { RootState } from '@/store';
 import { ExerciseProgressState, setExercisesProgress } from '@/store/userProgress.slice';
 import { removeHeart } from '@/store/user.slice';
 import config from '@/config';
-import { explainAnswer } from '@/services/userProgressAPI';
+import { explainAnswer, submitExercise, SubmitExerciseType } from '@/services/userProgressAPI';
 import { Flex, FloatButton, Spin } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
@@ -103,7 +103,7 @@ const SortSentence: React.FC<SortSentenceProps> = ({
         }
     };
 
-    const handleCheck = (): void => {
+    const handleCheck = async () => {
         // if (selectedWords.some(word => word === "")) return;
         if (selectedWords.includes('')) return;
         setIsSubmitted(true);
@@ -118,6 +118,14 @@ const SortSentence: React.FC<SortSentenceProps> = ({
         setIsRunning(false);
 
         const answer = selectedWords.join(' ');
+
+        const userExerciseSubmit: SubmitExerciseType = {
+            user_id: userId,
+            exercise_id: data._id,
+            user_answer: answer,
+            answer_time: seconds,
+        }
+        await submitExercise(userExerciseSubmit);
 
         if (correct) {
             const exercisesResult: ExerciseProgressState = {

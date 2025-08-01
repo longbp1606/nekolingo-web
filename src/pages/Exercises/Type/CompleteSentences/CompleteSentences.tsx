@@ -18,7 +18,7 @@ import { ExerciseProgressState, setExercisesProgress } from "@/store/userProgres
 import { removeHeart } from "@/store/user.slice";
 import config from "@/config";
 import { QuestionCircleOutlined } from "@ant-design/icons";
-import { explainAnswer } from "@/services/userProgressAPI";
+import { explainAnswer, submitExercise, SubmitExerciseType } from "@/services/userProgressAPI";
 
 interface CompleteSentencesProps {
   data: any;
@@ -107,12 +107,21 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = ({
     }
   };
 
-  const handleCheck = () => {
+  const handleCheck = async () => {
     setIsSubmitted(true);
     if (!selectedWords[0]) return;
     const correct = selectedWords[0].trim().toLowerCase() === correct_answer.trim().toLowerCase();
 
     setIsRunning(false);
+
+    const userExerciseSubmit: SubmitExerciseType = {
+      user_id: userId,
+      exercise_id: data._id,
+      user_answer: selectedWords[0],
+      answer_time: seconds,
+    }
+    await submitExercise(userExerciseSubmit);
+    
     if (correct) {
       const exercisesResult: ExerciseProgressState = {
         exercise_id: data._id ? data._id : "",
@@ -240,12 +249,12 @@ const CompleteSentences: React.FC<CompleteSentencesProps> = ({
           type="primary"
           onClick={getAIExplaiation}
         >
-          
-            {answerLoading? <Spin /> : (
-              <Flex vertical className="w-80 bg-white rounded p-4 mb-60 border" align="flex-end" >
-                {explainAI ? explainAI : 'Không có phản hồi'}
-              </Flex>
-            )}
+
+          {answerLoading ? <Spin /> : (
+            <Flex vertical className="w-80 bg-white rounded p-4 mb-60 border" align="flex-end" >
+              {explainAI ? explainAI : 'Không có phản hồi'}
+            </Flex>
+          )}
         </FloatButton.Group>
       )}
     </Wrapper>

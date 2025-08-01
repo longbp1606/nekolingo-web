@@ -11,3 +11,7 @@ export const register = (user: object) => {
 export const getProfile = () => {
     return get('/api/auth/profile');
 }
+
+export const verifyEmail = (token: string) => {
+    return get(`/api/auth/verify-email?token=${token}`);
+}

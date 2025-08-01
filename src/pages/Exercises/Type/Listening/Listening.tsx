@@ -19,7 +19,7 @@ import { RootState } from "@/store";
 import { ExerciseProgressState, setExercisesProgress } from "@/store/userProgress.slice";
 import { removeHeart } from "@/store/user.slice";
 import config from "@/config";
-import { explainAnswer } from "@/services/userProgressAPI";
+import { explainAnswer, submitExercise, SubmitExerciseType } from "@/services/userProgressAPI";
 
 const { Title } = Typography;
 
@@ -76,12 +76,21 @@ const Listening: React.FC<ListeningProps> = ({ data, totalQuestions, answeredQue
         }
     };
 
-    const handleCheck = () => {
+    const handleCheck = async () => {
         setIsRunning(false);
         setIsSubmitted(true);
         if (selectedIndex === null) return;
         const selectedValue = options[selectedIndex];
         const correct = selectedValue.trim().toLowerCase() === correct_answer.trim().toLowerCase();
+
+        const userExerciseSubmit: SubmitExerciseType = {
+            user_id: userId,
+            exercise_id: data._id,
+            user_answer: selectedValue,
+            answer_time: seconds,
+        }
+        await submitExercise(userExerciseSubmit);
+
         if (correct) {
             const exercisesResult: ExerciseProgressState = {
                 exercise_id: data._id ? data._id : "",

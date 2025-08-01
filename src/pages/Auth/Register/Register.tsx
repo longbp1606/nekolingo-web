@@ -3,8 +3,7 @@ import AuthForm from "@/components/AuthForm";
 import { RedirectType } from "@/components/AuthForm/AuthForm";
 import { registerFields } from "@/components/AuthForm/AuthForm.fields";
 import config from "@/config";
-import { login, register } from "@/services/authAPI";
-import cookieUtils from "@/services/cookieUtils";
+import { register } from "@/services/authAPI";
 import { RootState } from "@/store";
 import { message } from "antd";
 import { useState } from "react";
@@ -33,18 +32,7 @@ const Register = () => {
                     content: response.data.message || "Register successfully",
                 });
                 localStorage.setItem('FIRST_STEP', 'true');
-                const loginResponse = await login({
-                    email: values.email,
-                    password: values.password,
-                });
-                if (!loginResponse.data.data) throw loginResponse.data.message;
-                else {
-                    cookieUtils.setItem(config.cookies.accessToken, loginResponse.data.data.accessToken);
-                    cookieUtils.setItem(config.cookies.refreshToken, loginResponse.data.data.refreshToken);
-                    cookieUtils.setItem(config.cookies.role, loginResponse.data.data.role);
-                }
-                if (loginResponse.data.data.role === 1) navigate(config.routes.admin.language)
-                else navigate(config.routes.public.home);
+                navigate(config.routes.public.verify);
             }
         } catch (error: any) {
             if (error.response) messageApi.error(error.response.data.message);

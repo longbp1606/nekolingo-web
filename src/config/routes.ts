@@ -4,6 +4,8 @@ const routes = {
     welcome: "/welcome",
     login: "/login",
     register: "/register",
+    verify: "/verify",
+    verifyResult: "/verify/result",
   },
   user: {
     exercise: "/exercise/:lessonId",

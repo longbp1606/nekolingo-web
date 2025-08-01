@@ -15,7 +15,7 @@ interface NavbarElement {
 // Menu cho Customer
 const customerNavbar: NavbarElement[] = [
   { path: '/', label: 'Learn', icon: symbols.birdhouse },
-  { path: '/practice', label: 'Practice', icon: symbols.dumbbell },
+  // { path: '/practice', label: 'Practice', icon: symbols.dumbbell },
   { path: '/leaderboard', label: 'Leaderboard', icon: symbols.trophy },
   { path: '/quest', label: 'Quest', icon: symbols.parchment },
   { path: '/shop', label: 'Shop', icon: symbols.shop },

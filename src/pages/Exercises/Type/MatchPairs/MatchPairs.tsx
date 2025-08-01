@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { ExerciseProgressState, setExercisesProgress } from '@/store/userProgress.slice';
 import config from '@/config';
-import { explainAnswer } from '@/services/userProgressAPI';
+import { explainAnswer, submitExercise, SubmitExerciseType } from '@/services/userProgressAPI';
 import { Flex, FloatButton, Spin } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
@@ -161,12 +161,20 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
     };
 
     // Khi user "KIỂM TRA" (auto-called khi đủ 5 cặp)
-    const handleCheckBar = () => {
+    const handleCheckBar = async () => {
         // Vì nối đủ 5 cặp ⇒ đúng
         setIsRunning(false);
         setIsCorrectBar(true);
         setIsCheckedBar(true);
         setIsSubmitted(true);
+
+        const userExerciseSubmit: SubmitExerciseType = {
+            user_id: userId,
+            exercise_id: data._id,
+            user_answer: matchedPairs,
+            answer_time: seconds,
+        }
+        await submitExercise(userExerciseSubmit);
 
         if (matchedPairs) {
             const exercisesResult: ExerciseProgressState = {
