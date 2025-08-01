@@ -15,7 +15,7 @@ import { ExerciseProgressState, setExercisesProgress } from "@/store/userProgres
 import { removeHeart } from "@/store/user.slice";
 import { useNavigate } from "react-router-dom";
 import config from "@/config";
-import { explainAnswer } from "@/services/userProgressAPI";
+import { explainAnswer, submitExercise, SubmitExerciseType } from "@/services/userProgressAPI";
 import { Flex, FloatButton, Spin } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 
@@ -67,13 +67,21 @@ const SelectImage: React.FC<SelectImageProps> = ({
     return () => clearInterval(interval);
   }, [isRunning]);
 
-  const handleCheck = () => {
+  const handleCheck = async () => {
     setIsRunning(false);
     setIsSubmitted(true);
     if (selectedIndex === null) return;
 
     const selectedOpt = options[selectedIndex];
     const correct = selectedOpt.value?.toLowerCase() === correctAnswer?.toLowerCase();
+
+    const userExerciseSubmit: SubmitExerciseType = {
+      user_id: userId,
+      exercise_id: data._id,
+      user_answer: selectedOpt.value,
+      answer_time: seconds,
+    }
+    await submitExercise(userExerciseSubmit);
 
     if (correct) {
       const exercisesResult: ExerciseProgressState = {

@@ -24,23 +24,32 @@ import {
     GemsIcon,
 } from './Shop.styled';
 import Sidebar from '@/components/Sidebar';
-import { Button, Flex, message, Modal, Spin } from 'antd'
+import { Divider, Flex, List, message, Modal, Spin } from 'antd'
 import chill from "@/assets/chill.gif";
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { buyItem, getShopItem, getShopStatus } from '@/services/shopAPI';
 import { useDocumentTitle } from '@/hooks';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store';
+import { HistoryOutlined } from '@ant-design/icons';
+import Button from '@/components/Button';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { formatDateTime } from '@/utils/format-datetime';
+import { dateFormat } from '@/utils/enum';
+import { fetchProfile } from '@/store/user.slice';
 
 const Shop = () => {
     useDocumentTitle('Shop | Nekolingo');
 
     const balance = useSelector((state: RootState) => state.user.balance);
+    const dispatch = useDispatch<AppDispatch>();
     const [items, setItems] = useState<any>([]);
+    const [histories, setHistories] = useState<any[]>([]);
     const [status, setStatus] = useState<any>();
     const [loading, setLoading] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const hasFetchedItemList = useRef(false);
 
     const fetchItemList = async () => {
         setLoading(true);
@@ -49,15 +58,20 @@ const Shop = () => {
             const statusRes = await getShopStatus();
             setItems(res.data.items);
             setStatus(statusRes.data.status);
+            setHistories(statusRes.data.history);
         } catch (error) {
             setItems([]);
+            setHistories([]);
         } finally {
             setLoading(false);
         }
     }
 
     useEffect(() => {
-        fetchItemList();
+        if (!hasFetchedItemList.current) {
+            fetchItemList();
+            hasFetchedItemList.current = true;
+        }
     }, []);
 
     const postBuyItem = async (item: any) => {
@@ -70,6 +84,7 @@ const Shop = () => {
             if (res.status === 201) {
                 messageApi.success('Mua vật phẩm thành công');
                 fetchItemList();
+                dispatch(fetchProfile());
             }
         } catch (error: any) {
             // console.log(error);
@@ -111,7 +126,7 @@ const Shop = () => {
                         </BlueHeartIcon>
                         <ContentArea>
                             <HeartTitle>{item?.item?.replaceAll('_', ' ')}</HeartTitle>
-                            <ProgressText>{status?.is_freeze ? "ĐÃ" : "CHƯA"} TRANG BỊ</ProgressText>
+                            <ProgressText>Đang có {status?.freeze?.quantity}/2</ProgressText>
                             <HeartDescription style={{ marginTop: '8px' }}>
                                 Streak Freeze cho phép bạn giữ nguyên streak trong một ngày bạn không có hoạt động nào.
                             </HeartDescription>
@@ -119,7 +134,7 @@ const Shop = () => {
                         <PurchaseButton
                             className="buy"
                             size='large'
-                            disabled={balance < item?.price}
+                            disabled={balance < item?.price || !status?.freeze?.can_buy}
                             onClick={() => postBuyItem(item?.item)}
                         >
                             MUA VỚI GIÁ: <GemsIcon>💎</GemsIcon> {item.price}
@@ -142,7 +157,7 @@ const Shop = () => {
                         <PurchaseButton
                             className="buy"
                             size='large'
-                            disabled={balance < item?.price}
+                            disabled={balance < item?.price || !status?.repair?.can_buy}
                             onClick={() => postBuyItem(item?.item)}
                         >
                             MUA VỚI GIÁ: <GemsIcon>💎</GemsIcon> {item.price}
@@ -158,7 +173,7 @@ const Shop = () => {
                         </GradientHeartIcon>
                         <ContentArea>
                             <HeartTitle>{item?.item?.replaceAll('_', ' ')}</HeartTitle>
-                            <ProgressText>{status?.double_or_nothing ? "ĐÃ" : "CHƯA"} TRANG BỊ</ProgressText>
+                            <ProgressText>{status?.double?.active ? "ĐÃ" : "CHƯA"} TRANG BỊ</ProgressText>
                             <HeartDescription>
                                 Double or Nothing giúp bạn có thể nhận được gấp đôi phần thưởng nếu đạt yêu cầu.
                             </HeartDescription>
@@ -166,7 +181,7 @@ const Shop = () => {
                         <PurchaseButton
                             className="buy"
                             size='large'
-                            disabled={balance < item?.price}
+                            disabled={balance < item?.price || !status?.double?.can_buy}
                             onClick={() => postBuyItem(item?.item)}
                         >
                             MUA VỚI GIÁ: <GemsIcon>💎</GemsIcon> {item.price}
@@ -205,12 +220,14 @@ const Shop = () => {
                                 <Flex justify='space-between' align='center'>
                                     <Title>Danh sách vật phẩm</Title>
                                     <Button
-                                        type="primary"
+                                        size='small'
+                                        color='primary'
                                         className="open-btn mt-2"
                                         onClick={() => setIsModalOpen(true)}
-                                    >
-                                        Lịch sử mua hàng
-                                    </Button>
+                                        title={'Lịch sử mua hàng'}
+                                        icon={<HistoryOutlined />}
+                                    />
+
                                 </Flex>
 
                                 <Section>
@@ -227,11 +244,45 @@ const Shop = () => {
             <Modal
                 title="Lịch sử mua hàng"
                 open={isModalOpen}
-                onOk={() => setIsModalOpen(false)}
                 onCancel={() => setIsModalOpen(false)}
+                footer={null}
             >
-                Test modal
-            </Modal>
+                <div
+                    id="scrollableDiv"
+                    className="h-[400px] overflow-auto pr-2"
+                >
+                    <InfiniteScroll
+                        dataLength={histories.length}
+                        next={() => { }}
+                        hasMore={false}
+                        loader={<></>}
+                        endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
+                        scrollableTarget="scrollableDiv"
+                    >
+                        <List
+                            loading={loading}
+                            itemLayout='horizontal'
+                            dataSource={histories}
+                            renderItem={(item: any) => (
+                                <List.Item key={item?.id}>
+                                    <List.Item.Meta
+                                        avatar={
+                                            item?.item === 'HEART_REFILL' ? '❤️' :
+                                                item?.item === 'STREAK_FREEZE' ? '🧊' :
+                                                    item?.item === 'STREAK_REPAIR' ? '🔧' :
+                                                        item?.item === 'DOUBLE_OR_NOTHING' ? '⭐' :
+                                                            null
+                                        }
+                                        title={item?.item.replaceAll('_', ' ')}
+                                        description={formatDateTime(new Date(item?.createdAt), dateFormat.vietnamFormat)}
+                                    />
+                                    <span>{item?.price} 💎</span>
+                                </List.Item>
+                            )}
+                        />
+                    </InfiniteScroll>
+                </div>
+            </Modal >
         </>
     );
 };

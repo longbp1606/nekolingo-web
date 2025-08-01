@@ -1,4 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { getProfile } from "@/services/authAPI";
 
 export type UserStateType = {
     user_id: string;
@@ -40,5 +41,22 @@ const userSlice = createSlice({
 });
 
 export const { setHearts, addHeart, removeHeart, setBalance, setFreezeCount, setUserIDStore } = userSlice.actions;
+
+// Async thunk to fetch profile
+export const fetchProfile = createAsyncThunk(
+    "user/fetchProfile",
+    async (_, { dispatch }) => {
+        const res = await getProfile();
+        const data = res.data.data;
+        console.log(data);
+        // Dispatch actions to update each field
+        dispatch(setUserIDStore(data.id));
+        dispatch(setHearts(data.hearts));
+        dispatch(setBalance(data.balance));
+        dispatch(setFreezeCount(data.freeze_count));
+        // Optionally return data if you want to use it in extraReducers
+        return data;
+    }
+);
 
 export default userSlice.reducer;

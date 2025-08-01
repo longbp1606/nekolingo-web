@@ -120,7 +120,7 @@ export const StyledButton = styled(AntButton) <Omit<ButtonProps, 'title'>>`
   }
   
   /* Hover effect */
-  &:hover:not(:disabled) {
+  .ant-btn-variant-outlined&:hover:not(:disabled) {
     background: ${props => colorMap[props.color || 'primary'].hover};
     color: ${props => colorMap[props.color || 'primary'].text};
     transform: translateY(-1px);
