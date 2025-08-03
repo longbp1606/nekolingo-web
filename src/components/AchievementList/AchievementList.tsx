@@ -77,7 +77,7 @@ const AchievementList = ({ showViewAll = true, limit }: AchievementListProps) =>
       <AchievementSection>
         <AchievementHeader>
         {limit !== 3 && (
-          <BackButton onClick={() => navigate(-1)}>Back</BackButton>
+          <BackButton onClick={() => navigate(-1)}>Trở lại</BackButton>
         )}
           <AchievementTitle>Thành tích</AchievementTitle>
           {showViewAll && (
