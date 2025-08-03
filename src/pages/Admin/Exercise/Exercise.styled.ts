@@ -55,6 +55,14 @@ export const Header = styled.div`
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 24px;
+`;
+
+export const MidHeader = styled.div`
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 
   h2 {
     font-size: 24px;

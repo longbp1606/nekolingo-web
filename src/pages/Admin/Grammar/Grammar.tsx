@@ -4,11 +4,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Button,
   Form,
-  Input,
   Popconfirm,
   message,
   Modal,
   notification,
+  Input,
 } from "antd";
 import {
   getListGrammars,
@@ -16,14 +16,13 @@ import {
   createGrammar,
   updateGrammar,
   deleteGrammar,
-} from "@/services/grammarAPI";  // hãy chắc path đúng
+} from "@/services/grammarAPI";
 import { ContentCard, FilterArea } from "./Grammar.styled";
 import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-type TableRecord = GrammarItem & { key: string };
 
 export type GrammarItem = {
   _id: string;
@@ -31,6 +30,8 @@ export type GrammarItem = {
   description: string;
   condition: string;
 };
+
+type TableRecord = GrammarItem & { key: string };
 
 const Grammar = () => {
   const [data, setData] = useState<GrammarItem[]>([]);
@@ -51,8 +52,9 @@ const Grammar = () => {
       if (!hasErrorNotified.current) {
         notification.error({
           key: "fetch-grammar-error",
-          message: "Error",
-          description: error?.response?.data?.message || "Error fetching grammars",
+          message: "Lỗi",
+          description:
+            error?.response?.data?.message || "Lỗi khi tải danh sách ngữ pháp",
         });
         hasErrorNotified.current = true;
       }
@@ -68,7 +70,6 @@ const Grammar = () => {
   const handleRowClick = async (record: GrammarItem) => {
     setLoading(true);
     try {
-      // Optionally fetch detail if you need more fields:
       const res = await getGrammarDetail(record._id);
       const detail: GrammarItem = res.data.data;
       setSelectedRecord(detail);
@@ -78,22 +79,20 @@ const Grammar = () => {
         description: detail.description,
       });
       setPanelVisible(true);
-
     } catch {
-      message.error("Failed to load detail");
+      message.error("Tải chi tiết thất bại");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    // setLoading(true);
     try {
       await deleteGrammar(id);
-      message.success("Deleted successfully");
+      message.success("Xóa thành công");
       await fetchAll();
     } catch {
-      message.error("Delete failed");
+      message.error("Xóa thất bại");
     } finally {
       setLoading(false);
     }
@@ -105,47 +104,50 @@ const Grammar = () => {
     try {
       if (selectedRecord) {
         await updateGrammar(selectedRecord._id, values);
-        message.success("Updated successfully");
+        message.success("Cập nhật thành công");
       } else {
         await createGrammar(values);
-        message.success("Created successfully");
+        message.success("Tạo thành công");
       }
       setPanelVisible(false);
       form.resetFields();
       setSelectedRecord(null);
       await fetchAll();
     } catch {
-      message.error("Submit failed");
+      message.error("Lỗi khi gửi dữ liệu");
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
-    { title: "Name", dataIndex: "name", key: "name" },
-    { title: "Condition", dataIndex: "condition", key: "condition" },
-    { title: "Description", dataIndex: "description", key: "description" },
+    { title: "Tên", dataIndex: "name", key: "name" },
+    { title: "Điều kiện", dataIndex: "condition", key: "condition" },
+    { title: "Mô tả", dataIndex: "description", key: "description" },
     {
-      title: "Actions",
+      title: "Hành động",
       key: "actions",
       render: (_: any, record: GrammarItem) => (
-        <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
-        <Popconfirm
-          title="Delete this grammar?"
-          onConfirm={() => handleDelete(record._id)}
-        >
-          <Button danger size="small"
-                        onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
+        <div onClick={(e) => e.stopPropagation()}>
+          <Popconfirm
+            title="Bạn có chắc muốn xóa ngữ pháp này?"
+            onConfirm={() => handleDelete(record._id)}
+            okText="Xóa"
+            cancelText="Hủy"
           >
-            Delete
-          </Button>
-        </Popconfirm>
+            <Button
+              danger
+              size="small"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Xóa
+            </Button>
+          </Popconfirm>
         </div>
       ),
     },
   ];
 
-  // Lọc dữ liệu: tìm trên tất cả các cột (stringify mọi giá trị)
   const filteredData = useMemo(() => {
     if (!searchText) return data;
     const lower = searchText.toLowerCase();
@@ -156,9 +158,9 @@ const Grammar = () => {
     );
   }, [data, searchText]);
 
-  const tableData: TableRecord[] = filteredData.map(item => ({
-    ...item,          // _id, name, condition, description
-    key: item._id,    // AntD cần field `key`
+  const tableData: TableRecord[] = filteredData.map((item) => ({
+    ...item,
+    key: item._id,
   }));
 
   return (
@@ -166,7 +168,7 @@ const Grammar = () => {
       <ContentCard style={{ flex: 2 }}>
         <FilterArea>
           <InputSearch
-            placeholder="Search..."
+            placeholder="Tìm kiếm..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -178,7 +180,7 @@ const Grammar = () => {
               setPanelVisible(true);
             }}
           >
-            Add Grammar
+            Thêm ngữ pháp
           </CAddButton>
         </FilterArea>
 
@@ -191,41 +193,43 @@ const Grammar = () => {
             onClick: () => handleRowClick(record),
           })}
           pagination={{
-            pageSize: 8,       // mỗi trang 5 item
-            showSizeChanger: false, // ẩn dropdown chọn số dòng/page (tuỳ chọn)
+            pageSize: 8,
+            showSizeChanger: false,
           }}
         />
       </ContentCard>
 
       <Modal
-        title={selectedRecord ? "Edit Grammar" : "Add Grammar"}
+        title={selectedRecord ? "Chỉnh sửa ngữ pháp" : "Thêm ngữ pháp"}
         visible={panelVisible}
         onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
         confirmLoading={loading}
+        okText="Lưu"
+        cancelText="Hủy"
         destroyOnClose
       >
         <Form form={form} layout="vertical">
           <Form.Item
             name="name"
-            label="Name"
-            rules={[{ required: true, message: "Please enter name" }]}
+            label="Tên"
+            rules={[{ required: true, message: "Vui lòng nhập tên" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="condition"
-            label="Condition"
-            rules={[{ required: true, message: "Please enter condition" }]}
+            label="Điều kiện"
+            rules={[{ required: true, message: "Vui lòng nhập điều kiện" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="description"
-            label="Description"
-            rules={[{ required: true, message: "Please enter description" }]}
+            label="Mô tả"
+            rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
           >
-            <ReactQuill theme="snow" style={{ height: '100%' }} />
+            <ReactQuill theme="snow" style={{ height: "200px" }} />
           </Form.Item>
         </Form>
       </Modal>

@@ -56,14 +56,13 @@ const Quest = () => {
     setLoading(true);
     try {
       const res = await getQuest();
-      // API returns an array of quests
       setData(res.data || []);
     } catch (error: any) {
       if (!hasErrorNotified.current) {
         notification.error({
           key: "fetch-quest-error",
-          message: "Error",
-          description: error?.response?.data?.message || "Error fetching quests",
+          message: "Lỗi",
+          description: error?.response?.data?.message || "Lỗi khi lấy danh sách thử thách",
         });
         hasErrorNotified.current = true;
       }
@@ -78,7 +77,6 @@ const Quest = () => {
   const handleRowClick = async (record: QuestItem) => {
     setLoading(true);
     try {
-      // Optionally fetch detail if you need more fields:
       const res = await getQuestDetail(record._id);
       const detail: QuestItem = res.data;
       setSelectedRecord(detail);
@@ -90,10 +88,10 @@ const Quest = () => {
         condition: detail.condition,
         score: detail.score,
       });
-      setIconUrl(detail.icon || '');
+      setIconUrl(detail.icon || "");
       setPanelVisible(true);
     } catch {
-      message.error("Failed to load detail");
+      message.error("Không tải được chi tiết thử thách");
     } finally {
       setLoading(false);
     }
@@ -102,10 +100,10 @@ const Quest = () => {
   const handleDelete = async (id: string) => {
     try {
       await deleteQuest(id);
-      message.success("Deleted successfully");
+      message.success("Xóa thành công");
       await fetchAll();
     } catch {
-      message.error("Cannot delete this quest.");
+      message.error("Không thể xóa thử thách này");
     }
   };
 
@@ -123,10 +121,10 @@ const Quest = () => {
       };
       if (selectedRecord) {
         await updateQuest(selectedRecord._id, payload);
-        message.success("Updated successfully");
+        message.success("Cập nhật thành công");
       } else {
         await createQuest(payload);
-        message.success("Created successfully");
+        message.success("Tạo thử thách thành công");
       }
       setPanelVisible(false);
       form.resetFields();
@@ -134,40 +132,42 @@ const Quest = () => {
       setIconUrl("");
       await fetchAll();
     } catch {
-      message.error("Submit failed");
+      message.error("Lưu thất bại");
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
-    { title: "Title", dataIndex: "title", key: "title" },
+    { title: "Tiêu đề", dataIndex: "title", key: "title" },
     {
-      title: "Icon",
+      title: "Biểu tượng",
       dataIndex: "icon",
       key: "icon",
       render: (url: string) => url ? <Image width={50} src={url} preview={false} /> : null,
     },
-    { title: "Type", dataIndex: "type", key: "type" },
-    { title: "Condition", dataIndex: "condition", key: "condition" },
-    { title: "Score", dataIndex: "score", key: "score" },
+    { title: "Loại thử thách", dataIndex: "type", key: "type" },
+    { title: "Điều kiện", dataIndex: "condition", key: "condition" },
+    { title: "Điểm (%)", dataIndex: "score", key: "score" },
     {
-      title: "Reward",
+      title: "Phần thưởng",
       dataIndex: "reward",
       key: "reward",
       render: (r: any) => `${r.amount} ${r.type}`,
     },
     {
-      title: "Actions",
+      title: "Hành động",
       key: "actions",
       render: (_: any, record: QuestItem) => (
         <div onClick={(e) => e.stopPropagation()}>
           <Popconfirm
-            title="Delete this quest?"
+            title="Bạn có chắc muốn xóa thử thách này?"
+            okText="Xóa"
+            cancelText="Hủy"
             onConfirm={() => handleDelete(record._id)}
           >
             <Button danger size="small" onClick={(e) => e.stopPropagation()}>
-              Delete
+              Xóa
             </Button>
           </Popconfirm>
         </div>
@@ -175,7 +175,7 @@ const Quest = () => {
     },
   ];
 
-  // Search filter
+  // Bộ lọc tìm kiếm
   const filteredData = useMemo(() => {
     if (!searchText) return data;
     const lower = searchText.toLowerCase();
@@ -193,7 +193,7 @@ const Quest = () => {
       <ContentCard style={{ flex: 2 }}>
         <FilterArea>
           <InputSearch
-            placeholder="Search quests..."
+            placeholder="Tìm kiếm thử thách..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -206,7 +206,7 @@ const Quest = () => {
               setPanelVisible(true);
             }}
           >
-            Add Quest
+            Thêm thử thách
           </CAddButton>
         </FilterArea>
 
@@ -217,33 +217,34 @@ const Quest = () => {
           loading={loading}
           onRow={(record) => ({ onClick: () => handleRowClick(record) })}
           pagination={{
-            pageSize: 8,       // mỗi trang 5 item
-            showSizeChanger: false, // ẩn dropdown chọn số dòng/page (tuỳ chọn)
+            pageSize: 8,
+            showSizeChanger: false,
           }}
         />
       </ContentCard>
 
       <Modal
-        title={selectedRecord ? "Edit Quest" : "Add Quest"}
+        title={selectedRecord ? "Chỉnh sửa thử thách" : "Thêm thử thách"}
         visible={panelVisible}
         onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
         confirmLoading={loading}
         destroyOnClose
+        okText="Lưu"
+        cancelText="Hủy"
       >
         <Form form={form} layout="vertical">
           <Form.Item
             name="title"
-            label="Title"
-            rules={[{ required: true, message: "Please enter title" }]}
+            label="Tiêu đề"
+            rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="icon"
-            label="Icon URL"
+            label="Biểu tượng"
             getValueFromEvent={() => iconUrl}
-
           >
             <Upload
               listType="picture-card"
@@ -251,9 +252,8 @@ const Quest = () => {
               accept="image/*"
               customRequest={async ({ file, onSuccess, onError }) => {
                 try {
-                  const res = await uploadImage({ file: file as File, folder: 'flags' });
-                  const url = res.url;  // lấy đúng từ response
-                  // gán URL vào Form-field ẩn
+                  const res = await uploadImage({ file: file as File, folder: 'icons' });
+                  const url = res.url;
                   form.setFieldsValue({ icon: url });
                   setIconUrl(url);
                   onSuccess?.(null, file as File);
@@ -267,44 +267,44 @@ const Quest = () => {
               ) : (
                 <div>
                   <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>Upload</div>
+                  <div style={{ marginTop: 8 }}>Tải lên</div>
                 </div>
               )}
             </Upload>
           </Form.Item>
           <Form.Item
             name={["reward", "type"]}
-            label="Reward Type"
-            rules={[{ required: true }]}
+            label="Loại phần thưởng"
+            rules={[{ required: true, message: "Chọn loại phần thưởng" }]}
           >
             <Select options={Object.values(RewardType).map(val => ({ label: val, value: val }))} />
           </Form.Item>
           <Form.Item
             name={["reward", "amount"]}
-            label="Reward Amount"
-            rules={[{ required: true, type: 'number' }]}
+            label="Số lượng phần thưởng"
+            rules={[{ required: true, type: 'number', message: "Nhập số lượng phần thưởng" }]}
           >
             <InputNumber style={{ width: '100%' }} min={1} />
           </Form.Item>
           <Form.Item
             name="type"
-            label="Quest Type"
-            rules={[{ required: true }]}
+            label="Loại thử thách"
+            rules={[{ required: true, message: "Chọn loại thử thách" }]}
           >
             <Select options={Object.values(QuestType).map(val => ({ label: val, value: val }))} />
           </Form.Item>
           <Form.Item
             name="condition"
-            label="Condition"
-            rules={[{ required: true, type: 'number' }]}
+            label="Điều kiện"
+            rules={[{ required: true, type: 'number', message: "Nhập điều kiện" }]}
           >
             <InputNumber style={{ width: '100%' }} min={1} />
           </Form.Item>
           {form.getFieldValue('type') === QuestType.Result && (
             <Form.Item
               name="score"
-              label="Score (%)"
-              rules={[{ required: true, type: 'number', min: 0, max: 100 }]}
+              label="Tỉ lệ điểm (%)"
+              rules={[{ required: true, type: 'number', min: 0, max: 100, message: "Nhập tỉ lệ điểm" }]}
             >
               <InputNumber style={{ width: '100%' }} />
             </Form.Item>

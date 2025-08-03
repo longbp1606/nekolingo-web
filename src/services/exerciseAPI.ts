@@ -23,7 +23,7 @@ export type UpdateExercise = {
   audio_url?: string;
   image_url?: string;
   lesson?: string;
-  ocabulary?: string;
+  vocabulary?: string;
   grammar?: string;
   extra_data?: Record<string, string>;
 };
@@ -38,6 +38,10 @@ export const getListExercises = (page: number, take: number) => {
   }
   return get(url);
 };
+
+export const getAllExercises = () => {
+  return get("/api/exercise/list");
+}
 
 export const getExerciseDetail = (id: string) => {
   return get(`/api/exercise/${id}`);
