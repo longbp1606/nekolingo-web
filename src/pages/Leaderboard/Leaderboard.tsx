@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     BodyContent,
     LeaderboardContainer,
@@ -22,8 +22,6 @@ import {
     IconGrid,
     IconButton,
     FixedHeader,
-    TournamentSelector,
-    TournamentOption,
     TournamentContent,
     DeleteButton,
     FooterWrapper,
@@ -36,105 +34,44 @@ import {
 import Sidebar from '@/components/Sidebar';
 import { theme } from '@/themes';
 import StatsBar from '@/components/StatsBar/StatsBar';
-import { useAuth } from '@/hooks';
-import { getLeaderboardOverall } from '@/services/leaderboardAPI';
+import { getWeeklyLeaderboard } from '@/services/leaderboardAPI';
+import { getProfile } from '@/services/authAPI';
+import { formatDateTime } from '@/utils/format-datetime';
+import { dateFormat } from '@/utils/enum';
 
 const Leaderboard = () => {
-    const { profile } = useAuth();
-    const [selectedTournament, setSelectedTournament] = useState('bronze');
     const [leaderboardList, setLeaderboardList] = useState<any>([]);
-    
+    const [tournamentDetail, setTournamentDetail] = useState<any>({});
+    const [currentRank, setCurrentRank] = useState<number>(-1);
+    const hasFetchedLeaderboard = useRef(false);
+
     const fetchLeaderboard = async () => {
         try {
-            const response = await getLeaderboardOverall();
+            const profile = await getProfile();
+            const userID = profile.data?.data?.id;
+
+            const response = await getWeeklyLeaderboard();
             if (response.status === 200) {
-                setLeaderboardList(response.data); 
+                setTournamentDetail(response.data);
+                setLeaderboardList(response.data.users);
+                const index = response.data?.users?.findIndex((user: any) => String(user._id) === String(userID));
+                if (index !== -1) {
+                    setCurrentRank(index + 1);
+                } else {
+                    setCurrentRank(-1); // Not found
+                }
             }
         } catch (error) {
-            
+            console.error(error);
         }
     }
 
     useEffect(() => {
-        fetchLeaderboard();
-    }, [profile])
-
-    const tournaments = {
-        bronze: {
-            icon: '🥉',
-            title: 'Giải đấu Đồng',
-            subtitle: 'Top 15 sẽ được thăng hạng lên giải đấu cao hơn',
-            gradient: 'linear-gradient(135deg, #CD7F32, #F4E4BC)',
-            data: [
-                { rank: 1, name: 'xFaKvB9u', score: '164 KN', avatar: 'X', color: '#ff9500', isOnline: true },
-                { rank: 2, name: 'blevins', score: '117 KN', avatar: '🤓', color: '#ff69b4', isOnline: true },
-                { rank: 3, name: 'tu.8zPhLRDVr49BC', score: '30 KN', avatar: 'T', color: '#ff4444', isOnline: true },
-                { rank: 4, name: 'kaito', score: '30 KN', avatar: 'K', color: '#ff4444', isOnline: true },
-                { rank: 5, name: 'Eduardo Picano', score: '28 KN', avatar: 'E', color: '#9966ff', isOnline: true },
-                { rank: 6, name: 'tu.8zPhLBrEOdxpl', score: '20 KN', avatar: '🦉', color: '#333', isOnline: true },
-                { rank: 7, name: 'Khanh Tr?n Th?y H?ng', score: '15 KN', avatar: 'K', color: '#ff4444', isOnline: true },
-                { rank: 8, name: 'xFaKvB9u', score: '164 KN', avatar: 'X', color: '#ff9500', isOnline: true },
-                { rank: 9, name: 'blevins', score: '117 KN', avatar: '🤓', color: '#ff69b4', isOnline: true },
-                { rank: 10, name: 'tu.8zPhLRDVr49BC', score: '30 KN', avatar: 'T', color: '#ff4444', isOnline: true },
-                { rank: 11, name: 'kaito', score: '30 KN', avatar: 'K', color: '#ff4444', isOnline: true },
-                { rank: 12, name: 'Eduardo Picano', score: '28 KN', avatar: 'E', color: '#9966ff', isOnline: true },
-                { rank: 13, name: 'tu.8zPhLBrEOdxpl', score: '20 KN', avatar: '🦉', color: '#333', isOnline: true },
-                { rank: 14, name: 'Khanh', score: '15 KN', avatar: 'K', color: '#ff4444', isOnline: true },
-                { rank: 15, name: 'Khanh Tr?n Th?y H?ng', score: '15 KN', avatar: 'K', color: '#ff4444', isOnline: true },
-            ]
-        },
-        silver: {
-            icon: '🥈',
-            title: 'Giải đấu Bạc',
-            subtitle: 'Top 10 sẽ được thăng hạng lên giải đấu cao hơn',
-            gradient: 'linear-gradient(135deg, #C0C0C0, #E8E8E8)',
-            data: [
-                { rank: 1, name: 'ProGamer2024', score: '892 KN', avatar: 'P', color: '#ff9500', isOnline: true },
-                { rank: 2, name: 'SilverKnight', score: '756 KN', avatar: '⚔️', color: '#ff69b4', isOnline: true },
-                { rank: 3, name: 'MasterChef', score: '689 KN', avatar: '👨‍🍳', color: '#ff4444', isOnline: false },
-                { rank: 4, name: 'CodeWarrior', score: '634 KN', avatar: 'C', color: '#4CAF50', isOnline: true },
-                { rank: 5, name: 'NightHawk', score: '598 KN', avatar: '🦅', color: '#9966ff', isOnline: true },
-                { rank: 6, name: 'DragonSlayer', score: '567 KN', avatar: 'D', color: '#ff4444', isOnline: false },
-                { rank: 7, name: 'PhoenixRise', score: '523 KN', avatar: '🔥', color: '#ff9500', isOnline: true }
-            ]
-        },
-        gold: {
-            icon: '🥇',
-            title: 'Giải đấu Vàng',
-            subtitle: 'Top 5 sẽ được thăng hạng lên giải đấu cao hơn',
-            gradient: 'linear-gradient(135deg, #FFD700, #FFF8DC)',
-            data: [
-                { rank: 1, name: 'GoldLegend', score: '2.1M KN', avatar: '👑', color: '#ff9500', isOnline: true },
-                { rank: 2, name: 'ElitePlayer', score: '1.8M KN', avatar: 'E', color: '#ff69b4', isOnline: true },
-                { rank: 3, name: 'ChampionX', score: '1.6M KN', avatar: '🏆', color: '#ff4444', isOnline: true },
-                { rank: 4, name: 'GoldenEagle', score: '1.4M KN', avatar: '🦅', color: '#4CAF50', isOnline: false },
-                { rank: 5, name: 'KingOfGames', score: '1.2M KN', avatar: 'K', color: '#9966ff', isOnline: true },
-                { rank: 6, name: 'GoldRush', score: '1.1M KN', avatar: 'G', color: '#ff4444', isOnline: true },
-                { rank: 7, name: 'UltimateWin', score: '980K KN', avatar: 'U', color: '#333', isOnline: true }
-            ]
-        },
-        diamond: {
-            icon: '💎',
-            title: 'Giải đấu Kim Cương',
-            subtitle: 'Giải đấu cao nhất - Chỉ dành cho những người chơi xuất sắc nhất',
-            gradient: 'linear-gradient(135deg, #00BFFF, #E0F6FF)',
-            data: [
-                { rank: 1, name: 'DiamondKing', score: '10.5M KN', avatar: '💎', color: '#00BFFF', isOnline: true },
-                { rank: 2, name: 'CrystalMaster', score: '9.8M KN', avatar: '🔮', color: '#9966ff', isOnline: true },
-                { rank: 3, name: 'PlatinumPro', score: '9.2M KN', avatar: 'P', color: '#E5E4E2', isOnline: true },
-                { rank: 4, name: 'DiamondQueen', score: '8.7M KN', avatar: '👸', color: '#ff69b4', isOnline: false },
-                { rank: 5, name: 'GemLord', score: '8.1M KN', avatar: '💍', color: '#FFD700', isOnline: true },
-                { rank: 6, name: 'CrystalHeart', score: '7.8M KN', avatar: '💖', color: '#ff4444', isOnline: true },
-                { rank: 7, name: 'DiamondStorm', score: '7.3M KN', avatar: '⚡', color: '#ff9500', isOnline: true }
-            ]
+        if (!hasFetchedLeaderboard.current) {
+            fetchLeaderboard();
+            hasFetchedLeaderboard.current = true;
         }
-    };
-
-    const currentTournament = tournaments[selectedTournament as keyof typeof tournaments];
-
-    const handleTournamentChange = (tournamentType: string) => {
-        setSelectedTournament(tournamentType);
-    };
+    }, [])
 
     // const tournamentMenu = (
     //     <Menu onClick={({ key }) => handleTournamentChange(key)}>
@@ -174,50 +111,50 @@ const Leaderboard = () => {
                     <HomeContent>
                         <LeftSection>
                             <FixedHeader>
-                                <TournamentSelector>
-                                    {Object.entries(tournaments).map(([key, tournament]) => (
-                                        <TournamentOption
-                                            key={key}
-                                            isActive={selectedTournament === key}
-                                            gradient={tournament.gradient}
-                                            onClick={() => handleTournamentChange(key)}
-                                        >
-                                            {tournament.icon}
-                                        </TournamentOption>
-                                    ))}
-                                </TournamentSelector>
                                 <TournamentContent>
-                                    <TournamentTitle>{currentTournament.title}</TournamentTitle>
+                                    <TournamentTitle>Giải đấu ngôn ngữ tuần {tournamentDetail?.week}</TournamentTitle>
                                     <TournamentSubtitle>
-                                        {currentTournament.subtitle}
+                                        Cùng nhau tranh tài nguyên và chiến đấu với những người bạn bốn phương!
                                     </TournamentSubtitle>
-                                    <TournamentDays>6 ngày</TournamentDays>
+                                    <TournamentDays>
+                                        {formatDateTime(new Date(tournamentDetail?.start), dateFormat.ddMMyyyy)} - {formatDateTime(new Date(tournamentDetail?.end), dateFormat.ddMMyyyy)}
+                                    </TournamentDays>
                                 </TournamentContent>
                             </FixedHeader>
 
 
                             <LeaderboardContainer>
                                 <LeaderboardList>
-                                    {leaderboardList?.map((player: any, index: number) => (
-                                        <LeaderboardItem key={index}>
-                                            <RankBadge rank={index + 1} color={getRankColor(index + 1)}>
-                                                {index + 1}
-                                            </RankBadge>
+                                    {leaderboardList?.map((player: any, index: number) => {
+                                        return (
+                                            <LeaderboardItem key={index} style={
+                                                currentRank === index + 1 ? {
+                                                    background: theme.color.lightPrimary,
+                                                    color: theme.color.primary,
+                                                } : {
+                                                    background: 'white',
+                                                    color: '#333',
+                                                }
+                                            }>
+                                                <RankBadge rank={index + 1} color={getRankColor(index + 1)}>
+                                                    {index + 1}
+                                                </RankBadge>
 
-                                            <div style={{ position: 'relative' }}>
-                                                <UserAvatar color={theme.color.primary}>
-                                                    {player.avatar ? player.avatar : player.username?.charAt(0).toUpperCase()}
-                                                </UserAvatar>
-                                                {<OnlineIndicator />}
-                                            </div>
+                                                <div style={{ position: 'relative' }}>
+                                                    <UserAvatar color={theme.color.primary}>
+                                                        {player.avatar ? player.avatar : player.username?.charAt(0).toUpperCase()}
+                                                    </UserAvatar>
+                                                    {<OnlineIndicator />}
+                                                </div>
 
-                                            <UserInfo>
-                                                <UserName>{player?.username ? player.username : `Anonymous ${index}`}</UserName>
-                                            </UserInfo>
+                                                <UserInfo>
+                                                    <UserName>{player?.username ? player.username : `Anonymous ${index}`}</UserName>
+                                                </UserInfo>
 
-                                            <UserScore>{player?.xp} XP</UserScore>
-                                        </LeaderboardItem>
-                                    ))}
+                                                <UserScore>{player?.weekly_xp} XP</UserScore>
+                                            </LeaderboardItem>
+                                        )
+                                    })}
                                 </LeaderboardList>
                             </LeaderboardContainer>
                         </LeftSection>

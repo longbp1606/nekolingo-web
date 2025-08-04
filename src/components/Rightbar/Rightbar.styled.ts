@@ -1,5 +1,6 @@
 import styled, { keyframes } from "styled-components";
 import { theme } from "@/themes";
+import { Link } from "react-router-dom";
 
 // Animation nhẹ cho progress bar fill
 const progressAnimation = (width: string) => keyframes`
@@ -54,7 +55,7 @@ export const CardTitle = styled.h3`
     letter-spacing: 0.5px;
 `;
 
-export const ViewLink = styled.a`
+export const ViewLink = styled(Link)`
     color: ${theme.color.primary};
     font-size: 12px;
     font-weight: bold;

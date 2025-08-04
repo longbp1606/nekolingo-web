@@ -1,5 +1,5 @@
 import { CompleteFullLessonState } from "@/store/userProgress.slice";
-import { post } from "./apiCaller";
+import { get, post } from "./apiCaller";
 
 const apiUrl = '/api/user-progress';
 
@@ -24,4 +24,8 @@ export const explainAnswer = (payload: object) => {
 
 export const generatePersonalizedLesson = (payload: object) => {
     return post(`${apiUrl}/generate-personalized-lesson`, payload);
+}
+
+export const getRecoveryLesson = (userId: string) => {
+    return get(`${apiUrl}/heart-recovery-lesson/${userId}`);
 }

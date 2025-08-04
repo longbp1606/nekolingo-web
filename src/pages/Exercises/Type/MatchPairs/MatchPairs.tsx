@@ -15,7 +15,7 @@ import { Flex, FloatButton, Spin } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
 interface WordPair {
-    id: number;
+    id: string;
     left: string;
     right: string;
 }
@@ -39,23 +39,23 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
     const hearts = useSelector((state: RootState) => state.user.hearts);
     const exercises = useSelector((state: RootState) => state.userProgress.exercises);
 
-    const { options, question } = data;
+    const { options, question, correct_answer } = data;
     // Tổng số cặp (5)
     const totalPairs = options?.length;
     // ID của từ TIẾNG VIỆT và TIẾNG ANH đang chọn tạm
-    const [selectedVi, setSelectedVi] = useState<number | null>(null);
-    const [selectedEn, setSelectedEn] = useState<number | null>(null);
+    const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
+    const [selectedRight, setSelectedRight] = useState<string | null>(null);
 
     // matchedIds: lưu ID (tiếng Việt) của những cặp "thực sự" đã nối đúng (sau khi nháy xanh)
-    const [matchedIds, setMatchedIds] = useState<number[]>([]);
+    const [matchedIds, setMatchedIds] = useState<string[]>([]);
     // matchedPairs: lưu chi tiết các cặp đúng (viId, enId) tương ứng với matchedIds
-    const [matchedPairs, setMatchedPairs] = useState<{ viId: number; enId: number }[]>([]);
+    const [matchedPairs, setMatchedPairs] = useState<WordPair[]>([]);
 
     // wrongPair: nếu user chọn sai, lưu tạm để highlight đỏ rồi reset
-    const [wrongPair, setWrongPair] = useState<{ viId: number; enId: number } | null>(null);
+    const [wrongPair, setWrongPair] = useState<WordPair | null>(null);
 
     // recentMatchedPair: cặp vừa match đúng, dùng để nháy xanh và hiện sao trong 800 ms
-    const [recentMatchedPair, setRecentMatchedPair] = useState<{ viId: number; enId: number } | null>(null);
+    const [recentMatchedPair, setRecentMatchedPair] = useState<WordPair | null>(null);
 
     // Danh sách tiếng Anh đã shuffle 1 lần khi mount
     const [shuffledRightPairs, setShuffledRightPairs] = useState<WordPair[]>([]);
@@ -104,58 +104,59 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
         }
     }, [matchedIds, hasAutoChecked, totalPairs]);
 
-    // Khi user click một ô TIẾNG VIỆT
-    const handleClickVi = (id: number) => {
+    // Khi user click một ô BÊN TRÁI
+    const handleClickLeft = (id: string, left: string) => {
         if (matchedIds.includes(id)) return;      // Đã nối thành công rồi
         if (wrongPair) return;                    // Đang highlight sai, chờ reset
         if (matchedIds.length === totalPairs) return; // Đã nối đủ 5 cặp, chờ auto-check
 
-        setSelectedVi(id);
-        if (selectedEn !== null) {
-            checkPair(id, selectedEn);
+        setSelectedLeft(left);
+        if (selectedRight !== null) {
+            checkPair(id, left, selectedRight);
         }
     };
 
     // Khi user click một ô TIẾNG ANH
-    const handleClickEn = (id: number) => {
-        if (matchedPairs.some(pair => pair.enId === id)) return;  // Đã nối thành công
+    const handleClickRight = (id: string, right: string) => {
+        if (matchedPairs.some(pair => pair.right === right)) return;  // Đã nối thành công
         if (wrongPair) return;
         if (matchedIds.length === totalPairs) return;
 
-        setSelectedEn(id);
-        if (selectedVi !== null) {
-            checkPair(selectedVi, id);
+        setSelectedRight(id);
+        if (selectedLeft !== null) {
+            checkPair(id, selectedLeft, right);
         }
     };
 
     // Hàm kiểm tra cặp (viId, enId)
-    const checkPair = (viId: number, enId: number) => {
-        const pairVi = options.find((p: any) => p.id === viId)!;
-        const pairEn = options.find((p: any) => p.id === enId)!;
+    const checkPair = (id: string, left: string, right: string) => {
 
-        const isMatch = pairVi.left === pairEn.left;
+        const correctPair = correct_answer.find((pair: any) => pair.id === id);
+        const userPair = { id, left, right };
 
-        if (isMatch) {
+        const isFind = JSON.stringify(correctPair).toLowerCase() === JSON.stringify(userPair).toLowerCase();
+
+        if (isFind) {
             // 1. Gán recentMatchedPair để "nháy xanh + hiển thị sao" 800 ms
-            setRecentMatchedPair({ viId, enId });
+            setRecentMatchedPair({ id, left, right });
 
             // 2. Sau 800 ms, reset recentMatchedPair và mới add vào matchedIds/matchedPairs (disabled)
             setTimeout(() => {
                 setRecentMatchedPair(null);
-                setMatchedIds(prev => [...prev, viId]);
-                setMatchedPairs(prev => [...prev, { viId, enId }]);
+                setMatchedIds(prev => [...prev, id]);
+                setMatchedPairs(prev => [...prev, userPair]);
             }, 800);
 
             // 3. Reset selection để user chọn cặp tiếp theo
-            setSelectedVi(null);
-            setSelectedEn(null);
+            setSelectedLeft(null);
+            setSelectedRight(null);
         } else {
             // Nếu sai ⇒ highlight đỏ 800 ms rồi reset
-            setWrongPair({ viId, enId });
+            setWrongPair({ id, left, right });
             setTimeout(() => {
                 setWrongPair(null);
-                setSelectedVi(null);
-                setSelectedEn(null);
+                setSelectedLeft(null);
+                setSelectedRight(null);
             }, 800);
         }
     };
@@ -217,34 +218,34 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
     // Helper để render button:
     const renderButton = (
         text: string,
-        id: number,
-        isViColumn: boolean,
+        id: string,
+        isLeftColumn: boolean,
         // idx: number,
     ) => {
         // 1) isMatched: cặp đã "kết thúc" (đã ghi vào matchedIds)
-        const isMatched = isViColumn
+        const isMatched = isLeftColumn
             ? matchedIds.includes(id)
-            : matchedPairs.some(pair => pair.enId === id);
+            : matchedPairs.some(pair => pair.id === id);
 
         // 2) isRecentMatch: cặp vừa nối đúng (trong 800 ms đầu)
         const isRecentMatch = recentMatchedPair
-            ? isViColumn
-                ? recentMatchedPair.viId === id
-                : recentMatchedPair.enId === id
+            ? isLeftColumn
+                ? recentMatchedPair.left === text
+                : recentMatchedPair.right === text
             : false;
 
         // 3) isWrong: cặp vừa nối sai (trong 800 ms)
         const isWrong = wrongPair
-            ? isViColumn
-                ? wrongPair.viId === id
-                : wrongPair.enId === id
+            ? isLeftColumn
+                ? wrongPair.left === text
+                : wrongPair.right === text
             : false;
 
         // 4) isSelected: đang được chọn (nhưng chưa finalize match/sai)
         const isSelected =
-            isViColumn
-                ? selectedVi === id && !isWrong
-                : selectedEn === id && !isWrong;
+            isLeftColumn
+                ? selectedLeft === text && !isWrong
+                : selectedRight === text && !isWrong;
 
         // Thiết lập màu nền (bgColor) và viền (borderColor)
         let bgColor = '#fff';
@@ -275,11 +276,11 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
 
         return (
             <div
-                key={id.toString() + (isViColumn ? 'left' : 'right')}
+                key={id.toString() + (isLeftColumn ? 'left' : 'right')}
                 style={{ position: 'relative', marginBottom: 12 }}
             >
                 <button
-                    onClick={() => (isViColumn ? handleClickVi(id) : handleClickEn(id))}
+                    onClick={() => (isLeftColumn ? handleClickLeft(id, text) : handleClickRight(id, text))}
                     // Chỉ disable nếu "kết thúc match" hoặc đang highlight sai hoặc đã nối đủ 5 cặp
                     disabled={isMatched || Boolean(wrongPair) || matchedIds.length === totalPairs}
                     style={{
@@ -365,7 +366,7 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
 
                 <MatchArea
                 >
-                    {/* Cột tiếng Việt */}
+                    {/* Cột trái */}
                     <LeftOption>
                         {options?.map((option: any) =>
                             // renderButton(pair.vi, pair.id, true, idx)
@@ -373,7 +374,7 @@ const MatchPairs: React.FC<MatchPairsProps> = ({
                         )}
                     </LeftOption>
 
-                    {/* Cột tiếng Anh */}
+                    {/* Cột phải */}
                     <RightOption>
                         {shuffledRightPairs.map((pair) =>
                             // renderButton(pair.en, pair.id, false, idx)

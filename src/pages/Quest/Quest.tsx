@@ -145,8 +145,14 @@ const Quest = () => {
                               <AchievementLead>
                                 <AchievementTitleItem>
                                   <AchievementName>{title}</AchievementName>
-                                  <AchievementAward>
-                                  Phần thưởng: {reward.amount}
+                                  <AchievementAward style={{
+                                    backgroundColor: theme.color.lightPrimary,
+                                    border: `1px solid ${theme.color.primary}`,
+                                    padding: '2px 8px',
+                                    borderRadius: '4px',
+                                    fontWeight: 700,
+                                  }}>
+                                  🎁: {reward.amount}
                                   <span style={{ marginLeft: 4 }}>
                                       {reward.type === 'xp' && (
                                         <span style={{ color: theme.color.primary, fontWeight: 700 }}>XP</span>
@@ -154,6 +160,7 @@ const Quest = () => {
                                       {reward.type === 'gem' && <>💎</>}
                                       {reward.type === 'heart' && <>❤️</>}
                                       {reward.type === 'freeze' && <>🧊</>}
+                                      {reward.type === 'double' && <>⭐</>}
                                     </span>
                                   </AchievementAward>
                                 </AchievementTitleItem>
