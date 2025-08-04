@@ -28,7 +28,7 @@ import { Divider, Flex, List, message, Modal, Spin } from 'antd'
 import chill from "@/assets/chill.gif";
 import { useEffect, useRef, useState } from 'react';
 import { buyItem, getShopItem, getShopStatus } from '@/services/shopAPI';
-import { useDocumentTitle } from '@/hooks';
+import { useAuth, useDocumentTitle } from '@/hooks';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
 import { HistoryOutlined } from '@ant-design/icons';
@@ -36,12 +36,14 @@ import Button from '@/components/Button';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { formatDateTime } from '@/utils/format-datetime';
 import { dateFormat } from '@/utils/enum';
-import { fetchProfile } from '@/store/user.slice';
+import { fetchProfile, setFreezeBought } from '@/store/user.slice';
 
 const Shop = () => {
     useDocumentTitle('Shop | Nekolingo');
 
+    const { profile } = useAuth();
     const balance = useSelector((state: RootState) => state.user.balance);
+    const freezeBought = useSelector((state: RootState) => state.user.freeze_bought);
     const dispatch = useDispatch<AppDispatch>();
     const [items, setItems] = useState<any>([]);
     const [histories, setHistories] = useState<any[]>([]);
@@ -82,6 +84,9 @@ const Shop = () => {
             const res = await buyItem(payload);
             setItems(res.data.items);
             if (res.status === 201) {
+                if (item === 'STREAK_FREEZE') {
+                    dispatch(setFreezeBought(true));
+                }
                 messageApi.success('Mua vật phẩm thành công');
                 fetchItemList();
                 dispatch(fetchProfile());
@@ -102,7 +107,7 @@ const Shop = () => {
                         </PinkHeartIcon>
                         <ContentArea>
                             <HeartTitle>{item.item.replaceAll('_', ' ')}</HeartTitle>
-                            <ProgressText>ĐÃ TRANG BỊ {status?.hearts} / 5</ProgressText>
+                            <ProgressText>ĐÃ TRANG BỊ {profile?.hearts} / 5</ProgressText>
                             <HeartDescription>
                                 Lấp đầy trái tim để không phải lo lắng mắc lỗi sai trong bài học
                             </HeartDescription>
@@ -110,7 +115,7 @@ const Shop = () => {
                         <PurchaseButton
                             className="buy"
                             size='large'
-                            disabled={balance < item?.price}
+                            disabled={balance < item?.price || Number(profile?.hearts) >= 5}
                             onClick={() => postBuyItem(item?.item)}
                         >
                             MUA VỚI GIÁ: <GemsIcon>💎</GemsIcon> {item?.price}
@@ -134,7 +139,7 @@ const Shop = () => {
                         <PurchaseButton
                             className="buy"
                             size='large'
-                            disabled={balance < item?.price || !status?.freeze?.can_buy}
+                            disabled={balance < item?.price || !status?.freeze?.can_buy || freezeBought}
                             onClick={() => postBuyItem(item?.item)}
                         >
                             MUA VỚI GIÁ: <GemsIcon>💎</GemsIcon> {item.price}
