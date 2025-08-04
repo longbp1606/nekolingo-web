@@ -31,6 +31,9 @@ import { theme } from '@/themes';
 import { useAuth } from '@/hooks';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
+import { useNavigate } from 'react-router-dom';
+import config from '@/config';
+import { getRecoveryLesson } from '@/services/userProgressAPI';
 
 interface Course {
     id: string;
@@ -46,6 +49,7 @@ interface HeartShopItemData {
     subtitle?: string;
     price?: number;
     isFree?: boolean;
+    onClick?: () => void;
 }
 
 interface StatItemData {
@@ -69,6 +73,7 @@ interface StatItemData {
 
 const StatsBar: React.FC = () => {
     const { profile } = useAuth();
+    const navigate = useNavigate();
     const balance = useSelector((state: RootState) => state.user.balance);
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     const [selectedCourse, setSelectedCourse] = useState<Course>({
@@ -78,24 +83,36 @@ const StatsBar: React.FC = () => {
         code: 'EN'
     });
 
+    const fetchRecoveryLesson = async () => {
+        try {
+            const userId = profile?.id || '';
+
+            if (userId && userId !== '') {
+                const response = await getRecoveryLesson(userId);
+                if (response.status === 200) {
+                    const recoveryLesson = response.data;
+                    if (recoveryLesson) {
+                        navigate(`${config.routes.user.exercise.replace(':lessonId', recoveryLesson._id)}`);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching recovery lesson:', error);
+        }
+    }
+
     const heartShopItems: HeartShopItemData[] = [
-        {
-            id: 'unlimited',
-            icon: '♾️',
-            title: 'TRÁI TIM VÔ HẠN',
-            subtitle: 'THỬ MIỄN PHÍ',
-            isFree: true
-        },
         {
             id: 'refill',
             icon: '❤️',
             title: 'HỒI PHỤC TRÁI TIM',
-            price: 350
+            onClick: () => navigate(config.routes.user.shop)
         },
         {
             id: 'practice',
             icon: '❤️',
-            title: 'LUYỆN TẬP ĐỂ HỒI PHỤC TRÁI TIM'
+            title: 'LUYỆN TẬP ĐỂ HỒI PHỤC TRÁI TIM',
+            onClick: () => fetchRecoveryLesson()
         }
     ];
 
@@ -249,7 +266,7 @@ const StatsBar: React.FC = () => {
 
                         <HeartShopContainer>
                             {heartShopItems.map((shopItem) => (
-                                <HeartShopItem key={shopItem.id}>
+                                <HeartShopItem key={shopItem.id} onClick={shopItem.onClick}>
                                     <HeartShopIcon>{shopItem.icon}</HeartShopIcon>
                                     <HeartShopText>
                                         <div style={{ fontWeight: '600', fontSize: '14px' }}>

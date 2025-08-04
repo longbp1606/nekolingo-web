@@ -23,13 +23,45 @@ import {
 import { theme } from '@/themes';
 import { FiAward, FiTarget, FiZap, FiCheck } from 'react-icons/fi';
 import StatsBar from '../StatsBar/StatsBar';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { notification } from 'antd';
 import { getQuestDaily } from '@/services/questAPI';
 import { Link } from 'react-router-dom';
+import { getLeaderboardOverall } from '@/services/leaderboardAPI';
+import config from '@/config';
+import { getProfile } from '@/services/authAPI';
 
 const RightSidebar = () => {
   const [rawData, setRawData] = useState<any[]>([]);
+  const [currentRank, setCurrentRank] = useState<number>();
+  const hasFetchedData = useRef(false);
+  const hasFetchedLeaderboard = useRef(false);
+
+  const fetchLeaderboardData = async () => {
+    try {
+      const profile = await getProfile();
+      const userID = profile.data?.data?.id;
+      const response = await getLeaderboardOverall();
+      console.log(userID);
+      if (response.status === 200 && userID) {
+        const index = response.data.findIndex((user: any) => String(user._id) === String(userID));
+        if (index !== -1) {
+          setCurrentRank(index + 1);
+        } else {
+          setCurrentRank(-1); // Not found
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching leaderboard data:', error);
+    }
+  }
+
+  useEffect(() => {
+    if (!hasFetchedLeaderboard.current) {
+      fetchLeaderboardData();
+      hasFetchedLeaderboard.current = true;
+    };
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -46,7 +78,10 @@ const RightSidebar = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    if (!hasFetchedData.current) {
+      fetchData();
+      hasFetchedData.current = true;
+    }
   }, []);
 
   return (
@@ -55,8 +90,8 @@ const RightSidebar = () => {
 
       <LeagueCard>
         <CardHeader>
-          <CardTitle>Sapphire League</CardTitle>
-          <ViewLink>VIEW LEAGUE</ViewLink>
+          <CardTitle>Giải đấu ngôn ngữ</CardTitle>
+          <ViewLink to={config.routes.user.leaderboard}>Xem chi tiết</ViewLink>
         </CardHeader>
         <LeagueInfo>
           <LeagueIcon>
@@ -64,17 +99,17 @@ const RightSidebar = () => {
           </LeagueIcon>
           <div>
             <LeagueRank>
-              You're ranked <span>#5</span>
+              Bạn đang ở hạng <span>#{currentRank}</span>
             </LeagueRank>
-            <LeagueStatus>You moved up 1 rank!</LeagueStatus>
+            <LeagueStatus>Tiếp tục cố gắng nhé!</LeagueStatus>
           </div>
         </LeagueInfo>
       </LeagueCard>
 
       <Card>
         <CardHeader>
-          <CardTitle>Daily Quests</CardTitle>
-          <ViewLink as={Link} to="/quest">VIEW ALL</ViewLink>
+          <CardTitle>Nhiệm vụ hằng ngày</CardTitle>
+          <ViewLink as={Link} to="/quest">Xem tất cả</ViewLink>
         </CardHeader>
 
         {rawData.map((item, idx) => {
