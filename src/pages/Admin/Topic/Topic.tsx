@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button, Form, Input, InputNumber, Popconfirm, message, notification, Modal, TablePaginationConfig } from "antd";
 import { createTopic, deleteTopic, getListTopics, getTopicDetail, updateTopic } from "@/services/topicAPI";
 import { ContentCard, FilterArea } from "./Topic.styled";
@@ -9,6 +9,7 @@ import CAddButton from "@/components/AddButton/AddButton";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useOutletContext } from "react-router-dom";
+import InputSearch from "@/components/InputSearch/InputSearch";
 
 export type TopicItem = {
   _id: string;
@@ -17,6 +18,8 @@ export type TopicItem = {
   description?: string;
   course: string;
 };
+type TableRecord = TopicItem & { key: string };
+
 interface OutletCtx { selectedCourse: string | null }
 
 const Topic: React.FC = () => {
@@ -32,6 +35,7 @@ const Topic: React.FC = () => {
   const hasErrorNotified = useRef(false);
   const [panelVisible, setPanelVisible] = useState(false);
   const { selectedCourse } = useOutletContext<OutletCtx>();
+  const [searchText, setSearchText] = useState("");
 
   const fetchData = async (page = 1, take = 5, courseId?: string) => {
     setLoading(true);
@@ -54,8 +58,8 @@ const Topic: React.FC = () => {
       if (!hasErrorNotified.current) {
         notification.error({
           key: "fetch-grammar-error",
-          message: "Error",
-          description: error?.response?.data?.message || "Error fetching topics",
+          message: "Lỗi",
+          description: error?.response?.data?.message || "Lỗi khi tải danh sách chủ đề",
         });
         hasErrorNotified.current = true;
       }
@@ -85,7 +89,7 @@ const Topic: React.FC = () => {
       });
       setPanelVisible(true);
     } catch {
-      message.error("Failed to load detail");
+      message.error("Không tải được chi tiết chủ đề");
     } finally {
       setLoading(false);
     }
@@ -93,11 +97,11 @@ const Topic: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteTopic(id); /* <-- gọi API xóa tương ứng */
-      message.success("Deleted successfully");
+      await deleteTopic(id); 
+      message.success("Xóa thành công");
       fetchData(pagination.current, pagination.pageSize, selectedCourse ?? undefined);
     } catch {
-      message.error("Delete failed");
+      message.error("Xóa thất bại");
     }
   };
 
@@ -106,43 +110,63 @@ const Topic: React.FC = () => {
       const values = await form.validateFields();
       if (selectedRecord) {
         await updateTopic(selectedRecord._id, values);
-        message.success("Updated successfully");
+        message.success("Cập nhật thành công");
       } else {
         await createTopic({ ...values, course: selectedCourse });
-        message.success("Created successfully");
+        message.success("Tạo chủ đề mới thành công");
       }
       setPanelVisible(false);
       setSelectedRecord(null);
       form.resetFields();
       await fetchData(pagination.current, pagination.pageSize, selectedCourse ?? undefined);
     } catch {
-      message.error("Submit failed");
+      message.error("Lưu thất bại");
     }
   };
 
   const columns = [
-    { title: "Title", dataIndex: "title", key: "title" },
-    { title: "Order", dataIndex: "order", key: "order" },
-    { title: "Description", dataIndex: "description", key: "description" },
+    { title: "Tiêu đề", dataIndex: "title", key: "title" },
+    { title: "Thứ tự", dataIndex: "order", key: "order" },
+    { title: "Mô tả", dataIndex: "description", key: "description" },
     {
-      title: "Actions",
+      title: "Hành động",
       key: "actions",
       render: (_: any, record: any) => (
         <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
-          <Popconfirm title="Delete this topic?" onConfirm={() => handleDelete(record._id)}>
+          <Popconfirm title="Bạn có chắc muốn xóa phần này?" onConfirm={() => handleDelete(record._id)}>
             <Button danger size="small"
               onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
-            >Delete</Button>
+            >Xóa</Button>
           </Popconfirm>
         </div>
       ),
     },
   ];
 
+    const filteredData = useMemo(() => {
+      if (!searchText) return data;
+      const lower = searchText.toLowerCase();
+      return data.filter((row) =>
+        Object.values(row).some((val) =>
+          String(val).toLowerCase().includes(lower)
+        )
+      );
+    }, [data, searchText]);
+  
+    const tableData: TableRecord[] = filteredData.map((item) => ({
+      ...item,
+      key: item._id,
+    }));
+
   return (
     <div style={{ display: "flex", gap: 16 }}>
       <ContentCard style={{ flex: 2 }}>
         <FilterArea>
+          <InputSearch
+                      placeholder="Tìm kiếm chủ đề..."
+                      value={searchText}
+                      onChange={(e) => setSearchText(e.target.value)}
+                    />
           <CAddButton
             type="primary"
             disabled={!selectedCourse}
@@ -152,14 +176,14 @@ const Topic: React.FC = () => {
               setPanelVisible(true);
             }}
           >
-            Add Topic
+            Thêm chủ đề
           </CAddButton>
         </FilterArea>
 
         <CTable
           columns={columns}
-          dataSource={data}
-          rowKey="id"
+          dataSource={tableData}
+          rowKey="_id"
           loading={loading}
           pagination={pagination}
           onChange={handleTableChange}
@@ -168,7 +192,7 @@ const Topic: React.FC = () => {
       </ContentCard>
 
       <Modal
-        title={selectedRecord ? "Edit Topic" : "Add Topic"}
+        title={selectedRecord ? "Chỉnh sửa phần" : "Thêm phần mới"}
         visible={panelVisible}
         onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
@@ -176,13 +200,13 @@ const Topic: React.FC = () => {
         destroyOnClose
       >
         <Form layout="vertical" form={form}>
-          <Form.Item name="title" label="Title" rules={[{ required: true, message: "Please enter title" }]}>
+          <Form.Item name="title" label="Tiêu đề" rules={[{ required: true, message: "Please enter title" }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="order" label="Order" rules={[{ required: true, message: "Please enter order" }]}>
+          <Form.Item name="order" label="Thứ tự" rules={[{ required: true, message: "Please enter order" }]}>
             <InputNumber style={{ width: "100%" }} />
           </Form.Item>
-          <Form.Item name="description" label="Description">
+          <Form.Item name="description" label="Mô tả">
             <ReactQuill theme="snow" style={{ height: '100%' }} />
           </Form.Item>
         </Form>

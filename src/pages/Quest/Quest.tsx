@@ -10,9 +10,6 @@ import {
   LeftSection,
   CardSide,
   StyledSidebar,
-  FooterWrapper,
-  FooterRow,
-  FooterLink,
   Card,
   AchievementSection,
   AchievementHeader,
@@ -28,32 +25,32 @@ import {
   AchievementProgress,
   CardWrapper,
   HeaderTag,
-  Title,
-  SubText,
   ProgressWrapper,
   ProgressBar,
   ProgressFill,
   ProgressText,
-  AchievementDesc
+  AchievementDesc,
+  AchievementTitleItem,
+  AchievementAward
 } from './Quest.styled';
 import { useDocumentTitle } from '@/hooks';
 import Sidebar from '@/components/Sidebar';
 import { theme } from '@/themes';
 import StatsBar from '@/components/StatsBar/StatsBar';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { generateQuestDaily, getQuestDaily } from '@/services/questAPI';
 import { notification } from 'antd';
 import firefire from "@/assets/firefire.png";
-import { useAuth } from '@/hooks';
+// import { useAuth } from '@/hooks';
 
 const Quest = () => {
   useDocumentTitle('Nekolingo');
 
   const [rawData, setRawData] = useState<any[]>([]);
   const hasErrorNotified = useRef(false);
-  const { profile } = useAuth();
-  const currentUserId = profile?.id || '';
+  // const { profile } = useAuth();
+  // const currentUserId = profile?.id || '';
 
   const fetchData = async () => {
     try {
@@ -76,22 +73,9 @@ const Quest = () => {
     fetchData();
   }, []);
 
-  // Lọc theo user và nhóm theo type, chọn condition lớn nhất mỗi nhóm
-  const questsByType = useMemo(() => {
-    const filtered = rawData.filter(item => item.user_id === currentUserId);
-    const group: Record<string, any> = {};
-    filtered.forEach(item => {
-      const type = item.quest_id.type;
-      if (!group[type] || item.quest_id.condition > group[type].quest_id.condition) {
-        group[type] = item;
-      }
-    });
-    return Object.values(group);
-  }, [rawData, currentUserId]);
-
   // Tính tổng và đã hoàn thành
-  const totalCount = questsByType.length;
-  const completedCount = questsByType.filter(ach => {
+  const totalCount = rawData.length;
+  const completedCount = rawData.filter(ach => {
     const cond = ach.quest_id.condition.value ?? 1;
     const prog = ach.quest_id.progress;
     return cond > 0 && prog >= cond;
@@ -111,15 +95,15 @@ const Quest = () => {
                 {/* Phần header tổng quan */}
                 <CardWrapper>
                   <HeaderTag>{currentMonth.toUpperCase()}</HeaderTag>
-                  <Title>Cày phim kiểu Zari</Title>
+                  {/* <Title>Cày phim kiểu Zari</Title>
                   <SubText>
                     <ClockCircleOutlined style={{ marginRight: '3px' }} /> 1 NGÀY
-                  </SubText>
+                  </SubText> */}
                   <ProgressWrapper>
                     <AchievementName>Hoàn thành {completedCount} nhiệm vụ</AchievementName>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: '12px' }}>
                       <ProgressBar>
-                        <ProgressFill style={{ width: `${totalCount > 0 ? Math.round((completedCount/totalCount)*100) : 0}%` }} />
+                        <ProgressFill style={{ width: `${totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0}%` }} />
                       </ProgressBar>
                       <ProgressText>{completedCount} / {totalCount}</ProgressText>
                     </div>
@@ -132,17 +116,18 @@ const Quest = () => {
                       <AchievementTitle>Thử thách ngày</AchievementTitle>
                       <ViewAllLink>
                         <ClockCircleOutlined style={{ marginRight: '5px' }} />
-                        Cập nhật: {new Date().toLocaleTimeString()}
+                        {new Date().getHours()} TIẾNG
                       </ViewAllLink>
                     </AchievementHeader>
                     <AchievementListWrapper>
-                      {questsByType.map((ach) => {
+                      {rawData.map((ach) => {
                         const {
                           title,
                           type,
                           progress,
                           condition,
-                          progress_text
+                          progress_text,
+                          reward,
                         } = ach.quest_id;
 
                         const total = condition;
@@ -158,7 +143,27 @@ const Quest = () => {
 
                             <AchievementInfo>
                               <AchievementLead>
-                                <AchievementName>{title}</AchievementName>
+                                <AchievementTitleItem>
+                                  <AchievementName>{title}</AchievementName>
+                                  <AchievementAward style={{
+                                    backgroundColor: theme.color.lightPrimary,
+                                    border: `1px solid ${theme.color.primary}`,
+                                    padding: '2px 8px',
+                                    borderRadius: '4px',
+                                    fontWeight: 700,
+                                  }}>
+                                  🎁: {reward.amount}
+                                  <span style={{ marginLeft: 4 }}>
+                                      {reward.type === 'xp' && (
+                                        <span style={{ color: theme.color.primary, fontWeight: 700 }}>XP</span>
+                                      )}
+                                      {reward.type === 'gem' && <>💎</>}
+                                      {reward.type === 'heart' && <>❤️</>}
+                                      {reward.type === 'freeze' && <>🧊</>}
+                                      {reward.type === 'double' && <>⭐</>}
+                                    </span>
+                                  </AchievementAward>
+                                </AchievementTitleItem>
                                 <AchievementDesc>{progress_text}</AchievementDesc>
                               </AchievementLead>
 
@@ -185,11 +190,14 @@ const Quest = () => {
               <CardSide>
                 <SideCardContent>
                   <SideCardText>
-                    <h4 style={{ color: theme.color.title, fontSize: '16px' }}>Thử thách tháng sắp mở!</h4>
+                    <h4 style={{ color: theme.color.title, fontSize: '16px' }}>
+                      Mỗi ngày một bước tiến
+                    </h4>
                     <p style={{ color: theme.color.description, fontSize: '14px' }}>
-                      Hoàn thành các thử thách hằng tháng để giành được huy hiệu độc đáo
+                      Hoàn thành thử thách ngày để nhận huy hiệu và nâng cao kỹ năng ngay hôm nay!
                     </p>
                   </SideCardText>
+
                   <img
                     src="https://d35aaqx5ub95lt.cloudfront.net/images/goals/e07e459ea20aef826b42caa71498d85f.svg"
                     alt="Practice Speaking"
@@ -199,7 +207,7 @@ const Quest = () => {
                 </SideCardContent>
               </CardSide>
 
-              <FooterWrapper>
+              {/* <FooterWrapper>
                 <FooterRow>
                   <FooterLink>GIỚI THIỆU</FooterLink>
                   <FooterLink>CỬA HÀNG</FooterLink>
@@ -211,7 +219,7 @@ const Quest = () => {
                 <FooterRow>
                   <FooterLink>QUYỀN RIÊNG TƯ</FooterLink>
                 </FooterRow>
-              </FooterWrapper>
+              </FooterWrapper> */}
             </StyledSidebar>
           </HomeContent>
         </HomeWrapper>

@@ -17,12 +17,11 @@ export const SidebarWrapper = styled.div`
 `;
 
 export const HeaderTitle = styled(Title)`
-    font-size: 16px;
+    font-size: 36px;
     font-weight: 800;
     margin-bottom: 16px;
-    font-family: 'Quicksand';
+    font-family: 'Pacifico', cursive;
     padding-top: 16px;
-    font-size: 16px;
     color: ${theme.color.primary};
 `;
 

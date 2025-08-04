@@ -26,9 +26,9 @@ import { uploadImage } from "@/services/uploadAPI";
 import { useWatch } from "antd/es/form/Form";
 // import { uploadImage } from "@/services/uploadAPI";
 // import { PlusOutlined } from "@ant-design/icons";
-type TableRecord = LanguageItem & { key: string };
+type TableRecord = UserItem & { key: string };
 
-export type LanguageItem = {
+export type UserItem = {
   _id: string;
   email: string;
   password?: string;
@@ -49,15 +49,15 @@ export type LanguageItem = {
 };
 
 const roleOptions = [
-  { label: "Learner", value: 0 },
-  { label: "Admin", value: 1 },
-  { label: "Professor", value: 2 },
+  { label: "Người học", value: 0 },
+  { label: "Quản trị viên", value: 1 },
+  { label: "Giáo sư", value: 2 },
 ];
 
 const Users = () => {
-  const [data, setData] = useState<LanguageItem[]>([]);
+  const [data, setData] = useState<UserItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState<LanguageItem | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<UserItem | null>(null);
   const [panelVisible, setPanelVisible] = useState(false);
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
@@ -83,8 +83,10 @@ const Users = () => {
     setLoading(true);
     try {
       const res = await getListUsers();
-      const list: LanguageItem[] = res.data.data || [];
-      setData(list);
+      const list: UserItem[] = res.data.data || [];
+      const filteredByRole = list.filter((user) => user.role === 0 || user.role === 2);
+
+      setData(filteredByRole);
     } catch (error: any) {
       if (!hasErrorNotified.current) {
         notification.error({
@@ -104,11 +106,11 @@ const Users = () => {
     fetchOptions();
   }, []);
 
-  const handleRowClick = async (record: LanguageItem) => {
+  const handleRowClick = async (record: UserItem) => {
     setLoading(true);
     try {
       const res = await getUserDetail(record._id);
-      const detail: LanguageItem = res.data.data.user;
+      const detail: UserItem = res.data.data.user;
 
       setSelectedRecord(detail);
       form.setFieldsValue({
@@ -196,25 +198,25 @@ const Users = () => {
 
   const columns = [
     {
-      title: "Role",
+      title: "Vai trò",
       dataIndex: "role",
       key: "role",
       render: (r: number) => roleOptions.find(o => o.value === r)?.label
     },
     { title: "Email", dataIndex: "email", key: "email" },
     {
-      title: "Actions",
+      title: "Thao tác",
       key: "actions",
-      render: (_: any, record: LanguageItem) => (
-        <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
+      render: (_: any, record: UserItem) => (
+        <div onClick={(e) => e.stopPropagation()}>
           <Popconfirm
-            title="Delete this language?"
+            title="Bạn có chắc muốn cấm người dùng này?"
             onConfirm={() => handleDelete(record._id)}
+            okText="Xác nhận"
+            cancelText="Hủy"
           >
-            <Button danger size="small"
-              onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
-            >
-              Delete
+            <Button danger size="small" onClick={(e) => e.stopPropagation()}>
+              Cấm
             </Button>
           </Popconfirm>
         </div>
@@ -243,7 +245,7 @@ const Users = () => {
       <ContentCard style={{ flex: 2 }}>
         <FilterArea>
           <InputSearch
-            placeholder="Search..."
+            placeholder="Tìm kiếm..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -254,9 +256,8 @@ const Users = () => {
               form.resetFields();
               setPanelVisible(true);
             }}
-            // style={{display: "none"}}
           >
-            Add User
+            Thêm người dùng
           </CAddButton>
         </FilterArea>
 
@@ -269,19 +270,21 @@ const Users = () => {
             onClick: () => handleRowClick(record),
           })}
           pagination={{
-            pageSize: 8,       // mỗi trang 5 item
-            showSizeChanger: false, // ẩn dropdown chọn số dòng/page (tuỳ chọn)
+            pageSize: 8,
+            showSizeChanger: false,
           }}
         />
       </ContentCard>
 
       <Modal
-        title={selectedRecord ? "Edit User" : "Add User"}
+        title={selectedRecord ? "Chỉnh sửa người dùng" : "Thêm người dùng"}
         visible={panelVisible}
         onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
         confirmLoading={loading}
         destroyOnClose
+        okText="Lưu"
+        cancelText="Hủy"
       >
         <Form form={form} layout="vertical">
           <RowField>
@@ -290,31 +293,31 @@ const Users = () => {
             </Form.Item>
 
             {!selectedRecord && (
-              <Form.Item name="password" label="Password" rules={[{ required: true }]} style={{ width: "100%" }}>
+              <Form.Item name="password" label="Mật khẩu" rules={[{ required: true }]} style={{ width: "100%" }}>
                 <Input.Password />
               </Form.Item>
              )} 
           </RowField>
-          <Form.Item name="username" label="Username" style={{ width: "100%" }}>
+          <Form.Item name="username" label="Tên người dùng" style={{ width: "100%" }}>
               <Input />
             </Form.Item>
-            <RowField>
-            <Form.Item name="role" label="Role" style={{ width: "100%" }}>
+          <RowField>
+            <Form.Item name="role" label="Vai trò" style={{ width: "100%" }}>
               <Select options={roleOptions} style={{ width: "100%" }} />
             </Form.Item>
-          <Form.Item name="current_level" label="Current Level" style={{ width: "100%" }}>
-            <InputNumber style={{ width: "100%" }} />
-          </Form.Item>
+            <Form.Item name="current_level" label="Cấp độ hiện tại" style={{ width: "100%" }}>
+              <InputNumber style={{ width: "100%" }} />
+            </Form.Item>
           </RowField>
           <RowField>
-            <Form.Item name="language_from" label="Language From" style={{ width: "100%" }}>
+            <Form.Item name="language_from" label="Ngôn ngữ gốc" style={{ width: "100%" }}>
               <Select options={languageOptions} />
             </Form.Item>
-            <Form.Item name="language_to" label="Language To" style={{ width: "100%" }}>
+            <Form.Item name="language_to" label="Ngôn ngữ học" style={{ width: "100%" }}>
               <Select options={languageOptions} />
             </Form.Item>
           </RowField>
-          <Form.Item name="avatar_url" label="Avatar URL" getValueFromEvent={() => avatarUrl}>
+          <Form.Item name="avatar_url" label="Ảnh đại diện" getValueFromEvent={() => avatarUrl}>
             <Upload
               listType="picture-card"
               showUploadList={false}
@@ -322,8 +325,7 @@ const Users = () => {
               customRequest={async ({ file, onSuccess, onError }) => {
                 try {
                   const res = await uploadImage({ file: file as File, folder: 'flags' });
-                  const url = res.url;  // lấy đúng từ response
-                  // gán URL vào Form-field ẩn
+                  const url = res.url;
                   form.setFieldsValue({ avatar_url: url });
                   setAvatarUrl(url);
                   onSuccess?.(null, file as File);
@@ -337,53 +339,11 @@ const Users = () => {
               ) : (
                 <div>
                   <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>Upload</div>
+                  <div style={{ marginTop: 8 }}>Tải lên</div>
                 </div>
               )}
             </Upload>
           </Form.Item>
-          {/* <RowField>
-            <Form.Item name="role" label="Role" style={{ width: "100%" }}>
-              <Select options={roleOptions} />
-            </Form.Item>
-            
-          </RowField>
-          
-          
-          
-          <RowField>
-          <Form.Item name="xp" label="XP" style={{ width: "100%" }}>
-            <InputNumber style={{ width: "100%" }} />
-          </Form.Item>
-          <Form.Item name="weekly_xp" label="Weekly XP" style={{ width: "100%" }}>
-            <InputNumber style={{ width: "100%" }} />
-          </Form.Item>
-          </RowField>
-          <RowField>
-          <Form.Item name="hearts" label="Hearts" style={{ width: "100%" }}>
-            <InputNumber style={{ width: "100%" }} />
-          </Form.Item>
-          <Form.Item name="streak_days" label="Streak Days" style={{ width: "100%" }}>
-            <InputNumber style={{ width: "100%" }} />
-          </Form.Item>
-          </RowField>
-          <RowField>
-          <Form.Item name="is_freeze" label="Is Freeze" valuePropName="checked" style={{ width: "100%" }}>
-            <Switch />
-          </Form.Item>
-          <Form.Item name="freeze_count" label="Freeze Count" style={{ width: "100%" }}>
-            <InputNumber style={{ width: "100%" }} />
-          </Form.Item>
-          </RowField>
-          <RowField>
-          <Form.Item name="last_active_date" label="Last Active Date" style={{ width: "100%" }}>
-            <DatePicker showTime style={{ width: "100%" }} disabled />
-          </Form.Item>
-          <Form.Item name="is_premiere" label="Is Premiere" valuePropName="checked" style={{ width: "100%" }}>
-            <Switch />
-          </Form.Item>
-          </RowField>
-           */}
         </Form>
       </Modal>
     </div>

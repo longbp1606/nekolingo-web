@@ -3,8 +3,8 @@ import { get, post, put, remove } from "./apiCaller"
 export type CreateVocab = {
     word: string;
 	meaning: string;
-	language_from: string;
-	language_to: string;
+	language_from?: string;
+	language_to?: string;
 	type?: string;
 }
 

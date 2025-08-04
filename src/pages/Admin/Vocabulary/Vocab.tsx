@@ -10,6 +10,7 @@ import {
   Modal,
   notification,
   Select,
+  Spin,
 } from "antd";
 import type { TablePaginationConfig } from "antd";
 import { ContentCard, FilterArea, LangFromTo } from "./Vocab.styled";
@@ -24,12 +25,12 @@ export type LessonItem = {
   _id: string;
   word: string;
   meaning: string;
-  language_from: {
+  language_from?: {
     _id: string;
     name: string;
     code: string;
   };
-  language_to: {
+  language_to?: {
     _id: string;
     name: string;
     code: string;
@@ -55,13 +56,12 @@ const Vocab = () => {
   const fetchOptions = useCallback(async () => {
     try {
       const res = await getListLanguages(1, 10);
-      setLanguageOptions(res.data.languages.map((item: any) => ({
+      setLanguageOptions(res.data?.languages.map((item: any) => ({
         label: item.name,
         value: item._id,
-      }))
-      );
+      })));
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Lỗi khi tải ngôn ngữ:", error);
     }
   }, []);
 
@@ -69,9 +69,9 @@ const Vocab = () => {
     setLoading(true);
     try {
       const res = await getListVocabs(page, take);
-      const list: any[] = res.data.data.map((item: any) => ({
+      const list: any[] = res.data?.data?.map((item: any) => ({
         ...item,
-        id: item._id, // chuẩn hóa để dùng thống nhất
+        id: item._id,
       }));
       const { totalRecord } = res.data.pagination;
 
@@ -80,13 +80,13 @@ const Vocab = () => {
         current: page,
         pageSize: take,
         total: totalRecord,
-      });        
+      });
     } catch (error: any) {
       if (!hasErrorNotified.current) {
         notification.error({
           key: "fetch-grammar-error",
-          message: "Error",
-          description: error?.response?.data?.message || "Error fetching vocabularies",
+          message: "Lỗi",
+          description: error?.response?.data?.message || "Không thể tải danh sách từ vựng",
         });
         hasErrorNotified.current = true;
       }
@@ -97,45 +97,42 @@ const Vocab = () => {
 
   useEffect(() => {
     fetchOptions();
-    fetchAll(pagination.current as number, pagination.pageSize as number);
+    fetchAll(pagination?.current as number, pagination?.pageSize as number);
   }, [fetchOptions]);
 
   const handleTableChange = (pag: TablePaginationConfig) => {
-      fetchAll(pag.current as number, pag.pageSize as number);
-    };
-  
+    fetchAll(pag.current as number, pag.pageSize as number);
+  };
 
   const handleRowClick = async (record: LessonItem) => {
     setLoading(true);
     try {
-      // Optionally fetch detail if you need more fields:
       const res = await getVocabDetail(record._id);
-      const detail: LessonItem = res.data.data;
+      const detail: LessonItem = res.data?.data;
       setSelectedRecord(detail);
       form.setFieldsValue({
         word: detail.word,
         meaning: detail.meaning,
-        language_from: detail.language_from._id,
-        language_to: detail.language_to._id,
+        language_from: detail.language_from?._id || undefined,
+        language_to: detail.language_to?._id || undefined,
         type: detail.type,
       });
       setPanelVisible(true);
     } catch {
-      message.error("Failed to load detail");
+      message.error("Không thể tải chi tiết từ vựng");
     } finally {
       setLoading(false);
     }
   };
 
-
   const handleDelete = async (id: string) => {
     setLoading(true);
     try {
       await deleteVocab(id);
-      message.success("Deleted successfully");
+      message.success("Xoá thành công");
       await fetchAll();
     } catch {
-      message.error("Delete failed");
+      message.error("Xoá thất bại");
     } finally {
       setLoading(false);
     }
@@ -147,55 +144,54 @@ const Vocab = () => {
     try {
       if (selectedRecord) {
         await updateVocab(selectedRecord._id, values);
-        message.success("Updated successfully");
+        message.success("Cập nhật thành công");
       } else {
         await createVocab(values);
-        message.success("Created successfully");
+        message.success("Thêm mới thành công");
       }
       setPanelVisible(false);
       form.resetFields();
       setSelectedRecord(null);
       await fetchAll();
     } catch {
-      message.error("Submit failed");
+      message.error("Gửi thất bại");
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
-    { title: "Word", dataIndex: "word", key: "word" },
-    { title: "Meaning", dataIndex: "meaning", key: "meaning" },
-    { title: "Type", dataIndex: "type", key: "type" },
+    { title: "Từ vựng", dataIndex: "word", key: "word" },
+    { title: "Nghĩa", dataIndex: "meaning", key: "meaning" },
+    { title: "Loại", dataIndex: "type", key: "type" },
     {
-      title: "From language", dataIndex: "language_from", key: "language_from",
+      title: "Ngôn ngữ gốc", dataIndex: "language_from", key: "language_from",
       render: (language: any) => language.name || ""
     },
     {
-      title: "To language", dataIndex: "language_to", key: "language_to",
+      title: "Ngôn ngữ đích", dataIndex: "language_to", key: "language_to",
       render: (language: any) => language.name || ""
     },
     {
-      title: "Actions",
+      title: "Thao tác",
       key: "actions",
       render: (_: any, record: any) => (
-        <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
-        <Popconfirm
-          title="Delete this grammar?"
-          onConfirm={() => handleDelete(record._id)}
-        >
-          <Button danger size="small"
-            onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
+        <div onClick={(e) => e.stopPropagation()}>
+          <Popconfirm
+            title="Bạn có chắc muốn xoá từ vựng này?"
+            onConfirm={() => handleDelete(record._id)}
           >
-            Delete
-          </Button>
-        </Popconfirm>
+            <Button danger size="small"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Xoá
+            </Button>
+          </Popconfirm>
         </div>
       ),
     },
   ];
 
-  // Lọc dữ liệu: tìm trên tất cả các cột (stringify mọi giá trị)
   const filteredData = useMemo(() => {
     if (!searchText) return data;
     const lower = searchText.toLowerCase();
@@ -206,18 +202,17 @@ const Vocab = () => {
     );
   }, [data, searchText]);
 
-
   const tableData: TableRecord[] = filteredData.map(item => ({
-    ...item,          // _id, name, condition, description
-    key: item._id,    // AntD cần field `key`
+    ...item,
+    key: item._id,
   }));
 
   return (
-    <div style={{ display: "flex", gap: 16 }}>
+    <Spin spinning={loading}>
       <ContentCard style={{ flex: 2 }}>
         <FilterArea>
           <InputSearch
-            placeholder="Search..."
+            placeholder="Tìm kiếm..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -229,14 +224,14 @@ const Vocab = () => {
               setPanelVisible(true);
             }}
           >
-            Add Vocabulary
+            Thêm từ vựng
           </CAddButton>
         </FilterArea>
 
         <CTable
           columns={columns}
           dataSource={tableData}
-          rowKey="_id"
+          rowKey="id"
           loading={loading}
           pagination={pagination}
           onChange={handleTableChange}
@@ -247,7 +242,7 @@ const Vocab = () => {
       </ContentCard>
 
       <Modal
-        title={selectedRecord ? "Edit Vocabulary" : "Add Vocabulary"}
+        title={selectedRecord ? "Chỉnh sửa từ vựng" : "Thêm từ vựng"}
         visible={panelVisible}
         onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
@@ -257,29 +252,28 @@ const Vocab = () => {
         <Form form={form} layout="vertical">
           <Form.Item
             name="word"
-            label="Word"
-            rules={[{ required: true, message: "Please enter word" }]}
+            label="Từ vựng"
+            rules={[{ required: true, message: "Vui lòng nhập từ vựng" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="meaning"
-            label="Meaning"
-            rules={[{ required: true, message: "Please enter meaning" }]}
+            label="Nghĩa"
+            rules={[{ required: true, message: "Vui lòng nhập nghĩa" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="type"
-            label="Type"
+            label="Loại"
           >
             <Input />
           </Form.Item>
           <LangFromTo>
             <Form.Item
               name="language_from"
-              label="From language"
-              rules={[{ required: true, message: "Please choose from language" }]}
+              label="Ngôn ngữ gốc"
               style={{ width: "100%" }}
             >
               <Select
@@ -289,12 +283,12 @@ const Vocab = () => {
                   borderRadius: 12,
                 }}
                 options={languageOptions}
+                allowClear
               />
             </Form.Item>
             <Form.Item
               name="language_to"
-              label="To language"
-              rules={[{ required: true, message: "Please choose to language" }]}
+              label="Ngôn ngữ đích"
               style={{ width: "100%" }}
             >
               <Select
@@ -304,12 +298,13 @@ const Vocab = () => {
                   borderRadius: 12,
                 }}
                 options={languageOptions}
+                allowClear
               />
             </Form.Item>
           </LangFromTo>
         </Form>
       </Modal>
-    </div>
+    </Spin>
   );
 };
 

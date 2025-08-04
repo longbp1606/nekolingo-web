@@ -14,12 +14,12 @@ interface NavbarElement {
 
 // Menu cho Customer
 const customerNavbar: NavbarElement[] = [
-  { path: '/', label: 'Learn', icon: symbols.birdhouse },
+  { path: '/', label: 'Học tập', icon: symbols.birdhouse },
   // { path: '/practice', label: 'Practice', icon: symbols.dumbbell },
-  { path: '/leaderboard', label: 'Leaderboard', icon: symbols.trophy },
-  { path: '/quest', label: 'Quest', icon: symbols.parchment },
-  { path: '/shop', label: 'Shop', icon: symbols.shop },
-  { path: '/profile', label: 'Profile', icon: symbols.account }
+  { path: '/leaderboard', label: 'Bảng xếp hạng', icon: symbols.trophy },
+  { path: '/quest', label: 'Nhiệm vụ', icon: symbols.parchment },
+  { path: '/shop', label: 'Cửa hàng', icon: symbols.shop },
+  { path: '/profile', label: 'Hồ sơ', icon: symbols.account }
 ];
 
 // Menu cho Admin

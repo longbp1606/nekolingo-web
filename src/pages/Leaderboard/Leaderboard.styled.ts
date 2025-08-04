@@ -175,7 +175,7 @@ export const LeaderboardContainer = styled.div`
   padding: 24px 0;
   width: 100%;
   max-width: 600px;
-  margin: 200px auto 0px;
+  margin: 128px auto 0px;
 `;
 
 export const TournamentSelector = styled.div`

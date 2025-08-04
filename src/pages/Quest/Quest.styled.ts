@@ -9,7 +9,6 @@ export const HomeWrapper = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  font-family: "Quicksand", sans-serif;
 `;
 
 export const BodyContent = styled.div`
@@ -243,11 +242,28 @@ export const AchievementInfo = styled.div`
   margin-right: 25px;
 `;
 
+export const AchievementTitleItem = styled.h4`
+  display: flex;
+  // align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+
 export const AchievementName = styled.h4`
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   margin: 0 0 4px 0;
   color: ${theme.color.title};
+`;
+
+export const AchievementAward = styled.h4`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+    font-weight: 600;
+  margin: 0 0 4px 0;
+
 `;
 
 export const AchievementDesc = styled.p`
@@ -315,6 +331,9 @@ export const CardWrapper = styled.div`
   padding: 20px;
   color: white;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 `;
 
 export const HeaderTag = styled.span`
@@ -326,6 +345,7 @@ export const HeaderTag = styled.span`
   border-radius: 6px;
   display: inline-block;
   margin-bottom: 4px;
+  width: fit-content;
 `;
 
 export const Title = styled.h3`
