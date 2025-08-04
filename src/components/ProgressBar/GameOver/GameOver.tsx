@@ -32,7 +32,7 @@ const GameOver: React.FC<GameOverProps> = ({ onCancel, onRecover }) => {
                     <RestoreRight>Đợi 45 phút</RestoreRight>
                 </RestoreSection>
                 <RegisterButton onClick={onRecover}>
-                    ĐĂNG KÝ SUPER NEKOLINGO
+                    HỒI PHỤC TIM TẠI CỬA HÀNG
                 </RegisterButton>
                 <CancelButton onClick={onCancel}>KHÔNG, CẢM ƠN</CancelButton>
             </Popup>

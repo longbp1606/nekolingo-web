@@ -6,6 +6,7 @@ export type UserStateType = {
     hearts: number;
     balance: number;
     freeze_count: number;
+    freeze_bought: boolean;
 }
 
 const initialState: UserStateType = {
@@ -13,6 +14,7 @@ const initialState: UserStateType = {
     hearts: 0,
     balance: 0,
     freeze_count: 0,
+    freeze_bought: false,
 };
 
 const userSlice = createSlice({
@@ -37,10 +39,13 @@ const userSlice = createSlice({
         setFreezeCount: (state, action) => {
             state.freeze_count = action.payload;
         },
+        setFreezeBought: (state, action) => {
+            state.freeze_bought = action.payload;
+        },
     },
 });
 
-export const { setHearts, addHeart, removeHeart, setBalance, setFreezeCount, setUserIDStore } = userSlice.actions;
+export const { setHearts, addHeart, removeHeart, setBalance, setFreezeCount, setUserIDStore, setFreezeBought } = userSlice.actions;
 
 // Async thunk to fetch profile
 export const fetchProfile = createAsyncThunk(
