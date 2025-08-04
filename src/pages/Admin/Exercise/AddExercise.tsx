@@ -244,6 +244,18 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
         });
         return;
       }
+
+      // ==== Bổ sung: với fill_in_blank, phải có option === correct_answer ====
+    if (
+      editorData.question_format === 'fill_in_blank' &&
+      Array.isArray(editorData.options) &&
+      !((editorData.options as string[]).includes(editorData.correct_answer as string))
+    ) {
+      notification.warning({
+        message: 'Với định dạng Fill in Blank, bạn phải thêm lựa chọn trùng khớp với đáp án đúng.'
+      });
+      return;
+    }
   
       // Xây dựng payload từ editorData + chỉ ID của vocab/grammar
       const payload: any = {

@@ -88,8 +88,12 @@ const Topic: React.FC = () => {
         description: detail.description,
       });
       setPanelVisible(true);
-    } catch {
-      message.error("Không tải được chi tiết chủ đề");
+    } catch (error: any) {
+      message.error(
+            error?.response?.data?.message ||
+            "Không tải được chi tiết chủ đề"
+          );
+      // message.error("Không tải được chi tiết chủ đề");
     } finally {
       setLoading(false);
     }
@@ -100,7 +104,11 @@ const Topic: React.FC = () => {
       await deleteTopic(id); 
       message.success("Xóa thành công");
       fetchData(pagination.current, pagination.pageSize, selectedCourse ?? undefined);
-    } catch {
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+        "Xóa thất bại"
+      );
       message.error("Xóa thất bại");
     }
   };
@@ -119,12 +127,20 @@ const Topic: React.FC = () => {
       setSelectedRecord(null);
       form.resetFields();
       await fetchData(pagination.current, pagination.pageSize, selectedCourse ?? undefined);
-    } catch {
-      message.error("Lưu thất bại");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+        "Lưu thất bại"
+      );
     }
   };
 
   const columns = [
+    {
+      title: "STT",
+      key: "index",
+      render: (_: any, __: any, index: number) => index + 1,
+    },
     { title: "Tiêu đề", dataIndex: "title", key: "title" },
     { title: "Thứ tự", dataIndex: "order", key: "order" },
     { title: "Mô tả", dataIndex: "description", key: "description" },

@@ -54,7 +54,7 @@ const Exercise = () => {
     setLoading(true);
     try {
       const res = await getAllExercises();
-      const list: any[] = res.data.exercises || [];
+      const list: any[] = res.data || [];
       const lessonIds = new Set(lessons.map(l => l._id));
       const filtered = list.filter(ex => ex.lesson && lessonIds.has(ex.lesson._id));
       setData(filtered);
@@ -80,8 +80,12 @@ const Exercise = () => {
       const res = await getExerciseDetail(record._id);
       form.setFieldsValue(res.data);
       setCreating(true);
-    } catch {
-      message.error("Tải chi tiết thất bại");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+          "Tải chi tiết thất bại"
+      );
+      // message.error("Tải chi tiết thất bại");
     } finally {
       setLoading(false);
     }
@@ -93,14 +97,23 @@ const Exercise = () => {
       await deleteExercise(id);
       message.success("Xóa thành công");
       fetchAll();
-    } catch {
-      message.error("Xóa thất bại");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+          "Xóa thất bại"
+      );
+      // message.error("Xóa thất bại");
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
+    {
+      title: "STT",
+      key: "index",
+      render: (_: any, __: any, index: number) => index + 1,
+    },
     {
       title: "Định dạng câu hỏi",
       dataIndex: "question_format",

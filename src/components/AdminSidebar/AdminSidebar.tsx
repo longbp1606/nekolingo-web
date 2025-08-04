@@ -15,7 +15,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarHeader, StyledSider } from "./AdminSidebar.styled";
 
-const menuItems = [
+const allMenuItems = [
   { key: "/admin/language", label: "Ngôn ngữ", icon: <GlobalOutlined /> },
   { key: "/admin/course", label: "Khóa học", icon: <ReadOutlined /> },
   { key: "/admin/topic", label: "Chủ đề", icon: <TagOutlined /> },
@@ -29,36 +29,37 @@ const menuItems = [
   { key: "/admin/user", label: "Người dùng", icon: <UserOutlined /> },
 ];
 
-
 interface AdminSidebarProps {
-  profile: {
-    role: number;
-  } | null;
+  profile: { role: number } | null;
 }
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ profile }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const filteredItems = profile?.role === 2
-    ? menuItems.filter(item => item.key !== "/admin/user")
-    : menuItems;
+  // Nếu role = 2 (Giáo sư), ẩn quest, archivement, transaction, user
+  const filteredItems = allMenuItems.filter(item => {
+    if (profile?.role === 2) {
+      return ![
+        "/admin/quest",
+        "/admin/archivement",
+        "/admin/transaction",
+        "/admin/user",
+      ].includes(item.key);
+    }
+    return true;
+  });
 
   return (
     <StyledSider width={260}>
       <SidebarHeader>Nekolingo</SidebarHeader>
-
       <Menu
         mode="inline"
         selectedKeys={[location.pathname]}
         onClick={(item) => navigate(item.key)}
-        style={{
-          paddingTop: 12,
-          fontWeight: 600,
-          fontSize: 16,
-        }}
+        style={{ paddingTop: 12, fontWeight: 600, fontSize: 16 }}
         theme="light"
-        items={filteredItems.map((item) => ({
+        items={filteredItems.map(item => ({
           ...item,
           icon: <span style={{ color: "#fff" }}>{item.icon}</span>,
           label: <span style={{ color: "#fff" }}>{item.label}</span>,
