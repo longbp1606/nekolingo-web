@@ -61,8 +61,8 @@ const Lesson = () => {
       const res = await getTopicCourse(selectedCourse);
       setTopics(res.data.data || []);
       fetchAll(1, pagination.pageSize as number);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      notification.error({ message: "Lỗi khi tải chủ đề" });
       setTopics([]);
     }
   }, [selectedCourse]);
@@ -78,7 +78,7 @@ const Lesson = () => {
         }))
       );
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Lỗi khi tải tùy chọn chủ đề:", error);
     }
   }, []);
 
@@ -140,7 +140,7 @@ const Lesson = () => {
   
       setPanelVisible(true);
     } catch {
-      notification.error({ message: "Failed to load detail" });
+      notification.error({ message: "Tải chi tiết thất bại" });
     } finally {
       setLoading(false);
     }
@@ -151,10 +151,10 @@ const Lesson = () => {
     setLoading(true);
     try {
       await deleteLesson(id);
-      message.success("Deleted successfully");
+      message.success("Xóa thành công");
       await fetchAll();
     } catch {
-      message.error("Delete failed");
+      message.error("Xóa thất bại");
     } finally {
       setLoading(false);
     }
@@ -166,40 +166,42 @@ const Lesson = () => {
     try {
       if (selectedRecord) {
         await updateLesson(selectedRecord._id, values);
-        message.success("Updated successfully");
+        message.success("Cập nhật thành công");
       } else {
         await createLesson(values);
-        message.success("Created successfully");
+        message.success("Tạo mới thành công");
       }
       setPanelVisible(false);
       form.resetFields();
       setSelectedRecord(null);
       await fetchAll();
     } catch {
-      message.error("Submit failed");
+      message.error("Gửi dữ liệu thất bại");
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
-    { title: "Title", dataIndex: "title", key: "title" },
-    { title: "Description", dataIndex: "description", key: "description" },
-    { title: "Type", dataIndex: "type", key: "type" },
-    { title: "Topic", dataIndex: "topic", key: "topic.title" },
+    { title: "Tiêu đề", dataIndex: "title", key: "title" },
+    { title: "Mô tả", dataIndex: "description", key: "description" },
+    { title: "Loại", dataIndex: "type", key: "type" },
+    { title: "Chủ đề", dataIndex: "topic", key: "topic.title" },
     {
-      title: "Actions",
+      title: "Hành động",
       key: "actions",
       render: (_: any, record: any) => (
         <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
           <Popconfirm
-            title="Delete this grammar?"
-            onConfirm={() => handleDelete(record.id)}
+            title="Bạn có chắc muốn xóa bài học này?"
+            onConfirm={() => handleDelete(record._id)}
+            okText="Xóa"
+            cancelText="Hủy"
           >
             <Button danger size="small"
               onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
             >
-              Delete
+              Xóa
             </Button>
           </Popconfirm>
         </div>
@@ -228,7 +230,7 @@ const Lesson = () => {
       <ContentCard style={{ flex: 2 }}>
         <FilterArea>
           <InputSearch
-            placeholder="Search..."
+            placeholder="Tìm kiếm..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -240,7 +242,7 @@ const Lesson = () => {
               setPanelVisible(true);
             }}
           >
-            Add Lesson
+            Thêm bài học
           </CAddButton>
         </FilterArea>
 
@@ -258,32 +260,34 @@ const Lesson = () => {
       </ContentCard>
 
       <Modal
-        title={selectedRecord ? "Edit Lesson" : "Add Lesson"}
+        title={selectedRecord ? "Chỉnh sửa bài học" : "Thêm bài học"}
         visible={panelVisible}
         onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
         confirmLoading={loading}
+        okText="Lưu"
+        cancelText="Hủy"
         destroyOnClose
       >
         <Form form={form} layout="vertical">
           <Form.Item
             name="title"
-            label="Title"
-            rules={[{ required: true, message: "Please enter title" }]}
+            label="Tiêu đề"
+            rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="description"
-            label="Description"
-            rules={[{ required: true, message: "Please enter description" }]}
+            label="Mô tả"
+            rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
           >
             <ReactQuill theme="snow" style={{ height: '100%' }} />
           </Form.Item>
           <Form.Item
             name="type"
-            label="Type"
-            rules={[{ required: true, message: "Please choose at least one type" }]}
+            label="Loại"
+            rules={[{ required: true, message: "Vui lòng chọn ít nhất một loại" }]}
             style={{ width: "100%" }}
           >
             <Select
@@ -294,18 +298,18 @@ const Lesson = () => {
               }}
               mode="multiple"
               options={[
-                { value: "vocabulary", label: "Vocabulary" },
-                { value: "grammar", label: "Grammar" },
-                { value: "listening", label: "Listening" },
-                { value: "speaking", label: "Speaking" },
-                { value: "reading", label: "Reading" },
+                { value: "vocabulary", label: "Từ vựng" },
+                { value: "grammar", label: "Ngữ pháp" },
+                { value: "listening", label: "Nghe" },
+                { value: "speaking", label: "Nói" },
+                { value: "reading", label: "Đọc" },
               ]}
             />
           </Form.Item>
           <Form.Item
             name="topic"
-            label="Topic"
-            rules={[{ required: true, message: "Please choose to topic" }]}
+            label="Chủ đề"
+            rules={[{ required: true, message: "Vui lòng chọn chủ đề" }]}
             style={{ width: "100%" }}
           >
             <Select
@@ -319,32 +323,32 @@ const Lesson = () => {
           </Form.Item>
           <Form.Item
             name="order"
-            label="Order"
+            label="Thứ tự"
             normalize={(value) => Number(value)}
 
-            rules={[{ required: true, message: "Please enter order" }]}
+            rules={[{ required: true, message: "Vui lòng nhập thứ tự" }]}
           >
             <Input type="number" />
           </Form.Item>
 
           <Form.Item
             name="xp_reward"
-            label="XP Reward"
+            label="Phần thưởng XP"
             normalize={(value) => Number(value)}
-            rules={[{ required: true, message: "Please enter XP reward" }]}
+            rules={[{ required: true, message: "Vui lòng nhập XP thưởng" }]}
           >
             <Input type="number" />
           </Form.Item>
 
           <Form.Item
             name="mode"
-            label="Mode"
-            rules={[{ required: true, message: "Please select mode" }]}
+            label="Chế độ"
+            rules={[{ required: true, message: "Vui lòng chọn chế độ" }]}
           >
             <Select
               options={[
-                { label: "Normal", value: "normal" },
-                { label: "Test", value: "test" },
+                { label: "Normal", value: "Bình thường" },
+                { label: "Test", value: "Kiểm tra" },
               ]}
             />
           </Form.Item>

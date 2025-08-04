@@ -4,15 +4,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Button,
   Form,
-  Input,
   Popconfirm,
   message,
   Modal,
   notification,
   Image,
   Upload,
+  Input,
 } from "antd";
-import type { TablePaginationConfig } from "antd";// hãy chắc path đúng
+import type { TablePaginationConfig } from "antd";
 import { ContentCard, FilterArea } from "./Language.styled";
 import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
@@ -20,7 +20,6 @@ import CAddButton from "@/components/AddButton/AddButton";
 import { createLanguage, deleteLanguage, getLanguageDetail, getListLanguages, updateLanguage } from "@/services/languageAPI";
 import { uploadImage } from "@/services/uploadAPI";
 import { PlusOutlined } from "@ant-design/icons";
-type TableRecord = LanguageItem & { key: string };
 
 export type LanguageItem = {
   _id: string;
@@ -28,6 +27,7 @@ export type LanguageItem = {
   code: string;
   flag_url?: string;
 };
+type TableRecord = LanguageItem & { key: string };
 
 const Language = () => {
   const [data, setData] = useState<LanguageItem[]>([]);
@@ -55,13 +55,13 @@ const Language = () => {
         current: page,
         pageSize: take,
         total: totalRecord,
-      });    
+      });
     } catch (error: any) {
       if (!hasErrorNotified.current) {
         notification.error({
           key: "fetch-language-error",
-          message: "Error",
-          description: error?.response?.data?.message || "Error fetching languages",
+          message: "Lỗi",
+          description: error?.response?.data?.message || "Lỗi khi tải danh sách ngôn ngữ",
         });
         hasErrorNotified.current = true;
       }
@@ -81,7 +81,6 @@ const Language = () => {
   const handleRowClick = async (record: LanguageItem) => {
     setLoading(true);
     try {
-      // Optionally fetch detail if you need more fields:
       const res = await getLanguageDetail(record._id);
       const detail: LanguageItem = res.data;
 
@@ -91,23 +90,22 @@ const Language = () => {
         code: detail.code,
         flag_url: detail.flag_url,
       });
-      setFlagUrl(detail.flag_url || '');
+      setFlagUrl(detail.flag_url || "");
       setPanelVisible(true);
     } catch {
-      message.error("Failed to load detail");
+      message.error("Tải chi tiết thất bại");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    // setLoading(true);
     try {
       await deleteLanguage(id);
-      message.success("Deleted successfully");
+      message.success("Xóa thành công");
       await fetchAll();
     } catch {
-      message.error("Cannot delete this language because it is already in use.");
+      message.error("Không thể xóa ngôn ngữ này vì đang được sử dụng.");
     } finally {
       setLoading(false);
     }
@@ -119,44 +117,44 @@ const Language = () => {
     try {
       if (selectedRecord) {
         await updateLanguage(selectedRecord._id, values);
-        message.success("Updated successfully");
+        message.success("Cập nhật thành công");
       } else {
         await createLanguage(values);
-        message.success("Created successfully");
+        message.success("Tạo thành công");
       }
       setPanelVisible(false);
       form.resetFields();
       setSelectedRecord(null);
       await fetchAll();
     } catch {
-      message.error("Submit failed");
+      message.error("Lỗi khi gửi dữ liệu");
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
-    { title: "Name", dataIndex: "name", key: "name" },
-    { title: "Code", dataIndex: "code", key: "code" },
+    { title: "Tên", dataIndex: "name", key: "name" },
+    { title: "Mã", dataIndex: "code", key: "code" },
     {
-      title: "Flag",
+      title: "Quốc kỳ",
       dataIndex: "flag_url",
       key: "flag_url",
       render: (url: string) => url ? <Image width={50} src={url} preview={false} /> : null,
     },
     {
-      title: "Actions",
+      title: "Hành động",
       key: "actions",
       render: (_: any, record: LanguageItem) => (
-        <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
+        <div onClick={(e) => e.stopPropagation()}>
           <Popconfirm
-            title="Delete this language?"
+            title="Bạn có chắc muốn xóa ngôn ngữ này?"
             onConfirm={() => handleDelete(record._id)}
+            okText="Xóa"
+            cancelText="Hủy"
           >
-            <Button danger size="small"
-              onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
-            >
-              Delete
+            <Button danger size="small" onClick={(e) => e.stopPropagation()}>
+              Xóa
             </Button>
           </Popconfirm>
         </div>
@@ -164,7 +162,6 @@ const Language = () => {
     },
   ];
 
-  // Lọc dữ liệu: tìm trên tất cả các cột (stringify mọi giá trị)
   const filteredData = useMemo(() => {
     if (!searchText) return data;
     const lower = searchText.toLowerCase();
@@ -185,7 +182,7 @@ const Language = () => {
       <ContentCard style={{ flex: 2 }}>
         <FilterArea>
           <InputSearch
-            placeholder="Search..."
+            placeholder="Tìm kiếm..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -197,7 +194,7 @@ const Language = () => {
               setPanelVisible(true);
             }}
           >
-            Add Language
+            Thêm ngôn ngữ
           </CAddButton>
         </FilterArea>
 
@@ -215,31 +212,33 @@ const Language = () => {
       </ContentCard>
 
       <Modal
-        title={selectedRecord ? "Edit Language" : "Add Language"}
+        title={selectedRecord ? "Chỉnh sửa ngôn ngữ" : "Thêm ngôn ngữ"}
         visible={panelVisible}
         onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
         confirmLoading={loading}
+        okText="Lưu"
+        cancelText="Hủy"
         destroyOnClose
       >
         <Form form={form} layout="vertical">
           <Form.Item
             name="name"
-            label="Name"
-            rules={[{ required: true, message: "Please enter name" }]}
+            label="Tên"
+            rules={[{ required: true, message: "Vui lòng nhập tên" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="code"
-            label="Code"
-            rules={[{ required: true, message: "Please enter code" }]}
+            label="Mã"
+            rules={[{ required: true, message: "Vui lòng nhập mã" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="flag_url"
-            label="Flag"
+            label="Quốc kỳ"
             getValueFromEvent={() => flagUrl}
           >
             <Upload
@@ -249,8 +248,7 @@ const Language = () => {
               customRequest={async ({ file, onSuccess, onError }) => {
                 try {
                   const res = await uploadImage({ file: file as File, folder: 'flags' });
-                  const url = res.url;  // lấy đúng từ response
-                  // gán URL vào Form-field ẩn
+                  const url = res.url;
                   form.setFieldsValue({ flag_url: url });
                   setFlagUrl(url);
                   onSuccess?.(null, file as File);
@@ -264,7 +262,7 @@ const Language = () => {
               ) : (
                 <div>
                   <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>Upload</div>
+                  <div style={{ marginTop: 8 }}>Tải lên</div>
                 </div>
               )}
             </Upload>

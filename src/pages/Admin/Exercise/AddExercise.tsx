@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState, FC, useRef, useCallback } from "react";
-import { Button, Card, Col, notification, Input, Space, Select, Upload, Steps, Menu, Row, Popconfirm, message } from "antd";
-import { ActionButton, BackButton, Container, ContentBody, ContentColumn, EditorArea, ExerciseArea, ExerciseGrid, Header, NextButton, TypeGrid } from "./Exercise.styled";
+import { Button, Card, Col, notification, Input, Space, Select, Upload, Steps, Menu, Row, Popconfirm, message, Modal, Tag } from "antd";
+import { BackButton, Container, ContentBody, ContentColumn, EditorArea, ExerciseArea, ExerciseGrid, Header, MidHeader, NextButton, TypeGrid } from "./Exercise.styled";
 import { getTopicCourse } from "@/services/topicAPI";
 import { getLessonByTopic, getLessonDetail } from "@/services/lessonAPI";
 import { createExercise, deleteExercise, updateExercise } from "@/services/exerciseAPI";
@@ -11,6 +11,8 @@ import TextArea from "antd/es/input/TextArea";
 import { CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { uploadImage } from "@/services/uploadAPI";
 import { useOutletContext } from "react-router-dom";
+import { getListVocabs } from "@/services/vocabularyAPI";
+import { getListGrammars } from "@/services/grammarAPI";
 
 const ALLOWED_FORMATS = [
   "fill_in_blank",
@@ -38,6 +40,8 @@ type TextOption = string; // cho fill_in_blank, reorder, multiple_choice
 type ExerciseOptions = MatchOption[] | ImageSelectOption[] | TextOption[];
 interface EditorData extends Omit<Partial<CreateExercise>, 'options'> {
   options?: ExerciseOptions;
+  vocabulary?: string;
+  grammar?: string;
 }
 
 const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
@@ -45,18 +49,21 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
   const [lessons, setLessons] = useState<Record<string, any[]>>({});
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [exercises, setExercises] = useState<any[]>([]);
-
   const hasErrorNotified = useRef(false);
   const [creatingExercise, setCreatingExercise] = useState(false);
   const [editorData, setEditorData] = useState<EditorData>({});
-  // const [isEditingContent, setIsEditingContent] = useState(false);
   const [isEditingExistingExercise, setIsEditingExistingExercise] = useState(false);
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
-  // const isReadyToNext = !!editorData.type && !!editorData.question_format;
   const { selectedCourse } = useOutletContext<OutletCtx>();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [showExercise, setShowExercise] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState<"none" | "vocab" | "grammar">("none");
+  const [vocabList, setVocabList] = useState<Array<{ _id: string; word: string }>>([]);
+  const [grammarList, setGrammarList] = useState<Array<{ _id: string; condition: string }>>([]);
+  const [selectedVocab, setSelectedVocab] = useState<{ id: string; name: string } | null>(null);
+  const [selectedGrammar, setSelectedGrammar] = useState<{ id: string; name: string } | null>(null);
 
   const fetchTopics = useCallback(async () => {
     if (!selectedCourse) {
@@ -68,7 +75,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
       setTopics(res.data.data || []);
     } catch {
       if (!hasErrorNotified.current) {
-        notification.error({ message: 'Error fetching topics' });
+        notification.error({ message: 'Lỗi khi lấy chủ đề!' });
         hasErrorNotified.current = true;
       }
       setTopics([]);
@@ -78,6 +85,15 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
   useEffect(() => {
     fetchTopics();
   }, [fetchTopics]);
+
+  useEffect(() => {
+    if (modalType === "vocab") {
+      getListVocabs(1, 100).then(res => setVocabList(res.data.data)).catch(() => { });
+    }
+    if (modalType === "grammar") {
+      getListGrammars().then(r => setGrammarList(r.data.data)).catch(() => { });
+    }
+  }, [modalType]);
 
 
   // Handle topic collapse and fetch lessons by topic
@@ -89,7 +105,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
         const res = await getLessonByTopic(topicId);
         setLessons(prev => ({ ...prev, [topicId]: res.data }));
       } catch {
-        notification.error({ message: 'Error fetching lessons' });
+        notification.error({ message: 'Lỗi khi lấy bài học!' });
       }
     }
   };
@@ -101,12 +117,19 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
       const res = await getLessonDetail(lesson._id);
       setExercises(res.data.exercises);
     } catch {
-      notification.error({ message: 'Error fetching exercises' });
+      notification.error({ message: 'Lỗi khi lấy danh sách câu hỏi!' });
     }
   };
 
+  const onCreateClick = () => {
+    setModalType("none");
+    setModalVisible(true);
+  }
+
   // Initialize creating new exercise
   const startCreate = () => {
+    setModalVisible(false);
+
     let defaultOptions: ExerciseOptions;
     if (editorData.question_format === 'image_select') {
       defaultOptions = [{ image: '', value: '' }];
@@ -115,12 +138,16 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
     } else {
       defaultOptions = [''] as TextOption[];
     }
-    setEditorData({
+
+    setEditorData(prev => ({
+      ...prev,
       lesson: selectedLesson._id,
       options: defaultOptions,
       type: undefined,
       question_format: undefined,
-    });
+      vocabulary: prev.vocabulary, 
+      grammar: prev.grammar,
+    }));
     setCreatingExercise(true);
     setCurrentStep(1);
   };
@@ -142,7 +169,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
       setCreatingExercise(false);
       setIsEditingExistingExercise(false);
       setEditingExerciseId(null);
-      setShowExercise(false); 
+      setShowExercise(false);
     }
   };
 
@@ -174,8 +201,6 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
     }));
   };
 
-
-
   const handleOptionChange = (index: number, key: string, value: string) => {
     if (!editorData.options) return;
 
@@ -201,7 +226,39 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
 
   const handleDone = async () => {
     try {
-      const payload: any = { ...editorData };
+      const keywordVocab = selectedVocab?.name ?? null;
+
+      // Tập hợp nội dung để kiểm tra
+      const haystack = [
+        editorData.question,
+        JSON.stringify(editorData.options),
+        editorData.correct_answer
+      ]
+        .join(" ")
+        .toLowerCase();
+  
+      // Nếu đã chọn vocab nhưng không dùng từ đó, báo lỗi
+      if (keywordVocab && !haystack.includes(keywordVocab.toLowerCase())) {
+        notification.warning({
+          message: `Bạn chưa sử dụng từ "${keywordVocab}" trong câu hỏi, đáp án hoặc lựa chọn.`
+        });
+        return;
+      }
+  
+      // Xây dựng payload từ editorData + chỉ ID của vocab/grammar
+      const payload: any = {
+        ...editorData,
+        // chỉ gán ID, không gán cả object
+        vocabulary: selectedVocab?.id,
+        grammar: selectedGrammar?.id,
+      };
+
+      // Với format 'match'
+      if (payload.question_format === "match") {
+        payload.correct_answer = payload.options;
+      }
+
+      // Xóa các field không cần thiết
       delete payload._id;
       delete payload.__v;
       delete payload.answer;
@@ -210,24 +267,31 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
       delete payload.updatedAt;
       delete payload.isMistake;
 
-      if (editorData.question_format === 'match') {
-        payload.correct_answer = editorData.options;
-      }
-
-
+      // Gửi lên API
       if (isEditingExistingExercise && editingExerciseId) {
         await updateExercise(editingExerciseId, payload);
-        notification.success({ message: "Exercise updated" });
+        notification.success({ message: "Cập nhật bài tập thành công!" });
       } else {
         await createExercise(payload as CreateExercise);
-        notification.success({ message: "Exercise created" });
+        notification.success({ message: "Tạo bài tập thành công!" });
       }
+
+      // Reload và reset
       await onLessonClick(selectedLesson);
+      setSelectedVocab(null);
+      setSelectedGrammar(null);
       resetEditor();
+
     } catch {
-      notification.error({ message: isEditingExistingExercise ? "Error updating exercise" : "Error creating exercise" });
+      notification.error({
+        message: isEditingExistingExercise
+          ? "Lỗi khi cập nhật!"
+          : "Lỗi khi tạo!",
+      });
     }
   };
+
+
 
   // Edit existing exercise
   const onEditExercise = (exercise: any) => {
@@ -250,6 +314,43 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
       ...exercise,
       options: normalizedOptions,
     });
+
+    // 2. Nếu exercise.vocabulary tồn tại, setSelectedVocab
+    if (exercise.vocabulary) {
+      // exercise.vocabulary có thể là object {_id, word} hoặc string id
+      if (typeof exercise.vocabulary === 'object') {
+        setSelectedVocab({
+          id: exercise.vocabulary._id,
+          name: exercise.vocabulary.word,
+        });
+      } else {
+        // fetch từ list vocabList nếu cần, hoặc chỉ set id 
+        const found = vocabList.find(v => v._id === exercise.vocabulary);
+        setSelectedVocab(found
+          ? { id: found._id, name: found.word }
+          : { id: exercise.vocabulary, name: exercise.vocabulary });
+      }
+    } else {
+      setSelectedVocab(null);
+    }
+
+    // 3. Tương tự với grammar
+    if (exercise.grammar) {
+      if (typeof exercise.grammar === 'object') {
+        setSelectedGrammar({
+          id: exercise.grammar._id,
+          name: exercise.grammar.condition,
+        });
+      } else {
+        const foundG = grammarList.find(g => g._id === exercise.grammar);
+        setSelectedGrammar(foundG
+          ? { id: foundG._id, name: foundG.condition }
+          : { id: exercise.grammar, name: exercise.grammar });
+      }
+    } else {
+      setSelectedGrammar(null);
+    }
+
     // setEditorData({ lesson: selectedLesson._id, ...exercise });
     setEditingExerciseId(exercise._id);
     setIsEditingExistingExercise(true);
@@ -270,41 +371,51 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
   const handleDelete = async (id: string) => {
     try {
       await deleteExercise(id);
-      message.success("Deleted successfully");
+      message.success("Xóa thành công");
       await onLessonClick(selectedLesson);
     } catch {
-      message.error("Delete failed");
+      message.error("Xóa thất bại");
     }
   };
 
+  // render tags in header of editor
+  const renderHeaderTags = () => (
+    <Space size="middle" style={{ marginBottom: 16 }}>
+      {selectedVocab && <Tag color="blue">Từ vựng: {selectedVocab.name}</Tag>}
+      {selectedGrammar && <Tag color="purple">Ngữ pháp: {selectedGrammar.name}</Tag>}
+    </Space>
+  );
 
   // Render editor UI
   const renderEditor = () => (
     <EditorArea>
-      <ActionButton>
-        <BackButton onClick={handleBack}>Back</BackButton>
-        <h2><b>Exercises of {selectedLesson.title}</b></h2>
+      <Header>
+        <BackButton onClick={handleBack}>Quay lại</BackButton>
+        <MidHeader>
+        <h2><b>Câu hỏi của bài học {selectedLesson.title}</b></h2>
+        {renderHeaderTags()}
+        </MidHeader>
         {currentStep !== 2 && (
           <NextButton
             type="primary"
             disabled={!editorData.type || !editorData.question_format}
             onClick={() => setCurrentStep(2)} // NEXT TO STEP 3
           >
-            Next
+            Tiếp tục
           </NextButton>
         )}
         {/* {isEditingContent && ( */}
         {currentStep === 2 && (
           <NextButton type="primary" onClick={handleDone}>
-            Done
+            Hoàn thành
           </NextButton>
         )}
-      </ActionButton>
+      </Header>
 
       {/* {!isEditingContent && ( */}
       {currentStep === 1 && (
         <Space direction="vertical" style={{ width: "100%", marginTop: 24 }}>
-          <h3>Choose Type:</h3>
+          <h3>Chọn loại:</h3>
           <TypeGrid>
             {typeOptions.map((t) => (
               <Col span={6} key={t}>
@@ -319,7 +430,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
             ))}
           </TypeGrid>
 
-          <h3>Choose Format:</h3>
+          <h3>Chọn định dạng:</h3>
           <TypeGrid>
             {ALLOWED_FORMATS.map((f) => (
               <Col span={6} key={f}>
@@ -355,17 +466,17 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
       {/* {isEditingContent && ( */}
       {currentStep === 2 && (
         <Space direction="vertical" style={{ width: "100%", marginTop: 24 }}>
-          <TextArea rows={2} placeholder="Enter your question" value={editorData.question} onChange={(e: any) => handleChange('question', e.target.value)} />
+          <TextArea rows={2} placeholder="Nhập câu hỏi của bạn" value={editorData.question} onChange={(e: any) => handleChange('question', e.target.value)} />
           {editorData.question_format === 'match' ? (
             <>
               {(editorData.options as MatchOption[])?.map((opt: any, i: number) => (
                 <div key={i} style={{ marginBottom: 8, display: 'flex', gap: 8 }}>
-                  <Input placeholder="Left" value={opt.left} onChange={e => handleOptionChange(i, 'left', e.target.value)} />
-                  <Input placeholder="Right" value={opt.right} onChange={e => handleOptionChange(i, 'right', e.target.value)} />
+                  <Input placeholder="Bên trái" value={opt.left} onChange={e => handleOptionChange(i, 'left', e.target.value)} />
+                  <Input placeholder="Bên phải" value={opt.right} onChange={e => handleOptionChange(i, 'right', e.target.value)} />
                   <CloseOutlined onClick={() => handleRemoveOption(i)} style={{ color: "red" }} />
                 </div>
               ))}
-              <Button onClick={handleAddOption}>+ Add Pair</Button>
+              <Button onClick={handleAddOption}>+ Thêm cặp</Button>
             </>
           ) : editorData.question_format === 'image_select' ? (
             <>
@@ -394,19 +505,19 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
                     }
                   </Upload>
 
-                  <Input placeholder="Value" value={opt.value} onChange={e => handleOptionChange(i, 'value', e.target.value)} />
+                  <Input placeholder="Giá trị" value={opt.value} onChange={e => handleOptionChange(i, 'value', e.target.value)} />
                   <CloseOutlined onClick={() => handleRemoveOption(i)} style={{ color: "red" }} />
                 </div>
               ))}
               <Button onClick={handleAddOption}>+ Add Option</Button>
-              <Select placeholder="Correct Answer (value)" value={editorData.correct_answer} onChange={v => handleChange('correct_answer', v)} options={(editorData.options as ImageOption[] || []).map(o => ({ value: o.value, label: o.value }))} />
+              <Select placeholder="Đáp án đúng (value)" value={editorData.correct_answer} onChange={v => handleChange('correct_answer', v)} options={(editorData.options as ImageOption[] || []).map(o => ({ value: o.value, label: o.value }))} />
             </>
           ) : (
             <>
               {(editorData.question_format === 'multiple_choice' || editorData.question_format === 'fill_in_blank' || editorData.question_format === 'reorder') && (
                 <>
                   <Input
-                    placeholder="Correct Answer"
+                    placeholder="Đáp án đúng"
                     value={editorData.correct_answer ?? ''}
                     onChange={e => handleChange('correct_answer', e.target.value)}
                     style={{ border: '1px solid rgb(9,175,45)' }}
@@ -415,7 +526,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
                     <div key={i} style={{ marginBottom: 8, display: 'flex', gap: 8 }}>
                       <Input
                         key={i}
-                        placeholder={`Option ${i + 1}`}
+                        placeholder={`Lựa chọn ${i + 1}`}
                         value={typeof opt === 'string' ? opt : ''}
                         onChange={e => handleOptionChange(i, '', e.target.value)}
                       />
@@ -424,13 +535,13 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
                     </div>
                   ))}
 
-                  <Button onClick={handleAddOption}>+ Add Option</Button>
+                  <Button onClick={handleAddOption}>+ Thêm lựa chọn</Button>
                 </>
               )}
               {editorData.question_format === 'listening' && (
                 <>
                   <Input
-                    placeholder="Correct Answer"
+                    placeholder="Đáp án đúng"
                     value={editorData.correct_answer ?? ''}
                     onChange={e => handleChange('correct_answer', e.target.value)}
                     style={{ border: '1px solid rgb(9,175,45)' }}
@@ -439,7 +550,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
                     <div key={i} style={{ marginBottom: 8, display: 'flex', gap: 8 }}>
                       <Input
                         key={i}
-                        placeholder={`Option ${i + 1}`}
+                        placeholder={`Lựa chọn ${i + 1}`}
                         value={typeof opt === 'string' ? opt : ''}
                         onChange={e => handleOptionChange(i, 'value', e.target.value)}
                         style={{ border: '1px solid rgb(12,46,238)' }}
@@ -449,7 +560,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
                     </div>
                   ))}
 
-                  <Button onClick={handleAddOption}>+ Add Option</Button>
+                  <Button onClick={handleAddOption}>+ Thêm lựa chọn</Button>
 
                   <Space direction="vertical">
                     <Upload
@@ -466,7 +577,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
                         }
                       }}
                     >
-                      <Button icon={<PlusOutlined />}>Upload Audio</Button>
+                      <Button icon={<PlusOutlined />}>Tải lên âm thanh</Button>
                     </Upload>
                     {/* nếu đã có audio_url thì hiển thị audio preview */}
                     {editorData.audio_url && (
@@ -485,9 +596,9 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
   return (
     <Container>
       <Steps current={currentStep} style={{ marginBottom: 24 }}>
-        <Steps.Step title="Select Topic & Lesson" />
-        <Steps.Step title="Select Type & Format" />
-        <Steps.Step title="Enter Question Content" />
+        <Steps.Step title="Chọn chủ đề & bài học" />
+        <Steps.Step title="Chọn loại & định dạng" />
+        <Steps.Step title="Nhập nội dung câu hỏi" />
       </Steps>
 
       {currentStep === 0 && selectedCourse && (
@@ -498,7 +609,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
           </Header>
           <ContentBody>
             <ContentColumn>
-              <h2>List of topics</h2>
+              <h2>Danh sách chủ đề</h2>
               <Menu
                 mode="inline"
                 selectedKeys={[selectedTopic!]}
@@ -509,7 +620,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
             </ContentColumn>
 
             <ContentColumn>
-              <h2>List of lessons</h2>
+              <h2>Danh sách bài học</h2>
               <Row gutter={[16, 16]}>
                 {lessons[selectedTopic!]?.map(les => (
                   <Col key={les._id} span={24} style={{ height: "48px" }}>
@@ -537,7 +648,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
               }}>
                 Back
               </BackButton>
-              <h2>Exercises of {selectedLesson.title}</h2>
+              <h2>Câu hỏi của bài học {selectedLesson.title}</h2>
             </Header>
           )}
           {creatingExercise ? renderEditor() : (
@@ -546,12 +657,13 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
                 <Card
                   hoverable
                   onClick={() => {
-                    startCreate();
+                    // startCreate();
+                    onCreateClick();
                     setShowExercise(true);
                   }}
                   style={{ textAlign: 'center' }}
                 >
-                  ➕ Create Exercise
+                  ➕ Tạo mới câu hỏi
                 </Card>
               </Col>
               {exercises.map((ex) => (
@@ -561,7 +673,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
                     onClick={() => {
                       onEditExercise(ex);
                       setShowExercise(true);
-                    }} 
+                    }}
                     title={<b>{ex.type} - {ex.question_format}</b>}
                     size="small"
                   >
@@ -573,7 +685,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
                       <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
 
                         <Popconfirm
-                          title="Delete this exercise?"
+                          title="Bạn muốn xóa câu hỏi này?"
                           onConfirm={() => handleDelete(ex._id)}
                         >
                           <Button danger size="small"
@@ -591,6 +703,55 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
           )}
         </ExerciseArea>
       )}
+
+      <Modal
+        title="Chọn chế độ tạo"
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        onOk={startCreate}
+      >
+        <div style={{ display: "flex", gap: 12 }}>
+          {["none", "vocab", "grammar"].map(t => (
+            <Card
+              key={t}
+              hoverable
+              style={{
+                border: modalType === t ? "2px solid #1890ff" : "1px solid #ddd"
+              }}
+              onClick={() => setModalType(t as any)}
+            >
+              {t === "none" ? "None" : t === "vocab" ? "Vocabulary" : "Grammar"}
+            </Card>
+          ))}
+        </div>
+        {modalType === "vocab" && (
+          <Select
+            labelInValue
+            placeholder="Chọn từ vựng"
+            options={vocabList.map(v => ({ label: v.word, value: v._id }))}
+            onChange={({ value, label }) => {
+              setSelectedVocab({ id: value, name: label });
+              setEditorData(prev => ({ ...prev, vocabulary: value }));
+              setSelectedGrammar(null);
+            }}
+            style={{ width: "100%", marginTop: 16 }}
+          />
+        )}
+        {modalType === "grammar" && (
+          <Select
+            labelInValue
+            placeholder="Chọn ngữ pháp"
+            options={grammarList.map(g => ({ label: g.condition, value: g._id }))}
+            onChange={({ value, label }) => {
+              setSelectedGrammar({ id: value, name: label });
+              setEditorData(prev => ({ ...prev, grammar: value }));
+              setSelectedVocab(null);
+            }}
+            style={{ width: '100%', marginTop: 16 }}
+          />
+        )}
+      </Modal>
+
     </Container>
   );
 };

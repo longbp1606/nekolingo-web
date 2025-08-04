@@ -41,7 +41,6 @@ const CONDITION_TYPES = [
   "streak_days",
   "total_xp",
   "weekly_xp",
-  // "first_mistake",
   "complete_lessons",
   "complete_courses"
 ];
@@ -65,8 +64,8 @@ const Archivement = () => {
       if (!hasErrorNotified.current) {
         notification.error({
           key: "fetch-archivement-error",
-          message: "Error",
-          description: error?.response?.data?.message || "Error fetching archivements",
+          message: "Lỗi",
+          description: error?.response?.data?.message || "Lỗi khi tải danh sách thành tích",
         });
         hasErrorNotified.current = true;
       }
@@ -94,7 +93,7 @@ const Archivement = () => {
       setIconUrl(detail.icon);
       setPanelVisible(true);
     } catch {
-      message.error("Failed to load detail");
+      message.error("Tải chi tiết thất bại");
     } finally {
       setLoading(false);
     }
@@ -103,10 +102,10 @@ const Archivement = () => {
   const handleDelete = async (id: string) => {
     try {
       await deleteArchivement(id);
-      message.success("Deleted successfully");
+      message.success("Xóa thành công");
       fetchAll();
     } catch {
-      message.error("Cannot delete this archivement.");
+      message.error("Không thể xóa thành tích này");
     }
   };
 
@@ -122,10 +121,10 @@ const Archivement = () => {
       };
       if (selectedRecord) {
         await updateArchivement(selectedRecord._id, payload);
-        message.success("Updated successfully");
+        message.success("Cập nhật thành công");
       } else {
         await createArchivement(payload);
-        message.success("Created successfully");
+        message.success("Tạo mới thành công");
       }
       setPanelVisible(false);
       form.resetFields();
@@ -133,39 +132,41 @@ const Archivement = () => {
       setIconUrl("");
       fetchAll();
     } catch {
-      message.error("Submit failed");
+      message.error("Gửi dữ liệu thất bại");
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
-    { title: "Title", dataIndex: "title", key: "title" },
-    { title: "Description", dataIndex: "description", key: "description" },
+    { title: "Tiêu đề", dataIndex: "title", key: "title" },
+    { title: "Mô tả", dataIndex: "description", key: "description" },
     {
-      title: "Icon",
+      title: "Biểu tượng",
       dataIndex: "icon",
       key: "icon",
       render: (url: string) => url ? <Image width={50} src={url} preview={false} /> : null,
     },
     {
-      title: "Condition",
+      title: "Điều kiện",
       dataIndex: ["condition", "type"],
       key: "condition",
       render: (_: any, record: ArchivementItem) =>
         `${record.condition.type}${record.condition.value ? `: ${record.condition.value}` : ""}`,
     },
     {
-      title: "Actions",
+      title: "Hành động",
       key: "actions",
       render: (_: any, record: ArchivementItem) => (
         <div onClick={(e) => e.stopPropagation()}>
           <Popconfirm
-            title="Delete this archivement?"
+            title="Bạn có chắc muốn xóa?"
             onConfirm={() => handleDelete(record._id)}
+            okText="Xóa"
+            cancelText="Hủy"
           >
             <Button danger size="small" onClick={(e) => e.stopPropagation()}>
-              Delete
+            Xóa
             </Button>
           </Popconfirm>
         </div>
@@ -189,7 +190,7 @@ const Archivement = () => {
       <ContentCard style={{ flex: 2 }}>
         <FilterArea>
           <InputSearch
-            placeholder="Search archivement..."
+            placeholder="Tìm thành tích..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -202,7 +203,7 @@ const Archivement = () => {
               setPanelVisible(true);
             }}
           >
-            Add Archivement
+            Thêm thành tích
           </CAddButton>
         </FilterArea>
 
@@ -220,7 +221,7 @@ const Archivement = () => {
       </ContentCard>
 
       <Modal
-        title={selectedRecord ? "Edit Archivement" : "Add Archivement"}
+        title={selectedRecord ? "Chỉnh sửa thành tích" : "Thêm thành tích"}
         visible={panelVisible}
         onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
@@ -230,15 +231,15 @@ const Archivement = () => {
         <Form form={form} layout="vertical">
           <Form.Item
             name="title"
-            label="Title"
-            rules={[{ required: true, message: "Please enter title" }]}
+            label="Tiêu đề"
+            rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="description"
-            label="Description"
-            rules={[{ required: true, message: "Please enter description" }]}
+            label="Mô tả"
+            rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
           >
             <Input.TextArea rows={3} />
           </Form.Item>
@@ -269,7 +270,7 @@ const Archivement = () => {
               ) : (
                 <div>
                   <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>Upload</div>
+                  <div style={{ marginTop: 8 }}>Tải lên</div>
                 </div>
               )}
             </Upload>
@@ -277,7 +278,7 @@ const Archivement = () => {
           <Form.Item
             name={["condition", "type"]}
             label="Condition Type"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: "Vui lòng chọn loại điều kiện" }]}
           >
             <AutoComplete options={CONDITION_TYPES.map(c => ({ value: c }))} />
           </Form.Item>
@@ -289,7 +290,7 @@ const Archivement = () => {
               form.getFieldValue(["condition", "type"]) && (
                 <Form.Item
                   name={["condition", "value"]}
-                  label="Condition Value"
+                  label="Giá trị điều kiện"
                   rules={[{ type: 'number', min: 1 }]}
                 >
                   <InputNumber style={{ width: '100%' }} />

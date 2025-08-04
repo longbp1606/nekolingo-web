@@ -18,7 +18,14 @@ import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
 import { getListLanguages } from "@/services/languageAPI";
 import ReactQuill from "react-quill";
-import { createCourse, deleteCourse, getCourseDetail, getListCourses, updateCourse } from "@/services/courseAPI";
+import {
+  createCourse,
+  deleteCourse,
+  getCourseDetail,
+  getListCourses,
+  updateCourse,
+} from "@/services/courseAPI";
+
 type TableRecord = CourseItem & { key: string };
 
 export type CourseItem = {
@@ -50,18 +57,21 @@ const Course = () => {
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
   const hasErrorNotified = useRef(false);
-  const [languageOptions, setLanguageOptions] = useState<{ label: string; value: string }[]>([]);
+  const [languageOptions, setLanguageOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
 
   const fetchOptions = useCallback(async () => {
     try {
       const res = await getListLanguages(1, 10);
-      setLanguageOptions(res.data.languages.map((item: any) => ({
-        label: item.name,
-        value: item._id,
-      }))
+      setLanguageOptions(
+        res.data.languages.map((item: any) => ({
+          label: item.name,
+          value: item._id,
+        }))
       );
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Lỗi khi tải danh sách ngôn ngữ:", error);
     }
   }, []);
 
@@ -76,13 +86,14 @@ const Course = () => {
         current: page,
         pageSize: take,
         total: totalRecord,
-      });    
+      });
     } catch (error: any) {
       if (!hasErrorNotified.current) {
         notification.error({
-          key: "fetch-grammar-error",
-          message: "Error",
-          description: error?.response?.data?.message || "Error fetching courses",
+          key: "fetch-course-error",
+          message: "Lỗi",
+          description:
+            error?.response?.data?.message || "Lỗi khi tải danh sách khóa học",
         });
         hasErrorNotified.current = true;
       }
@@ -97,16 +108,14 @@ const Course = () => {
   }, [fetchOptions]);
 
   const handleTableChange = (pag: TablePaginationConfig) => {
-      fetchAll(pag.current as number, pag.pageSize as number);
-    };
+    fetchAll(pag.current as number, pag.pageSize as number);
+  };
 
-  const handleRowClick = async (record: any) => {
+  const handleRowClick = async (record: CourseItem) => {
     setLoading(true);
     try {
-      // Optionally fetch detail if you need more fields:
       const res = await getCourseDetail(record._id);
       const detail: CourseItem = res.data;
-
       setSelectedRecord(detail);
       form.setFieldsValue({
         title: detail.title,
@@ -116,20 +125,20 @@ const Course = () => {
       });
       setPanelVisible(true);
     } catch {
-      message.error("Failed to load detail");
+      message.error("Tải chi tiết thất bại");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    // setLoading(true);
+    setLoading(true);
     try {
       await deleteCourse(id);
-      message.success("Deleted successfully");
+      message.success("Xóa thành công");
       await fetchAll();
     } catch {
-      message.error("Delete failed");
+      message.error("Xóa thất bại");
     } finally {
       setLoading(false);
     }
@@ -141,45 +150,55 @@ const Course = () => {
     try {
       if (selectedRecord) {
         await updateCourse(selectedRecord._id, values);
-        message.success("Updated successfully");
+        message.success("Cập nhật thành công");
       } else {
         await createCourse(values);
-        message.success("Created successfully");
+        message.success("Tạo mới thành công");
       }
       setPanelVisible(false);
       form.resetFields();
       setSelectedRecord(null);
       await fetchAll();
     } catch {
-      message.error("Submit failed");
+      message.error("Gửi dữ liệu thất bại");
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
-    { title: "Title", dataIndex: "title", key: "title" },
-    { title: "Description", dataIndex: "description", key: "description" },
-    { title: "From language", dataIndex: "language_from", key: "language_from",
-      render: (language: any) => language.name || "",
-    },
-    { title: "To language", dataIndex: "language_to", key: "language_to",
-      render: (language: any) => language.name || "",
-     },
-
+    { title: "Tiêu đề", dataIndex: "title", key: "title" },
+    { title: "Mô tả", dataIndex: "description", key: "description" },
     {
-      title: "Actions",
+      title: "Ngôn ngữ gốc",
+      dataIndex: "language_from",
+      key: "language_from",
+      render: (lang: any) => lang.name || "",
+    },
+    {
+      title: "Ngôn ngữ đích",
+      dataIndex: "language_to",
+      key: "language_to",
+      render: (lang: any) => lang.name || "",
+    },
+    {
+      title: "Hành động",
       key: "actions",
       render: (_: any, record: CourseItem) => (
-        <div onClick={(e) => e.stopPropagation()}> {/* ✅ Chặn click toàn vùng actions */}
+        <div onClick={(e) => e.stopPropagation()}>
+          {/* Popconfirm xóa */}
           <Popconfirm
-            title="Delete this course?"
+            title="Bạn có chắc muốn xóa khóa học này?"
             onConfirm={() => handleDelete(record._id)}
+            okText="Xóa"
+            cancelText="Hủy"
           >
-            <Button danger size="small"
-              onClick={(e) => e.stopPropagation()} // ✅ Ngăn click lan lên hàng
+            <Button
+              danger
+              size="small"
+              onClick={(e) => e.stopPropagation()}
             >
-              Delete
+              Xóa
             </Button>
           </Popconfirm>
         </div>
@@ -187,7 +206,6 @@ const Course = () => {
     },
   ];
 
-  // Lọc dữ liệu: tìm trên tất cả các cột (stringify mọi giá trị)
   const filteredData = useMemo(() => {
     if (!searchText) return data;
     const lower = searchText.toLowerCase();
@@ -198,7 +216,7 @@ const Course = () => {
     );
   }, [data, searchText]);
 
-  const tableData: TableRecord[] = filteredData.map(item => ({
+  const tableData: TableRecord[] = filteredData.map((item) => ({
     ...item,
     key: item._id,
   }));
@@ -208,7 +226,7 @@ const Course = () => {
       <ContentCard style={{ flex: 2 }}>
         <FilterArea>
           <InputSearch
-            placeholder="Search..."
+            placeholder="Tìm kiếm..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -220,7 +238,7 @@ const Course = () => {
               setPanelVisible(true);
             }}
           >
-            Add Course
+            Thêm khóa học
           </CAddButton>
         </FilterArea>
 
@@ -238,33 +256,37 @@ const Course = () => {
       </ContentCard>
 
       <Modal
-        title={selectedRecord ? "Edit Course" : "Add Course"}
+        title={selectedRecord ? "Chỉnh sửa khóa học" : "Thêm khóa học"}
         visible={panelVisible}
         onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
+        okText="Lưu"
+        cancelText="Hủy"
         confirmLoading={loading}
         destroyOnClose
       >
         <Form form={form} layout="vertical">
           <Form.Item
             name="title"
-            label="Title"
-            rules={[{ required: true, message: "Please enter title" }]}
+            label="Tiêu đề"
+            rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="description"
-            label="Description"
-            rules={[{ required: true, message: "Please enter description" }]}
+            label="Mô tả"
+            rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
           >
-            <ReactQuill theme="snow" style={{ height: '100%' }} />
+            <ReactQuill theme="snow" style={{ height: "100%" }} />
           </Form.Item>
           <LangFromTo>
             <Form.Item
               name="language_from"
-              label="From language"
-              rules={[{ required: true, message: "Please choose from language" }]}
+              label="Ngôn ngữ gốc"
+              rules={[
+                { required: true, message: "Vui lòng chọn ngôn ngữ gốc" },
+              ]}
               style={{ width: "100%" }}
             >
               <Select
@@ -278,8 +300,10 @@ const Course = () => {
             </Form.Item>
             <Form.Item
               name="language_to"
-              label="To language"
-              rules={[{ required: true, message: "Please choose to language" }]}
+              label="Ngôn ngữ đích"
+              rules={[
+                { required: true, message: "Vui lòng chọn ngôn ngữ đích" },
+              ]}
               style={{ width: "100%" }}
             >
               <Select

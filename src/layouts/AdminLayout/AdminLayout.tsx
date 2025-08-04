@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { theme } from "@/themes";
 import AdminSidebar from "@/components/AdminSidebar";
@@ -10,6 +10,8 @@ import { Avatar, Dropdown, MenuProps, Select, Typography } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useDocumentTitle } from "@/hooks";
 import { getListCourses } from "@/services/courseAPI";
+import cookieUtils from "@/services/cookieUtils";
+import config from '@/config';
 
 const LayoutContainer = styled.div`
   display: flex;
@@ -112,6 +114,7 @@ const AdminLayout: React.FC<AdminProps> = ({ selectedCourse, setSelectedCourse }
   const [selectedCourseState, setSelectedCourseState] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserType | null>(null);
   const [courses, setCourses] = useState<any[]>([]);
+  const navigate = useNavigate();
 
   useDocumentTitle('Nekolingo');
 
@@ -157,16 +160,36 @@ const AdminLayout: React.FC<AdminProps> = ({ selectedCourse, setSelectedCourse }
     setSelectedCourse(value as string);
   };
 
+  const logout = () => {
+    cookieUtils.clear();
+    navigate(config.routes.public.login);
+  };
+
   const items: MenuProps['items'] = [
     {
+      key: 'logout',
       label: (
-        <Link to="http://localhost:5173/login" target="_blank" rel="noopener noreferrer">
-          Logout
-        </Link>
+        <div onClick={logout} style={{ cursor: 'pointer' }}>
+          Đăng xuất
+        </div>
       ),
-      key: '0',
     }
   ];
+
+  const titleMap: Record<string, string> = {
+    language: "Ngôn ngữ",
+    course: "Khóa học",
+    topic: "Chủ đề",
+    lesson: "Bài học",
+    vocabulary: "Từ vựng",
+    grammar: "Ngữ pháp",
+    exercise: "Câu hỏi",
+    quest: "Nhiệm vụ",
+    archivement: "Thành tựu",
+    transaction: "Giao dịch",
+    user: "Người dùng",
+  };
+  
 
   return (
     <LayoutContainer>
@@ -174,7 +197,7 @@ const AdminLayout: React.FC<AdminProps> = ({ selectedCourse, setSelectedCourse }
       <MainArea>
         <HeaderBar>
           <PageTitle level={4}>
-            {screenTitle ? screenTitle.charAt(0).toUpperCase() + screenTitle.slice(1) : ""}
+          {screenTitle && titleMap[screenTitle] ? titleMap[screenTitle] : ""}
           </PageTitle>
 
           {["/admin/topic", "/admin/lesson", "/admin/exercise"].includes(location.pathname) && (

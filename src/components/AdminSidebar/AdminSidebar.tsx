@@ -3,27 +3,32 @@ import {
   BookOutlined,
   GlobalOutlined,
   ReadOutlined,
-  AppstoreOutlined,
-  FileTextOutlined,
-  FileDoneOutlined,
   UserOutlined,
-  FileSearchOutlined,
+  TagOutlined,
+  ProfileOutlined,
+  FontSizeOutlined,
+  QuestionCircleOutlined,
+  TrophyOutlined,
+  CheckCircleOutlined,
+  MoneyCollectOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarHeader, StyledSider } from "./AdminSidebar.styled";
 
 const menuItems = [
-  { key: "/admin/language", label: "Language", icon: <GlobalOutlined /> },
-  { key: "/admin/course", label: "Course", icon: <ReadOutlined /> },
-  { key: "/admin/topic", label: "Topic", icon: <BookOutlined /> },
-  { key: "/admin/lesson", label: "Lesson", icon: <AppstoreOutlined /> },
-  { key: "/admin/vocabulary", label: "Vocabulary", icon: <FileTextOutlined /> },
-  { key: "/admin/grammar", label: "Grammar", icon: <FileDoneOutlined /> },
-  { key: "/admin/exercise", label: "Exercise", icon: <FileSearchOutlined /> },
-  { key: "/admin/quest", label: "Quest", icon: <FileSearchOutlined /> },
-  { key: "/admin/archivement", label: "Archivement", icon: <FileSearchOutlined /> },
-  { key: "/admin/user", label: "User", icon: <UserOutlined /> },
+  { key: "/admin/language", label: "Ngôn ngữ", icon: <GlobalOutlined /> },
+  { key: "/admin/course", label: "Khóa học", icon: <ReadOutlined /> },
+  { key: "/admin/topic", label: "Chủ đề", icon: <TagOutlined /> },
+  { key: "/admin/lesson", label: "Bài học", icon: <BookOutlined /> },
+  { key: "/admin/vocabulary", label: "Từ vựng", icon: <ProfileOutlined /> },
+  { key: "/admin/grammar", label: "Ngữ pháp", icon: <FontSizeOutlined /> },
+  { key: "/admin/exercise", label: "Câu hỏi", icon: <QuestionCircleOutlined /> },
+  { key: "/admin/quest", label: "Nhiệm vụ", icon: <TrophyOutlined /> },
+  { key: "/admin/archivement", label: "Thành tựu", icon: <CheckCircleOutlined /> },
+  { key: "/admin/transaction", label: "Giao dịch", icon: <MoneyCollectOutlined /> },
+  { key: "/admin/user", label: "Người dùng", icon: <UserOutlined /> },
 ];
+
 
 interface AdminSidebarProps {
   profile: {
@@ -36,8 +41,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ profile }) => {
   const navigate = useNavigate();
 
   const filteredItems = profile?.role === 2
-  ? menuItems.filter(item => item.key !== "/admin/user")
-  : menuItems;
+    ? menuItems.filter(item => item.key !== "/admin/user")
+    : menuItems;
 
   return (
     <StyledSider width={260}>
