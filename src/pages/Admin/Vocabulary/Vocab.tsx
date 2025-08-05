@@ -123,7 +123,6 @@ const Vocab = () => {
         error?.response?.data?.message ||
         "Không thể tải chi tiết từ vựng"
       );
-      // message.error("Không thể tải chi tiết từ vựng");
     } finally {
       setLoading(false);
     }
@@ -140,7 +139,6 @@ const Vocab = () => {
         error?.response?.data?.message ||
         "Không thể tải chi tiết từ vựng"
       );
-      message.error("Xoá thất bại");
     } finally {
       setLoading(false);
     }
@@ -166,7 +164,6 @@ const Vocab = () => {
         error?.response?.data?.message ||
         "Không thể tải chi tiết từ vựng"
       );
-      message.error("Gửi thất bại");
     } finally {
       setLoading(false);
     }

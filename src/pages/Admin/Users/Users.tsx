@@ -94,7 +94,7 @@ const Users = () => {
       setActiveUsers(list.filter((u) => (u.role === 0 || u.role === 2) && u.is_active !== false));
     } catch (err: any) {
       if (!hasErrorNotified.current) {
-        notification.error({ message: err.response?.data?.message || "Error fetching active users" });
+        notification.error({ message: err.response?.data?.message || "Lỗi khi tải người dùng hoạt động" });
         hasErrorNotified.current = true;
       }
     } finally {
@@ -110,7 +110,7 @@ const Users = () => {
       setInactiveUsers(list.filter((u) => (u.role === 0 || u.role === 2) && u.is_active === false));
     } catch (err: any) {
       if (!hasErrorNotified.current) {
-        notification.error({ message: err.response?.data?.message || "Error fetching inactive users" });
+        notification.error({ message: err.response?.data?.message || "Lỗi khi tải người dùng không hoạt động" });
         hasErrorNotified.current = true;
       }
     } finally {
@@ -157,7 +157,7 @@ const Users = () => {
       setAvatarUrl(detail.avatar_url || "");
       setPanelVisible(true);
     } catch (e: any) {
-      message.error(e.response?.data?.message || "Failed to load user detail");
+      message.error(e.response?.data?.message || "Không thể tải chi tiết người dùng");
     } finally {
       setLoading(false);
     }
@@ -166,10 +166,10 @@ const Users = () => {
   const handleDelete = async (id: string) => {
     try {
       await deleteUser(id);
-      message.success("User banned successfully");
+      message.success("Khóa người dùng thành công");
       fetchActiveUsers();
     } catch {
-      message.error("Ban failed");
+      message.error("Khóa không thành công");
     }
   };
 
@@ -177,10 +177,10 @@ const Users = () => {
     setLoading(true);
     try {
       await updateUser(id, { is_active: true });
-      message.success("User unbanned successfully");
+      message.success("Mở khóa người dùng thành công");
       fetchInactiveUsers();
     } catch {
-      message.error("Unban failed");
+      message.error("Mở khóa không thành công");
     } finally {
       setLoading(false);
     }
@@ -210,13 +210,13 @@ const Users = () => {
     try {
       if (isEditMode) await updateUser(selectedRecord!._id, payload);
       else await createUser(payload);
-      message.success("Submit successful");
+      message.success("Gửi thành công");
       setPanelVisible(false);
       form.resetFields();
       setSelectedRecord(null);
       fetchActiveUsers();
     } catch {
-      message.error("Submit failed");
+      message.error("Gửi không thành công");
     } finally {
       setLoading(false);
     }
