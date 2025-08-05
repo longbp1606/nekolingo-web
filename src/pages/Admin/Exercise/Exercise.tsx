@@ -102,7 +102,6 @@ const Exercise = () => {
         error?.response?.data?.message ||
           "Xóa thất bại"
       );
-      // message.error("Xóa thất bại");
     } finally {
       setLoading(false);
     }

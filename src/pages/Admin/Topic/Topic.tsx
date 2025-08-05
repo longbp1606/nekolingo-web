@@ -29,7 +29,7 @@ const Topic: React.FC = () => {
     current: 1,
     pageSize: 5,
     total: 0,
-  });  
+  });
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [form] = Form.useForm();
   const hasErrorNotified = useRef(false);
@@ -90,10 +90,9 @@ const Topic: React.FC = () => {
       setPanelVisible(true);
     } catch (error: any) {
       message.error(
-            error?.response?.data?.message ||
-            "Không tải được chi tiết chủ đề"
-          );
-      // message.error("Không tải được chi tiết chủ đề");
+        error?.response?.data?.message ||
+        "Không tải được chi tiết chủ đề"
+      );
     } finally {
       setLoading(false);
     }
@@ -101,7 +100,7 @@ const Topic: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteTopic(id); 
+      await deleteTopic(id);
       message.success("Xóa thành công");
       fetchData(pagination.current, pagination.pageSize, selectedCourse ?? undefined);
     } catch (error: any) {
@@ -109,7 +108,6 @@ const Topic: React.FC = () => {
         error?.response?.data?.message ||
         "Xóa thất bại"
       );
-      message.error("Xóa thất bại");
     }
   };
 
@@ -159,30 +157,30 @@ const Topic: React.FC = () => {
     },
   ];
 
-    const filteredData = useMemo(() => {
-      if (!searchText) return data;
-      const lower = searchText.toLowerCase();
-      return data.filter((row) =>
-        Object.values(row).some((val) =>
-          String(val).toLowerCase().includes(lower)
-        )
-      );
-    }, [data, searchText]);
-  
-    const tableData: TableRecord[] = filteredData.map((item) => ({
-      ...item,
-      key: item._id,
-    }));
+  const filteredData = useMemo(() => {
+    if (!searchText) return data;
+    const lower = searchText.toLowerCase();
+    return data.filter((row) =>
+      Object.values(row).some((val) =>
+        String(val).toLowerCase().includes(lower)
+      )
+    );
+  }, [data, searchText]);
+
+  const tableData: TableRecord[] = filteredData.map((item) => ({
+    ...item,
+    key: item._id,
+  }));
 
   return (
     <div style={{ display: "flex", gap: 16 }}>
       <ContentCard style={{ flex: 2 }}>
         <FilterArea>
           <InputSearch
-                      placeholder="Tìm kiếm chủ đề..."
-                      value={searchText}
-                      onChange={(e) => setSearchText(e.target.value)}
-                    />
+            placeholder="Tìm kiếm chủ đề..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+          />
           <CAddButton
             type="primary"
             disabled={!selectedCourse}

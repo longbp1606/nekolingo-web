@@ -127,7 +127,7 @@ const Course = () => {
     } catch (error: any) {
       message.error(
         error?.response?.data?.message ||
-          "Tải chi tiết thất bại"
+        "Tải chi tiết thất bại"
       );
       // message.error("Tải chi tiết thất bại");
     } finally {
@@ -144,9 +144,8 @@ const Course = () => {
     } catch (error: any) {
       message.error(
         error?.response?.data?.message ||
-          "Xóa thất bại"
+        "Xóa thất bại"
       );
-      // message.error("Xóa thất bại");
     } finally {
       setLoading(false);
     }
@@ -170,7 +169,7 @@ const Course = () => {
     } catch (error: any) {
       message.error(
         error?.response?.data?.message ||
-          "Gửi dữ liệu thất bại"
+        "Gửi dữ liệu thất bại"
       );
     } finally {
       setLoading(false);

@@ -351,7 +351,7 @@ const AddExercise: FC<{ onBack: () => void }> = ({ onBack }) => {
       if (typeof exercise.grammar === 'object') {
         setSelectedGrammar({
           id: exercise.grammar._id,
-          name: exercise.grammar.condition,
+          name: exercise.grammar.name,
         });
       } else {
         const foundG = grammarList.find(g => g._id === exercise.grammar);

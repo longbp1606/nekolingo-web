@@ -170,7 +170,6 @@ const Lesson = () => {
       message.success("Xóa thành công");
       await fetchAll();
     } catch (error: any) {
-      // message.error("Xóa thất bại");
       message.error(
         error?.response?.data?.message ||
         "Xóa thất bại"
@@ -196,7 +195,6 @@ const Lesson = () => {
       setSelectedRecord(null);
       await fetchAll();
     } catch (error: any) {
-      // message.error("Gửi dữ liệu thất bại");
       message.error(
         error?.response?.data?.message ||
         "Gửi dữ liệu thất bại"

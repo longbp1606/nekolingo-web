@@ -95,7 +95,6 @@ const Quest = () => {
         error?.response?.data?.message ||
         "Lưu thất bại"
       );
-      message.error("Không tải được chi tiết thử thách");
     } finally {
       setLoading(false);
     }
@@ -109,9 +108,8 @@ const Quest = () => {
     } catch (error: any) {
       message.error(
         error?.response?.data?.message ||
-        "Lưu thất bại"
+        "Xóa thất bại"
       );
-      message.error("Không thể xóa thử thách này");
     }
   };
 
@@ -144,7 +142,6 @@ const Quest = () => {
         error?.response?.data?.message ||
         "Lưu thất bại"
       );
-      message.error("Lưu thất bại");
     } finally {
       setLoading(false);
     }
