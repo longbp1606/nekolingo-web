@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import {
   Button,
   Form,
@@ -13,20 +13,26 @@ import {
   Select,
   Upload,
   Image,
+  Segmented,
 } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { ContentCard, FilterArea, RowField } from "./Users.styled";
 import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
-import { CreateUser, createUser, deleteUser, getListUsers, getUserDetail, updateUser } from "@/services/usersAPI";
-import moment from "moment";
+import {
+  CreateUser,
+  createUser,
+  deleteUser,
+  getIsActiveListUsers,
+  getListUsers,
+  getUserDetail,
+  updateUser,
+} from "@/services/usersAPI";
 import { getListLanguages } from "@/services/languageAPI";
-import { PlusOutlined } from "@ant-design/icons";
+import moment from "moment";
 import { uploadImage } from "@/services/uploadAPI";
 import { useWatch } from "antd/es/form/Form";
-// import { uploadImage } from "@/services/uploadAPI";
-// import { PlusOutlined } from "@ant-design/icons";
-type TableRecord = UserItem & { key: string };
 
 export type UserItem = {
   _id: string;
@@ -46,6 +52,7 @@ export type UserItem = {
   language_from?: string;
   language_to?: string;
   is_premiere?: boolean;
+  is_active?: boolean;
 };
 
 const roleOptions = [
@@ -55,45 +62,55 @@ const roleOptions = [
 ];
 
 const Users = () => {
-  const [data, setData] = useState<UserItem[]>([]);
+  const [activeUsers, setActiveUsers] = useState<UserItem[]>([]);
+  const [inactiveUsers, setInactiveUsers] = useState<UserItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<UserItem | null>(null);
   const [panelVisible, setPanelVisible] = useState(false);
-  const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
-  const hasErrorNotified = useRef(false);
   const [languageOptions, setLanguageOptions] = useState<{ label: string; value: string }[]>([]);
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"active" | "inactive">("active");
+  const [form] = Form.useForm();
   const roleValue = useWatch("role", form);
+  const hasErrorNotified = useRef(false);
 
   const fetchOptions = useCallback(async () => {
     try {
       const res = await getListLanguages(1, 10);
-      setLanguageOptions(res.data.languages.map((item: any) => ({
-        label: item.name,
-        value: item._id,
-      }))
+      setLanguageOptions(
+        res.data.languages.map((item: any) => ({ label: item.name, value: item._id }))
       );
-    } catch (error) {
-      console.error("Error fetching data:", error);
+    } catch (e) {
+      console.error(e);
     }
   }, []);
 
-  const fetchAll = async () => {
+  const fetchActiveUsers = async () => {
     setLoading(true);
     try {
       const res = await getListUsers();
       const list: UserItem[] = res.data.data || [];
-      const filteredByRole = list.filter((user) => user.role === 0 || user.role === 2);
-
-      setData(filteredByRole);
-    } catch (error: any) {
+      setActiveUsers(list.filter((u) => (u.role === 0 || u.role === 2) && u.is_active !== false));
+    } catch (err: any) {
       if (!hasErrorNotified.current) {
-        notification.error({
-          key: "fetch-language-error",
-          message: "Error",
-          description: error?.response?.data?.message || "Error fetching languages",
-        });
+        notification.error({ message: err.response?.data?.message || "Error fetching active users" });
+        hasErrorNotified.current = true;
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchInactiveUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await getIsActiveListUsers();
+      const list: UserItem[] = res.data.data || [];
+      setInactiveUsers(list.filter((u) => (u.role === 0 || u.role === 2) && u.is_active === false));
+    } catch (err: any) {
+      if (!hasErrorNotified.current) {
+        notification.error({ message: err.response?.data?.message || "Error fetching inactive users" });
         hasErrorNotified.current = true;
       }
     } finally {
@@ -102,24 +119,28 @@ const Users = () => {
   };
 
   useEffect(() => {
-    fetchAll();
     fetchOptions();
-  }, []);
+  }, [fetchOptions]);
+
+  useEffect(() => {
+    if (statusFilter === "active") fetchActiveUsers();
+    else fetchInactiveUsers();
+  }, [statusFilter]);
+
+  const isEditMode = Boolean(selectedRecord);
 
   const handleRowClick = async (record: UserItem) => {
+    if (!isEditMode && statusFilter !== "active") return;
     setLoading(true);
     try {
       const res = await getUserDetail(record._id);
       const detail: UserItem = res.data.data.user;
-
       setSelectedRecord(detail);
       form.setFieldsValue({
-        _id: detail._id,
         email: detail.email,
         role: detail.role,
         username: detail.username,
-        password: detail.password,
-        avatar_url: detail.avatar_url,
+        password: undefined,
         current_level: detail.current_level,
         xp: detail.xp,
         weekly_xp: detail.weekly_xp,
@@ -131,24 +152,35 @@ const Users = () => {
         language_from: detail.language_from,
         language_to: detail.language_to,
         is_premiere: detail.is_premiere,
+        avatar_url: detail.avatar_url,
       });
-      setAvatarUrl(detail.avatar_url || '');
+      setAvatarUrl(detail.avatar_url || "");
       setPanelVisible(true);
-    } catch {
-      message.error("Failed to load detail");
+    } catch (e: any) {
+      message.error(e.response?.data?.message || "Failed to load user detail");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    // setLoading(true);
     try {
       await deleteUser(id);
-      message.success("Deleted successfully");
-      await fetchAll();
+      message.success("User banned successfully");
+      fetchActiveUsers();
     } catch {
-      message.error("Delete failed");
+      message.error("Ban failed");
+    }
+  };
+
+  const handleUnban = async (id: string) => {
+    setLoading(true);
+    try {
+      await updateUser(id, { is_active: true });
+      message.success("User unbanned successfully");
+      fetchInactiveUsers();
+    } catch {
+      message.error("Unban failed");
     } finally {
       setLoading(false);
     }
@@ -157,38 +189,32 @@ const Users = () => {
   const handleFormSubmit = async () => {
     const values = await form.validateFields();
     setLoading(true);
+    const payload: CreateUser = {
+      email: values.email,
+      password: values.password,
+      role: values.role,
+      username: values.username,
+      avatar_url: values.avatar_url,
+      current_level: values.current_level,
+      xp: values.xp,
+      weekly_xp: values.weekly_xp,
+      hearts: values.hearts,
+      streak_days: values.streak_days,
+      is_freeze: values.is_freeze,
+      last_active_date: values.last_active_date?.toDate(),
+      freeze_count: values.freeze_count,
+      language_from: values.language_from,
+      language_to: values.language_to,
+      is_premiere: values.is_premiere,
+    };
     try {
-      const payload: CreateUser = {
-        email: values.email,
-        password: values.password,
-        role: values.role,
-        username: values.username,
-        avatar_url: values.avatar_url,
-        current_level: 0,
-        xp: values.xp,
-        weekly_xp: values.weekly_xp,
-        hearts: values.hearts,
-        streak_days: values.streak_days,
-        is_freeze: values.is_freeze,
-        last_active_date: values.last_active_date?.toDate(),
-        freeze_count: values.freeze_count,
-        language_from: values.language_from,
-        language_to: values.language_to,
-        is_premiere: values.is_premiere,
-      };
-
-      if (selectedRecord?._id) {
-        await updateUser(selectedRecord._id, payload);
-        message.success("Updated successfully");
-      } else {
-        await createUser(payload);
-        // await register(payload);
-        message.success("Created successfully");
-      }
+      if (isEditMode) await updateUser(selectedRecord!._id, payload);
+      else await createUser(payload);
+      message.success("Submit successful");
       setPanelVisible(false);
       form.resetFields();
       setSelectedRecord(null);
-      await fetchAll();
+      fetchActiveUsers();
     } catch {
       message.error("Submit failed");
     } finally {
@@ -196,88 +222,65 @@ const Users = () => {
     }
   };
 
-  const columns = [
-    {
-      title: "Vai trò",
-      dataIndex: "role",
-      key: "role",
-      render: (r: number) => roleOptions.find(o => o.value === r)?.label
-    },
-    { title: "Email", dataIndex: "email", key: "email" },
-    {
-      title: "Thao tác",
-      key: "actions",
-      render: (_: any, record: UserItem) => (
-        <div onClick={(e) => e.stopPropagation()}>
-          <Popconfirm
-            title="Bạn có chắc muốn cấm người dùng này?"
-            onConfirm={() => handleDelete(record._id)}
-            okText="Xác nhận"
-            cancelText="Hủy"
-          >
-            <Button danger size="small" onClick={(e) => e.stopPropagation()}>
-              Cấm
-            </Button>
-          </Popconfirm>
-        </div>
-      ),
-    },
-  ];
-
-  // Lọc dữ liệu: tìm trên tất cả các cột (stringify mọi giá trị)
+  const sourceData = statusFilter === "active" ? activeUsers : inactiveUsers;
   const filteredData = useMemo(() => {
-    if (!searchText) return data;
+    if (!searchText) return sourceData;
     const lower = searchText.toLowerCase();
-    return data.filter((row) =>
-      Object.values(row).some((val) =>
-        String(val).toLowerCase().includes(lower)
-      )
+    return sourceData.filter((row) =>
+      Object.values(row).some((val) => String(val).toLowerCase().includes(lower))
     );
-  }, [data, searchText]);
+  }, [sourceData, searchText]);
 
-  const tableData: TableRecord[] = filteredData.map(item => ({
-    ...item,
-    key: item._id,
-  }));
+  const columnsActive = [
+    { title: "STT", key: "index", render: (_: any, __: any, idx: number) => idx + 1 },
+    { title: "Vai trò", dataIndex: "role", key: "role", render: (r: number) => roleOptions.find(o => o.value === r)?.label },
+    { title: "Email", dataIndex: "email", key: "email" },
+    { title: "Thao tác", key: "actions", render: (_: any, rec: UserItem) => (
+      <div onClick={e => e.stopPropagation()}>
+        <Popconfirm title="Bạn có chắc muốn cấm người dùng này?" onConfirm={() => handleDelete(rec._id)} okText="Xác nhận" cancelText="Hủy">
+          <Button danger size="small" onClick={e => e.stopPropagation()}>Cấm</Button>
+        </Popconfirm>
+      </div>
+    )},
+  ];
+  const columnsInactive = [
+    { title: "STT", key: "index", render: (_: any, __: any, idx: number) => idx + 1 },
+    { title: "Vai trò", dataIndex: "role", key: "role", render: (r: number) => roleOptions.find(o => o.value === r)?.label },
+    { title: "Email", dataIndex: "email", key: "email" },
+    { title: "Thao tác", key: "actions", render: (_: any, rec: UserItem) => (
+      <Popconfirm title="Bạn có chắc muốn hủy cấm người dùng này?" onConfirm={() => handleUnban(rec._id)} okText="Xác nhận" cancelText="Hủy">
+        <Button size="small">Hủy cấm</Button>
+      </Popconfirm>
+    )},
+  ];
+  const columns = statusFilter === "active" ? columnsActive : columnsInactive;
 
   return (
     <div style={{ display: "flex", gap: 16 }}>
       <ContentCard style={{ flex: 2 }}>
         <FilterArea>
-          <InputSearch
-            placeholder="Tìm kiếm..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+          <InputSearch placeholder="Tìm kiếm..." value={searchText} onChange={e => setSearchText(e.target.value)} />
+          <Segmented
+            options={[{ label: "Hoạt động", value: "active" }, { label: "Bị cấm", value: "inactive" }]}
+            value={statusFilter}
+            onChange={val => setStatusFilter(val as "active" | "inactive")}
+            style={{ height: 32 }}
           />
-          <CAddButton
-            type="primary"
-            onClick={() => {
-              setSelectedRecord(null);
-              form.resetFields();
-              setPanelVisible(true);
-            }}
-          >
+          <CAddButton type="primary" onClick={() => { setSelectedRecord(null); form.resetFields(); setPanelVisible(true); }}>
             Thêm người dùng
           </CAddButton>
         </FilterArea>
-
         <CTable
           columns={columns}
-          dataSource={tableData}
+          dataSource={filteredData.map(r => ({ ...r, key: r._id }))}
           rowKey="_id"
           loading={loading}
-          onRow={(record) => ({
-            onClick: () => handleRowClick(record),
-          })}
-          pagination={{
-            pageSize: 8,
-            showSizeChanger: false,
-          }}
+          onRow={r => ({ onClick: () => statusFilter === "active" && handleRowClick(r) })}
+          pagination={{ pageSize: 8, showSizeChanger: false }}
         />
       </ContentCard>
-
       <Modal
-        title={selectedRecord ? "Chỉnh sửa người dùng" : "Thêm người dùng"}
+        title={isEditMode ? "Chỉnh sửa người dùng" : "Thêm người dùng"}
         visible={panelVisible}
         onCancel={() => setPanelVisible(false)}
         onOk={handleFormSubmit}
@@ -289,32 +292,31 @@ const Users = () => {
         <Form form={form} layout="vertical">
           <RowField>
             <Form.Item name="email" label="Email" rules={[{ required: true }]} style={{ width: "100%" }}>
-              <Input disabled={roleValue === 0}/>
+              <Input disabled={isEditMode && (roleValue === 0 || roleValue === 2)} />
             </Form.Item>
-
-            {!selectedRecord && (
+            {!isEditMode && (
               <Form.Item name="password" label="Mật khẩu" rules={[{ required: true }]} style={{ width: "100%" }}>
                 <Input.Password />
               </Form.Item>
-             )} 
+            )}
           </RowField>
           <Form.Item name="username" label="Tên người dùng" style={{ width: "100%" }}>
-              <Input />
-            </Form.Item>
+            <Input disabled={isEditMode && (roleValue === 0 || roleValue === 2)} />
+          </Form.Item>
           <RowField>
             <Form.Item name="role" label="Vai trò" style={{ width: "100%" }}>
-              <Select options={roleOptions} style={{ width: "100%" }} />
+              <Select options={roleOptions} disabled={isEditMode && (roleValue === 0 || roleValue === 2)} />
             </Form.Item>
             <Form.Item name="current_level" label="Cấp độ hiện tại" style={{ width: "100%" }}>
-              <InputNumber style={{ width: "100%" }} />
+              <InputNumber disabled={isEditMode && (roleValue === 0 || roleValue === 2)} style={{ width: "100%" }} />
             </Form.Item>
           </RowField>
           <RowField>
             <Form.Item name="language_from" label="Ngôn ngữ gốc" style={{ width: "100%" }}>
-              <Select options={languageOptions} />
+              <Select options={languageOptions} disabled={isEditMode && (roleValue === 0 || roleValue === 2)} />
             </Form.Item>
             <Form.Item name="language_to" label="Ngôn ngữ học" style={{ width: "100%" }}>
-              <Select options={languageOptions} />
+              <Select options={languageOptions} disabled={isEditMode && (roleValue === 0 || roleValue === 2)} />
             </Form.Item>
           </RowField>
           <Form.Item name="avatar_url" label="Ảnh đại diện" getValueFromEvent={() => avatarUrl}>
@@ -333,6 +335,7 @@ const Users = () => {
                   onError?.(err as Error);
                 }
               }}
+              disabled={isEditMode && (roleValue === 0 || roleValue === 2)}
             >
               {avatarUrl ? (
                 <Image src={avatarUrl} width={80} preview={false} />

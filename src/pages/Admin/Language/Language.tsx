@@ -92,8 +92,12 @@ const Language = () => {
       });
       setFlagUrl(detail.flag_url || "");
       setPanelVisible(true);
-    } catch {
-      message.error("Tải chi tiết thất bại");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+          "Tải chi tiết thất bại"
+      );
+      // message.error("Tải chi tiết thất bại");
     } finally {
       setLoading(false);
     }
@@ -104,8 +108,12 @@ const Language = () => {
       await deleteLanguage(id);
       message.success("Xóa thành công");
       await fetchAll();
-    } catch {
-      message.error("Không thể xóa ngôn ngữ này vì đang được sử dụng.");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+          "Tải chi tiết thất bại"
+      );
+      // message.error("Không thể xóa ngôn ngữ này vì đang được sử dụng.");
     } finally {
       setLoading(false);
     }
@@ -126,14 +134,25 @@ const Language = () => {
       form.resetFields();
       setSelectedRecord(null);
       await fetchAll();
-    } catch {
-      message.error("Lỗi khi gửi dữ liệu");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+          "Lỗi khi gửi dữ liệu"
+      );
+      // message.error("Lỗi khi gửi dữ liệu");
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
+    {
+      title: "STT",
+      key: "index",
+      render: (_: any, __: LanguageItem, index: number) => (
+        (pagination.current! - 1) * pagination.pageSize! + index + 1
+      ),
+    },
     { title: "Tên", dataIndex: "name", key: "name" },
     { title: "Mã", dataIndex: "code", key: "code" },
     {

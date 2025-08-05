@@ -118,8 +118,12 @@ const Vocab = () => {
         type: detail.type,
       });
       setPanelVisible(true);
-    } catch {
-      message.error("Không thể tải chi tiết từ vựng");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+        "Không thể tải chi tiết từ vựng"
+      );
+      // message.error("Không thể tải chi tiết từ vựng");
     } finally {
       setLoading(false);
     }
@@ -131,7 +135,11 @@ const Vocab = () => {
       await deleteVocab(id);
       message.success("Xoá thành công");
       await fetchAll();
-    } catch {
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+        "Không thể tải chi tiết từ vựng"
+      );
       message.error("Xoá thất bại");
     } finally {
       setLoading(false);
@@ -153,7 +161,11 @@ const Vocab = () => {
       form.resetFields();
       setSelectedRecord(null);
       await fetchAll();
-    } catch {
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+        "Không thể tải chi tiết từ vựng"
+      );
       message.error("Gửi thất bại");
     } finally {
       setLoading(false);
@@ -161,6 +173,11 @@ const Vocab = () => {
   };
 
   const columns = [
+    {
+      title: "STT",
+      key: "index",
+      render: (_: any, __: any, index: number) => index + 1,
+    },
     { title: "Từ vựng", dataIndex: "word", key: "word" },
     { title: "Nghĩa", dataIndex: "meaning", key: "meaning" },
     { title: "Loại", dataIndex: "type", key: "type" },

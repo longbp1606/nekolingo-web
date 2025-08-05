@@ -37,10 +37,15 @@ export type UpdateUser = {
 	is_premiere?: boolean;
 	balance?: number;
 	hearts?: number;
+	is_active?: boolean;
 };
 
 export const getListUsers = () => {
 	return get("/api/user");
+}
+
+export const getIsActiveListUsers = () => {
+	return get("/api/user/inactive");
 }
 
 export const getUserDetail = (id: string) => {

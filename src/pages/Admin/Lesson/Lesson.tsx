@@ -17,8 +17,8 @@ import CTable from "@/components/CustomedTable/CTable";
 import InputSearch from "@/components/InputSearch/InputSearch";
 import CAddButton from "@/components/AddButton/AddButton";
 import ReactQuill from "react-quill";
-import { getTopicCourse, getTopicsAll } from "@/services/topicAPI";
-import { createLesson, deleteLesson, getLessonDetail, getListLessons, updateLesson } from "@/services/lessonAPI";
+import { getTopicCourse } from "@/services/topicAPI";
+import { createLesson, deleteLesson, getLessonByTopic, getLessonDetail, updateLesson } from "@/services/lessonAPI";
 import { useOutletContext } from "react-router-dom";
 type TableRecord = LessonItem & { key: string };
 
@@ -53,24 +53,26 @@ const Lesson = () => {
   const hasErrorNotified = useRef(false);
   const [topicOptions, setTopicOptions] = useState<{ label: string; value: string }[]>([]);
   const { selectedCourse } = useOutletContext<OutletCtx>();
-  const [topics, setTopics] = useState<{ _id: string; title: string }[]>([]);  
+  // const [topics, setTopics] = useState<{ _id: string; title: string }[]>([]);  
+  const [selectedTopic, setSelectedTopic] = useState("");
 
-  const fetchTopics = useCallback(async () => {
-    if (!selectedCourse) { setTopics([]); return; }
-    try {
-      const res = await getTopicCourse(selectedCourse);
-      setTopics(res.data.data || []);
-      fetchAll(1, pagination.pageSize as number);
-    } catch {
-      notification.error({ message: "Lỗi khi tải chủ đề" });
-      setTopics([]);
-    }
-  }, [selectedCourse]);
+  // const fetchTopics = useCallback(async () => {
+  //   if (!selectedCourse) { setTopics([]); return; }
+  //   try {
+  //     const res = await getTopicCourse(selectedCourse);
+  //     setTopics(res.data.data || []);
+  //     // fetchAll(1, pagination.pageSize as number);
+  //   } catch {
+  //     notification.error({ message: "Lỗi khi tải chủ đề" });
+  //     setTopics([]);
+  //   }
+  // }, [selectedCourse]);
 
 
   const fetchOptions = useCallback(async () => {
     try {
-      const res = await getTopicsAll();
+      // const res = await getTopicsAll();
+      const res = await getTopicCourse(selectedCourse);
       setTopicOptions(
         res.data.data.map((item: any) => ({
           label: item.title,
@@ -80,45 +82,55 @@ const Lesson = () => {
     } catch (error) {
       console.error("Lỗi khi tải tùy chọn chủ đề:", error);
     }
-  }, []);
+  }, [selectedCourse]);
 
   useEffect(() => {
-    fetchTopics();
+    // fetchTopics();
     fetchOptions();
-  }, [fetchTopics, fetchOptions]);
+  }, [fetchOptions]);
 
-  const fetchAll = async (page = 1, take = 10) => {
-    setLoading(true);
-    try {
-      const res = await getListLessons(page, take);
-      const list: LessonItem[] = res.data.lessons || [];
-      const { totalRecord } = res.data.pagination;
-      const topicIds = topics.map((t) => t._id);
-      const filtered = list.filter((lesson) => topicIds.includes(lesson.topic._id));
-      setData(filtered);
-      setPagination({
-        current: page,
-        pageSize: take,
-        total: totalRecord,
-      });       
-    } catch (error: any) {
-      if (!hasErrorNotified.current) {
-        notification.error({ key: "fetch-lesson-error", message: "Error", description: error?.response?.data?.message || "Error fetching lessons" });
-        hasErrorNotified.current = true;
+  const fetchAll = useCallback(
+    async (page = 1, pageSize = 10) => {
+      if (!selectedTopic) return;
+      setLoading(true);
+      try {
+        const res = await getLessonByTopic(selectedTopic);
+        // API returns array directly
+        const list: LessonItem[] = Array.isArray(res.data) ? res.data : [];
+        setData(list);
+        setPagination(() => ({
+          current: page,
+          pageSize,
+          total: list.length,
+        }));
+        hasErrorNotified.current = false; // reset error flag on success
+      } catch (error: any) {
+        if (!hasErrorNotified.current) {
+          notification.error({
+            key: "fetch-course-error",
+            message: "Lỗi",
+            description:
+              error?.response?.data?.message || "Lỗi khi tải danh sách bài học",
+          });
+          hasErrorNotified.current = true;
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [selectedTopic]
+  );
 
   useEffect(() => {
-    if (topics.length > 0) {
-      fetchAll(pagination.current as number, pagination.pageSize as number);
-    }  }, [topics]);
+    if (selectedTopic) {
+      fetchAll(1, pagination.pageSize as number);
+    }
+  }, [selectedTopic]);
 
-   const handleTableChange = (pag: TablePaginationConfig) => {
-      fetchAll(pag.current as number, pag.pageSize as number);
-    };
+
+  const handleTableChange = (pag: TablePaginationConfig) => {
+    fetchAll(pag.current as number, pag.pageSize as number);
+  };
 
   const handleRowClick = async (record: LessonItem) => {
     setLoading(true);
@@ -126,7 +138,7 @@ const Lesson = () => {
       await fetchOptions(); // 👈 đảm bảo có options
       const res = await getLessonDetail(record._id);
       const detail: LessonItem = res.data;
-  
+
       setSelectedRecord(detail);
       form.setFieldsValue({
         title: detail.title,
@@ -137,15 +149,19 @@ const Lesson = () => {
         xp_reward: Number(detail.xp_reward),
         mode: detail.mode,
       });
-  
+
       setPanelVisible(true);
-    } catch {
-      notification.error({ message: "Tải chi tiết thất bại" });
+    } catch (error: any) {
+      // notification.error({ message: "Tải chi tiết thất bại" });
+      message.error(
+        error?.response?.data?.message ||
+        "Gửi dữ liệu thất bại"
+      );
     } finally {
       setLoading(false);
     }
   };
-  
+
 
   const handleDelete = async (id: string) => {
     setLoading(true);
@@ -153,8 +169,12 @@ const Lesson = () => {
       await deleteLesson(id);
       message.success("Xóa thành công");
       await fetchAll();
-    } catch {
-      message.error("Xóa thất bại");
+    } catch (error: any) {
+      // message.error("Xóa thất bại");
+      message.error(
+        error?.response?.data?.message ||
+        "Xóa thất bại"
+      );
     } finally {
       setLoading(false);
     }
@@ -175,19 +195,33 @@ const Lesson = () => {
       form.resetFields();
       setSelectedRecord(null);
       await fetchAll();
-    } catch {
-      message.error("Gửi dữ liệu thất bại");
+    } catch (error: any) {
+      // message.error("Gửi dữ liệu thất bại");
+      message.error(
+        error?.response?.data?.message ||
+        "Gửi dữ liệu thất bại"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
+    {
+      title: "STT",
+      key: "index",
+      render: (_: any, __: any, index: number) => index + 1,
+    },
     { title: "Tiêu đề", dataIndex: "title", key: "title" },
     { title: "Mô tả", dataIndex: "description", key: "description" },
     { title: "Loại", dataIndex: "type", key: "type" },
-    { title: "Chủ đề", dataIndex: "topic", key: "topic.title" },
+    { title: "Thứ tự", dataIndex: "order", key: "order" },
     {
+      title: "Chủ đề",
+      key: "topic",
+      render: (_: any, record: LessonItem) => record.topic.title
+    },
+        {
       title: "Hành động",
       key: "actions",
       render: (_: any, record: any) => (
@@ -222,18 +256,31 @@ const Lesson = () => {
 
   const tableData: TableRecord[] = filteredData.map(item => ({
     ...item,          // _id, name, condition, description
-    key: item._id,    // AntD cần field `key`
+    key: item._id,    // AntD cần field key
   }));
 
   return (
     <div style={{ display: "flex", gap: 16 }}>
       <ContentCard style={{ flex: 2 }}>
         <FilterArea>
-          <InputSearch
-            placeholder="Tìm kiếm..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
+          <div style={{ display: "flex", gap: "12px", width: "100%" }}>
+            <InputSearch
+              placeholder="Tìm kiếm..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+            <Select
+              style={{
+                width: "200px",
+                height: 32,
+                borderRadius: 12,
+              }}
+              options={topicOptions}
+              onChange={(value) => {
+                setSelectedTopic(value);
+              }}
+            />
+          </div>
           <CAddButton
             type="primary"
             onClick={() => {
@@ -347,8 +394,8 @@ const Lesson = () => {
           >
             <Select
               options={[
-                { label: "Normal", value: "Bình thường" },
-                { label: "Test", value: "Kiểm tra" },
+                { label: "Bình thường", value: "normal" },
+                { label: "Kiểm tra", value: "test" },
               ]}
             />
           </Form.Item>
