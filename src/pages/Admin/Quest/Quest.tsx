@@ -90,8 +90,11 @@ const Quest = () => {
       });
       setIconUrl(detail.icon || "");
       setPanelVisible(true);
-    } catch {
-      message.error("Không tải được chi tiết thử thách");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+        "Lưu thất bại"
+      );
     } finally {
       setLoading(false);
     }
@@ -102,8 +105,11 @@ const Quest = () => {
       await deleteQuest(id);
       message.success("Xóa thành công");
       await fetchAll();
-    } catch {
-      message.error("Không thể xóa thử thách này");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+        "Xóa thất bại"
+      );
     }
   };
 
@@ -131,14 +137,22 @@ const Quest = () => {
       setSelectedRecord(null);
       setIconUrl("");
       await fetchAll();
-    } catch {
-      message.error("Lưu thất bại");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+        "Lưu thất bại"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
+    {
+      title: "STT",
+      key: "index",
+      render: (_: any, __: any, index: number) => index + 1,
+    },
     { title: "Tiêu đề", dataIndex: "title", key: "title" },
     {
       title: "Biểu tượng",
@@ -244,6 +258,7 @@ const Quest = () => {
           <Form.Item
             name="icon"
             label="Biểu tượng"
+            rules={[{ required: true, message: "Vui lòng tải ảnh" }]}
             getValueFromEvent={() => iconUrl}
           >
             <Upload

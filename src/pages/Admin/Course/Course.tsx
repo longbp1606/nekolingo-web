@@ -124,8 +124,12 @@ const Course = () => {
         language_to: detail.language_to._id,
       });
       setPanelVisible(true);
-    } catch {
-      message.error("Tải chi tiết thất bại");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+        "Tải chi tiết thất bại"
+      );
+      // message.error("Tải chi tiết thất bại");
     } finally {
       setLoading(false);
     }
@@ -137,8 +141,11 @@ const Course = () => {
       await deleteCourse(id);
       message.success("Xóa thành công");
       await fetchAll();
-    } catch {
-      message.error("Xóa thất bại");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+        "Xóa thất bại"
+      );
     } finally {
       setLoading(false);
     }
@@ -159,14 +166,22 @@ const Course = () => {
       form.resetFields();
       setSelectedRecord(null);
       await fetchAll();
-    } catch {
-      message.error("Gửi dữ liệu thất bại");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+        "Gửi dữ liệu thất bại"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
+    {
+      title: "STT",
+      key: "index",
+      render: (_: any, __: any, index: number) => index + 1,
+    },
     { title: "Tiêu đề", dataIndex: "title", key: "title" },
     { title: "Mô tả", dataIndex: "description", key: "description" },
     {

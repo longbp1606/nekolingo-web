@@ -8,7 +8,6 @@ import {
   Popconfirm,
   message,
   Modal,
-  notification,
   Image,
   Upload,
   AutoComplete,
@@ -62,11 +61,10 @@ const Archivement = () => {
       setData(res.data?.data || []);
     } catch (error: any) {
       if (!hasErrorNotified.current) {
-        notification.error({
-          key: "fetch-archivement-error",
-          message: "Lỗi",
-          description: error?.response?.data?.message || "Lỗi khi tải danh sách thành tích",
-        });
+        message.error(
+          error?.response?.data?.message ||
+          "Lỗi khi tải danh sách thành tích"
+        );
         hasErrorNotified.current = true;
       }
     } finally {
@@ -92,20 +90,29 @@ const Archivement = () => {
       });
       setIconUrl(detail.icon);
       setPanelVisible(true);
-    } catch {
-      message.error("Tải chi tiết thất bại");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+        "Lỗi khi tải chi tiết thành tích"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
+    setLoading(true);
     try {
       await deleteArchivement(id);
       message.success("Xóa thành công");
       fetchAll();
-    } catch {
-      message.error("Không thể xóa thành tích này");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+        "Không thể xóa thành tích này"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -131,14 +138,18 @@ const Archivement = () => {
       setSelectedRecord(null);
       setIconUrl("");
       fetchAll();
-    } catch {
-      message.error("Gửi dữ liệu thất bại");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+        "Gửi dữ liệu thất bại"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
+    { title: "STT", dataIndex: undefined, key: "index", render: (_: any, __: any, index: number) => index + 1 },
     { title: "Tiêu đề", dataIndex: "title", key: "title" },
     { title: "Mô tả", dataIndex: "description", key: "description" },
     {
@@ -166,7 +177,7 @@ const Archivement = () => {
             cancelText="Hủy"
           >
             <Button danger size="small" onClick={(e) => e.stopPropagation()}>
-            Xóa
+              Xóa
             </Button>
           </Popconfirm>
         </div>
@@ -178,8 +189,9 @@ const Archivement = () => {
     if (!searchText) return data;
     const lower = searchText.toLowerCase();
     return data.filter((row) =>
-      [row.title, row.description, row.condition.type]
-        .some((val) => val.toLowerCase().includes(lower))
+      [row.title, row.description, row.condition.type].some((val) =>
+        val.toLowerCase().includes(lower)
+      )
     );
   }, [data, searchText]);
 
@@ -196,12 +208,7 @@ const Archivement = () => {
           />
           <CAddButton
             type="primary"
-            onClick={() => {
-              setSelectedRecord(null);
-              form.resetFields();
-              setIconUrl("");
-              setPanelVisible(true);
-            }}
+            onClick={() => { setSelectedRecord(null); form.resetFields(); setIconUrl(""); setPanelVisible(true); }}
           >
             Thêm thành tích
           </CAddButton>
@@ -213,10 +220,7 @@ const Archivement = () => {
           rowKey="_id"
           loading={loading}
           onRow={(record) => ({ onClick: () => handleRowClick(record) })}
-          pagination={{
-            pageSize: 8,       // mỗi trang 5 item
-            showSizeChanger: false, // ẩn dropdown chọn số dòng/page (tuỳ chọn)
-          }}
+          pagination={{ pageSize: 8, showSizeChanger: false }}
         />
       </ContentCard>
 
@@ -246,6 +250,7 @@ const Archivement = () => {
           <Form.Item
             name="icon"
             label="Icon"
+            rules={[{ required: true, message: "Vui lòng tải ảnh" }]}
             getValueFromEvent={() => iconUrl}
           >
             <Upload
@@ -254,7 +259,6 @@ const Archivement = () => {
               accept="image/*"
               customRequest={async ({ file, onSuccess, onError }) => {
                 try {
-                  // emoji or image upload
                   const res = await uploadImage({ file: file as File, folder: 'profile-pictures' });
                   const url = res.url;
                   form.setFieldsValue({ icon: url });

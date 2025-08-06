@@ -79,8 +79,12 @@ const Grammar = () => {
         description: detail.description,
       });
       setPanelVisible(true);
-    } catch {
-      message.error("Tải chi tiết thất bại");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+          "Tải chi tiết thất bại"
+      );
+      // message.error("Tải chi tiết thất bại");
     } finally {
       setLoading(false);
     }
@@ -91,8 +95,11 @@ const Grammar = () => {
       await deleteGrammar(id);
       message.success("Xóa thành công");
       await fetchAll();
-    } catch {
-      message.error("Xóa thất bại");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+          "Xóa thất bại"
+      );
     } finally {
       setLoading(false);
     }
@@ -113,14 +120,23 @@ const Grammar = () => {
       form.resetFields();
       setSelectedRecord(null);
       await fetchAll();
-    } catch {
-      message.error("Lỗi khi gửi dữ liệu");
+    } catch (error: any) {
+      message.error(
+        error?.response?.data?.message ||
+          "Lỗi khi gửi dữ liệu"
+      );
+      // message.error("Lỗi khi gửi dữ liệu");
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
+    {
+      title: "STT",
+      key: "index",
+      render: (_: any, __: any, index: number) => index + 1,
+    },
     { title: "Tên", dataIndex: "name", key: "name" },
     { title: "Điều kiện", dataIndex: "condition", key: "condition" },
     { title: "Mô tả", dataIndex: "description", key: "description" },
